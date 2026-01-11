@@ -7,3 +7,10 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+Challenge.find_or_create_by!(date: Date.current) do |c|
+  c.theme = "gesture"
+  c.focus = "Capture the movement, not the details."
+  c.tip = "Start with one continuous line. Keep it loose."
+  c.example_image_url = "/examples/gesture/example_01.png"
+end

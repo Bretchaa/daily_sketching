@@ -1,0 +1,19 @@
+<h1>Today’s challenge</h1>
+
+<p><strong>Theme:</strong> <%= @challenge.theme.humanize %></p>
+
+<h2>Focus</h2>
+<p><%= @challenge.focus %></p>
+
+<h2>Tip</h2>
+<p><%= @challenge.tip %></p>
+
+<% if @challenge.example_image_url.present? %>
+  <img src="<%= @challenge.example_image_url %>"
+       alt="Example"
+       style="max-width:360px;height:auto;" />
+<% end %>
+
+<p>
+  <%= link_to "Start drawing", draw_path(step: 1) %>
+</p>

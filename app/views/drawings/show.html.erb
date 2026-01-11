@@ -1,0 +1,30 @@
+<div style="position: relative; height: 100vh;">
+  <div style="position:absolute;top:16px;right:16px;">
+    ⏱ <span id="timer"><%= @duration_seconds %></span>
+  </div>
+
+  <img src="<%= @pose_url %>"
+       style="width:100%;height:100%;object-fit:contain;" />
+
+  <div style="position:absolute;bottom:16px;left:16px;">
+    Pose <%= @step %> / <%= @total %>
+  </div>
+</div>
+
+<script>
+  (function () {
+    let seconds = <%= @duration_seconds %>;
+    const el = document.getElementById("timer");
+
+    function tick() {
+      seconds--;
+      el.textContent = seconds;
+      if (seconds <= 0) {
+        window.location.href = "<%= draw_path(@next_step) %>";
+      } else {
+        setTimeout(tick, 1000);
+      }
+    }
+    setTimeout(tick, 1000);
+  })();
+</script>

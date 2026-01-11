@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  challenge: one
+  image_url: MyString
+  duration_seconds: 1
+  position: 1
+
+two:
+  challenge: two
+  image_url: MyString
+  duration_seconds: 1
+  position: 1
