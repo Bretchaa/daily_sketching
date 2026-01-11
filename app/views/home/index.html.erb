@@ -1,14 +1,18 @@
-<div class="min-h-screen flex items-center justify-center bg-base-200">
-  <div class="w-full max-w-3xl bg-base-100 border border-base-300 rounded-3xl p-12 text-center shadow">
-    <h1 class="text-5xl font-bold mb-10">
-      Daily Sketching
-    </h1>
+<div class="min-h-screen flex items-center justify-center">
+  <div class="flex flex-col items-center text-center gap-10">
 
-    <p class="text-3xl mb-12">
-      Practice drawing. Every day.
+    <%= image_tag "logo_home.svg",
+      class: "w-80 md:w-[420px]",
+      alt: "Daily Sketching" %>
+
+    <p class="text-xl md:text-2xl text-base-content/80 max-w-md">
+      Practice drawing every day.
     </p>
 
-    <%= link_to "Start today's challenge", today_challenge_path,
-        class: "btn btn-lg btn-neutral px-10" %>
+    <%= link_to "Start today’s challenge",
+      "#",
+      class: "btn btn-primary btn-lg px-8" %>
+
   </div>
+
 </div>

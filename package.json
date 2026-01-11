@@ -3,7 +3,7 @@
   "private": true,
   "devDependencies": {
     "autoprefixer": "^10.4.23",
-    "daisyui": "4",
+    "daisyui": "^5.5.14",
     "esbuild": "^0.27.2",
     "postcss": "^8.5.6"
   },

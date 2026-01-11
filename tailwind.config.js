@@ -5,7 +5,12 @@ module.exports = {
     "./app/helpers/**/*.rb",
     "./app/assets/stylesheets/**/*.css",
     "./app/javascript/**/*.js",
+    "./app/components/**/*.{rb,html.erb}",
   ],
-  theme: { extend: {} },
-  plugins: [require("daisyui")],
+  theme: {
+    extend: {},
+  },
+  daisyui: {
+    themes: ["light"], // 👈 this is the correct place
+  },
 };
