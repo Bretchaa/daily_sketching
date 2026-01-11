@@ -1,0 +1,49 @@
+{
+  "gesture": {
+    "poses": [
+      "poses/gesture/DSC_0096-837x1536.jpg",
+      "poses/gesture/DSC_0305.jpg",
+      "poses/gesture/DSC_0306-DEJ-2024.jpg",
+      "poses/gesture/DSC_0347.jpg",
+      "poses/gesture/DSC_0422.jpg",
+      "poses/gesture/DSC_0452-794x1000.jpg",
+      "poses/gesture/Draw-Everything-June-2023-3-800x869.jpg",
+      "poses/gesture/Patreon-2021-11-1-800x1813.jpg",
+      "poses/gesture/Power-13-1045x1536.jpg",
+      "poses/gesture/Sword-39-924x1000.jpg",
+      "poses/gesture/aug2012-61-1125x1536.jpg",
+      "poses/gesture/aug2012-65.jpg"
+    ],
+    "examples": []
+  },
+  "portrait": {
+    "poses": [
+      "poses/portrait/2006_NASA_portrait_of_Joel_S._Levine_01.jpg",
+      "poses/portrait/Aminah_Cendrakasih,_c._1959,_by_Tati_Photo_Studio.jpg",
+      "poses/portrait/Lyndon_B._Johnson,_photo_portrait_(3x4_cropped).jpg",
+      "poses/portrait/Malcolm_X_1964_press_photo.jpg",
+      "poses/portrait/Photo-portrait_de_Luc_Charles-Dominique.jpg",
+      "poses/portrait/Photo_R-One.jpg",
+      "poses/portrait/Portrait_photo_of_Tetsuya_Matsumoto.jpg",
+      "poses/portrait/WCFR.2025.photo_portrait_04.jpg",
+      "poses/portrait/Österreichischer_Filmpreis_2017_photo_call_Egon_Schiele_Tod_und_Mädchen_Franz_Novotny_1.jpg"
+    ],
+    "examples": []
+  },
+  "long_poses": {
+    "poses": [
+      "poses/long_poses/Autumn_Beach_Pose.jpg",
+      "poses/long_poses/Fernande_nude_photo.jpg",
+      "poses/long_poses/Katie_-_Poses_Nude_15.png",
+      "poses/long_poses/KneelingArmRaised.jpg",
+      "poses/long_poses/Nude_(Charis,_Santa_Monica).jpg",
+      "poses/long_poses/Nude_man_thoughtfull.jpg",
+      "poses/long_poses/Nude_on_floor_1.jpg",
+      "poses/long_poses/Nude_recumbent_woman_by_Jean-Christophe_Destailleur.jpg",
+      "poses/long_poses/Nude_study_with_fridge_(25715924983).jpg",
+      "poses/long_poses/Nude_sunbathing.jpg",
+      "poses/long_poses/ReadingSeated.jpg"
+    ],
+    "examples": []
+  }
+}
