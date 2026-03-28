@@ -1,31 +1,94 @@
-<div class="min-h-screen flex flex-col items-center justify-center px-6" style="background: #f5f2ee;">
+<div class="min-h-screen flex flex-col items-center justify-center px-6 py-10" style="background: #f5f2ee;">
   <div class="w-full" style="max-width: 24rem;">
 
-    <%= image_tag "logo_home.svg", class: "w-48", alt: "Daily Sketching", style: "margin: 0 auto 2rem;" %>
+    <%= image_tag "logo_home.svg", class: "w-40", alt: "Daily Sketching", style: "margin: 0 auto 1.75rem; display: block;" %>
 
     <div class="bg-white rounded-[2rem] shadow-md" style="padding: 2rem; border: 1px solid #e2ddd8;">
 
-      <p class="font-sans" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 0.35rem;">Uploading as</p>
-      <p class="font-sans" style="font-size: 1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 1.5rem;"><%= @user.username %></p>
+      <%# Success state %>
+      <% if params[:uploaded] %>
+        <div style="text-align: center; padding: 1rem 0;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+          <p class="font-sans" style="font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.5rem;">Drawing shared!</p>
+          <p class="font-sans" style="font-size: 0.875rem; color: #888; margin-bottom: 1.5rem;">Your drawing is now visible to the community.</p>
+          <% if @existing&.image&.attached? %>
+            <div style="border-radius: 1rem; overflow: hidden; margin-bottom: 1.5rem;">
+              <%= image_tag url_for(@existing.image), style: "width: 100%; object-fit: cover; display: block;" %>
+            </div>
+          <% end %>
+          <p class="font-sans" style="font-size: 0.82rem; color: #aaa;">
+            Changed your mind? Upload a new one below.
+          </p>
+          <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid #f0ece6;">
+        <% end %>
 
-      <% if @existing&.image&.attached? %>
-        <div style="border-radius: 1rem; overflow: hidden; margin-bottom: 1.25rem;">
-          <%= image_tag url_for(@existing.image), style: "width: 100%; object-fit: cover; display: block;" %>
+      <%# Header %>
+      <% unless params[:uploaded] %>
+        <div style="margin-bottom: 1.5rem;">
+          <p class="font-sans" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 0.2rem;">Uploading as</p>
+          <p class="font-sans" style="font-size: 1rem; font-weight: 700; color: #1a1a1a;"><%= @user.username %></p>
         </div>
-        <p class="font-sans text-center" style="font-size: 0.82rem; color: #aaa; margin-bottom: 1rem;">Drawing uploaded ✓ — upload again to replace it.</p>
+
+        <%# Existing drawing preview %>
+        <% if @existing&.image&.attached? %>
+          <div style="border-radius: 1rem; overflow: hidden; margin-bottom: 0.75rem;">
+            <%= image_tag url_for(@existing.image), style: "width: 100%; object-fit: cover; display: block;" %>
+          </div>
+          <p class="font-sans text-center" style="font-size: 0.8rem; color: #aaa; margin-bottom: 1.25rem;">Already uploaded — replace it below.</p>
+        <% end %>
       <% end %>
 
-      <%= form_with url: upload_path(token: params[:token]), method: :post, html: { enctype: "multipart/form-data" } do |f| %>
+      <%# Upload form %>
+      <%= form_with url: upload_path(token: params[:token]), method: :post, html: { enctype: "multipart/form-data", id: "upload-form" } do |f| %>
         <div style="display: flex; flex-direction: column; gap: 1rem;">
-          <label style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; border: 2px dashed #e2ddd8; border-radius: 1rem; padding: 2rem 1rem; cursor: pointer; background: #faf9f7;">
-            <span style="font-size: 2.5rem;">📷</span>
-            <span class="font-sans" style="font-size: 0.9rem; color: #888; text-align: center;">Tap to take a photo<br>or pick from your gallery</span>
-            <%= f.file_field :image, accept: "image/*", capture: "environment", style: "display: none;" %>
+
+          <%# Drop zone / preview area %>
+          <label for="image-input" id="drop-zone" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; border: 2px dashed #e2ddd8; border-radius: 1rem; padding: 2rem 1rem; cursor: pointer; background: #faf9f7; transition: border-color 0.2s; position: relative; overflow: hidden;">
+            <div id="preview-container" style="display: none; width: 100%; position: relative;">
+              <img id="preview-image" style="width: 100%; border-radius: 0.75rem; display: block; object-fit: cover; max-height: 280px;">
+              <div style="position: absolute; bottom: 0.5rem; right: 0.5rem; background: rgba(0,0,0,0.5); border-radius: 999px; padding: 0.3rem 0.7rem;">
+                <span class="font-sans" style="font-size: 0.75rem; color: white;">Tap to change</span>
+              </div>
+            </div>
+            <div id="placeholder" style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 2.5rem;">📷</span>
+              <span class="font-sans" style="font-size: 0.9rem; color: #888; text-align: center;">Tap to take a photo<br>or pick from your gallery</span>
+            </div>
+            <%= f.file_field :image, accept: "image/*", capture: "environment", style: "display: none;", id: "image-input" %>
           </label>
-          <%= f.submit "Upload my drawing", class: "btn btn-black btn-lg w-full rounded-2xl" %>
+
+          <%= f.submit @existing&.image&.attached? ? "Replace drawing" : "Share my drawing", class: "btn btn-black btn-lg w-full rounded-2xl", id: "submit-btn" %>
+
+        </div>
+      <% end %>
+
+      <% if params[:uploaded] %>
         </div>
       <% end %>
 
     </div>
   </div>
 </div>
+
+<script>
+  const input = document.getElementById("image-input");
+  const preview = document.getElementById("preview-image");
+  const previewContainer = document.getElementById("preview-container");
+  const placeholder = document.getElementById("placeholder");
+  const submitBtn = document.getElementById("submit-btn");
+
+  input.addEventListener("change", function () {
+    const file = this.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      preview.src = e.target.result;
+      previewContainer.style.display = "block";
+      placeholder.style.display = "none";
+      submitBtn.style.background = "#1a1a1a";
+      submitBtn.value = "Share my drawing";
+    };
+    reader.readAsDataURL(file);
+  });
+</script>

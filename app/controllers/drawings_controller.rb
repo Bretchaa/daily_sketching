@@ -4,7 +4,7 @@ class DrawingsController < ApplicationController
     if @challenge
       @my_submission = current_user&.submissions&.find_by(challenge: @challenge)
       others = @challenge.submissions.includes(:user).where.not(id: @my_submission&.id).order(created_at: :desc)
-      @submissions = [@my_submission].compact + others.to_a
+      @submissions = [ @my_submission ].compact + others.to_a
     else
       @submissions = []
     end

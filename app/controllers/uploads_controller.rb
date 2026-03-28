@@ -12,9 +12,9 @@ class UploadsController < ApplicationController
     submission.image = params[:image]
 
     if submission.save
-      redirect_to upload_path(token: params[:token]), notice: "Drawing uploaded!"
+      redirect_to upload_path(token: params[:token], uploaded: 1)
     else
-      redirect_to upload_path(token: params[:token]), alert: "Upload failed, please try again."
+      redirect_to upload_path(token: params[:token])
     end
   end
 

@@ -9,5 +9,3 @@ class ApplicationController < ActionController::Base
     request.user_agent.to_s =~ /Mobile|Android|iPhone|iPad/i
   end
 end
-
-

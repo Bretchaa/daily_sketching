@@ -32,16 +32,34 @@
 
             <% if mobile? %>
               <%# On mobile: just show the upload form %>
-              <%= form_with url: submissions_path, method: :post, html: { enctype: "multipart/form-data" } do |f| %>
+              <%= form_with url: submissions_path, method: :post, html: { enctype: "multipart/form-data", id: "mobile-upload-form" } do |f| %>
                 <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                  <label style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; border: 2px dashed #e2ddd8; border-radius: 1rem; padding: 1.5rem; cursor: pointer; background: #faf9f7;">
-                    <span style="font-size: 2rem;">📷</span>
-                    <span class="font-sans" style="font-size: 0.875rem; color: #888;">Tap to take or pick a photo</span>
-                    <%= f.file_field :image, accept: "image/*", capture: "environment", style: "display: none;" %>
+                  <label for="mobile-image-input" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; border: 2px dashed #e2ddd8; border-radius: 1rem; padding: 1.5rem; cursor: pointer; background: #faf9f7; overflow: hidden; position: relative;">
+                    <div id="mobile-preview-container" style="display: none; width: 100%;">
+                      <img id="mobile-preview" style="width: 100%; border-radius: 0.5rem; object-fit: cover; max-height: 220px; display: block;">
+                    </div>
+                    <div id="mobile-placeholder">
+                      <span style="font-size: 2rem;">📷</span>
+                      <span class="font-sans" style="font-size: 0.875rem; color: #888; display: block; margin-top: 0.25rem;">Tap to take or pick a photo</span>
+                    </div>
+                    <%= f.file_field :image, accept: "image/*", capture: "environment", style: "display: none;", id: "mobile-image-input" %>
                   </label>
-                  <%= f.submit @my_submission&.image&.attached? ? "Replace drawing" : "Upload my drawing", class: "btn btn-black w-full rounded-2xl" %>
+                  <%= f.submit @my_submission&.image&.attached? ? "Replace drawing" : "Upload my drawing", class: "btn btn-black w-full rounded-2xl", id: "mobile-submit-btn" %>
                 </div>
               <% end %>
+              <script>
+                document.getElementById("mobile-image-input").addEventListener("change", function() {
+                  const file = this.files[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = function(e) {
+                    document.getElementById("mobile-preview").src = e.target.result;
+                    document.getElementById("mobile-preview-container").style.display = "block";
+                    document.getElementById("mobile-placeholder").style.display = "none";
+                  };
+                  reader.readAsDataURL(file);
+                });
+              </script>
 
             <% else %>
               <%# On desktop: QR code is the primary option %>

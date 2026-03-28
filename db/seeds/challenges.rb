@@ -31,4 +31,3 @@ challenges.each do |attrs|
 end
 
 puts "✅ Seeded #{challenges.size} challenges"
-

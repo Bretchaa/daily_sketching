@@ -31,4 +31,3 @@ File.write(
 )
 
 puts "✅ image_manifest.json generated"
-
