@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   get "/auth/google_oauth2/callback", to: "sessions#google"
 
   post "/submissions", to: "submissions#create", as: :submissions
+  post "/cheers", to: "cheers#create", as: :cheers
   get  "/upload", to: "uploads#show", as: :upload
   post "/upload", to: "uploads#create"
   get  "/sign_up",  to: "registrations#new",    as: :sign_up

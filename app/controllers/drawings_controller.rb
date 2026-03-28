@@ -3,8 +3,15 @@ class DrawingsController < ApplicationController
     @challenge = Challenge.find_by(date: Date.current)
     if @challenge
       @my_submission = current_user&.submissions&.find_by(challenge: @challenge)
-      others = @challenge.submissions.includes(:user).where.not(id: @my_submission&.id).order(created_at: :desc)
+      others = @challenge.submissions.includes(:user, :cheers).where.not(id: @my_submission&.id).order(created_at: :desc)
       @submissions = [ @my_submission ].compact + others.to_a
+      @my_submission&.association(:cheers)&.load_target
+      submission_ids = @submissions.map(&:id)
+      if current_user
+        @my_cheers = current_user.cheers.where(submission_id: submission_ids).index_by(&:submission_id)
+      else
+        @my_cheers = {}
+      end
     else
       @submissions = []
     end

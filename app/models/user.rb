@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   has_many :submissions
+  has_many :cheers
   has_secure_password validations: false
 
   validates :email, presence: true, uniqueness: true

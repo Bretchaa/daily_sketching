@@ -142,12 +142,32 @@
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
           <% @submissions.each do |submission| %>
             <% next unless submission.image.attached? %>
-            <div style="position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; aspect-ratio: 3/4; <%= submission == @my_submission ? 'box-shadow: 0 0 0 3px #1a1a1a;' : '' %>">
+            <% is_mine = submission == @my_submission %>
+            <% my_cheer = @my_cheers[submission.id] %>
+            <% my_cheer_count = my_cheer&.count || 0 %>
+            <% total = submission.total_cheers %>
+            <div style="position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; aspect-ratio: 3/4; <%= is_mine ? 'box-shadow: 0 0 0 3px #1a1a1a;' : '' %>">
               <%= image_tag url_for(submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block;" %>
-              <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.5rem 0.75rem; background: linear-gradient(transparent, rgba(0,0,0,0.55));">
-                <p class="font-sans" style="font-size: 0.75rem; color: rgba(255,255,255,0.95); font-weight: 600;">
-                  <%= submission == @my_submission ? "You" : submission.user.username %>
-                </p>
+              <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.5rem 0.75rem; background: linear-gradient(transparent, rgba(0,0,0,0.6));">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <p class="font-sans" style="font-size: 0.75rem; color: rgba(255,255,255,0.95); font-weight: 600;">
+                    <%= is_mine ? "You" : submission.user.username %>
+                  </p>
+                  <% unless is_mine %>
+                    <% can_cheer = current_user && my_cheer_count < Cheer::MAX_PER_USER %>
+                    <% if can_cheer %>
+                      <%= button_to cheers_path, method: :post, params: { submission_id: submission.id }, style: "background: rgba(255,255,255,0.2); border: none; border-radius: 999px; padding: 0.2rem 0.5rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;" do %>
+                        <span style="font-size: 0.8rem;">👏</span>
+                        <span class="font-sans" style="font-size: 0.7rem; color: white; font-weight: 600;"><%= total > 0 ? total : "" %></span>
+                      <% end %>
+                    <% else %>
+                      <div style="display: flex; align-items: center; gap: 0.25rem; padding: 0.2rem 0.5rem;">
+                        <span style="font-size: 0.8rem;">👏</span>
+                        <span class="font-sans" style="font-size: 0.7rem; color: rgba(255,255,255,0.8); font-weight: 600;"><%= total > 0 ? total : "" %></span>
+                      </div>
+                    <% end %>
+                  <% end %>
+                </div>
               </div>
             </div>
           <% end %>
