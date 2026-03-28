@@ -69,41 +69,49 @@
   <%# Community section %>
   <div style="max-width: 52rem; margin: 0 auto; padding: 0 1.5rem 5rem;">
 
-    <div style="margin-bottom: 1.75rem;">
-      <h2 class="font-handwritten" style="font-size: 1.5rem; color: #1a1a1a;">What the community drew yesterday</h2>
-      <p class="font-sans" style="font-size: 0.875rem; color: #999; margin-top: 0.25rem;">
-        Theme: Gesture drawing · 126 people showed up. Here's what they made.
-      </p>
-    </div>
+    <% if @yesterday_submissions.any? %>
+      <div style="margin-bottom: 1.75rem;">
+        <h2 class="font-handwritten" style="font-size: 1.5rem; color: #1a1a1a;">What the community drew yesterday</h2>
+        <p class="font-sans" style="font-size: 0.875rem; color: #999; margin-top: 0.25rem;">
+          <%= @yesterday_count %> <%= @yesterday_count == 1 ? "person" : "people" %> showed up<% if @yesterday_theme.present? %> · Theme: <%= @yesterday_theme %><% end %>.
+        </p>
+      </div>
 
-    <%# Drawing grid — placeholder with real pose images for now %>
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
-      <% [
-        "DSC_0096-837x1536.jpg",
-        "DSC_0305.jpg",
-        "DSC_0306-DEJ-2024.jpg",
-        "DSC_0347.jpg",
-        "DSC_0422.jpg",
-        "DSC_0452-794x1000.jpg"
-      ].each_with_index do |filename, i| %>
-        <div style="position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; aspect-ratio: 3/4;">
-          <img src="https://assets.dailysketching.app/poses/gesture/<%= filename %>"
-               style="width: 100%; height: 100%; object-fit: cover; display: block;">
-          <%# Username overlay %>
-          <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.5rem 0.75rem; background: linear-gradient(transparent, rgba(0,0,0,0.5));">
-            <p class="font-sans" style="font-size: 0.75rem; color: rgba(255,255,255,0.9); font-weight: 600;">sketchlover<%= i + 1 %></p>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+        <% @yesterday_submissions.each do |submission| %>
+          <div style="position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; aspect-ratio: 3/4;">
+            <%= image_tag url_for(submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block;" %>
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.5rem 0.75rem; background: linear-gradient(transparent, rgba(0,0,0,0.6));">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <p class="font-sans" style="font-size: 0.75rem; color: rgba(255,255,255,0.95); font-weight: 600;">
+                  <%= submission.user.username %>
+                </p>
+                <% total = submission.total_cheers %>
+                <% if total > 0 %>
+                  <div style="display: flex; align-items: center; gap: 0.2rem;">
+                    <span style="font-size: 0.75rem;">👏</span>
+                    <span class="font-sans" style="font-size: 0.7rem; color: rgba(255,255,255,0.9); font-weight: 600;"><%= total %></span>
+                  </div>
+                <% end %>
+              </div>
+            </div>
           </div>
-        </div>
-      <% end %>
-    </div>
+        <% end %>
+      </div>
 
-    <%# CTA nudge %>
-    <div style="margin-top: 1.5rem; text-align: center;">
-      <p class="font-sans" style="font-size: 0.875rem; color: #aaa;">
-        Your drawing could be here tomorrow.
-        <%= link_to "Start today's challenge →", today_challenge_path, style: "color: #1a1a1a; font-weight: 700; text-decoration: none;" %>
-      </p>
-    </div>
+      <div style="margin-top: 1.5rem; text-align: center;">
+        <p class="font-sans" style="font-size: 0.875rem; color: #aaa;">
+          Your drawing could be here tomorrow.
+          <%= link_to "Start today's challenge →", today_challenge_path, style: "color: #1a1a1a; font-weight: 700; text-decoration: none;" %>
+        </p>
+      </div>
+
+    <% else %>
+      <div style="text-align: center; padding: 3rem 0;">
+        <p class="font-handwritten" style="font-size: 1.5rem; color: #bbb;">No drawings yet.</p>
+        <p class="font-sans" style="font-size: 0.875rem; color: #ccc; margin-top: 0.5rem;">Be the first to share one today.</p>
+      </div>
+    <% end %>
 
   </div>
 
