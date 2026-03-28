@@ -1,7 +1,8 @@
 require "zlib"
 
 class DailyPicker
-  IMAGE_GLOB = "*.{jpg,jpeg,png,webp}"
+  R2_BASE_URL = "https://assets.dailysketching.app"
+  MANIFEST_PATH = Rails.root.join("config", "image_manifest.json")
 
   def initialize(theme:, date: Date.current, poses_count: 5)
     @theme = theme
@@ -10,10 +11,11 @@ class DailyPicker
   end
 
   def poses
-    files = Dir.glob(Rails.root.join("public", "poses", @theme, IMAGE_GLOB)).sort
+    manifest = JSON.parse(File.read(MANIFEST_PATH))
+    files = manifest.dig(@theme, "poses") || []
     raise "No pose images found for theme=#{@theme}" if files.empty?
 
-    seeded_shuffle(files).first(@poses_count).map { |path| to_public_url(path) }
+    seeded_shuffle(files).first(@poses_count).map { |path| "#{R2_BASE_URL}/#{path}" }
   end
 
   private
@@ -22,9 +24,5 @@ class DailyPicker
     seed = "#{@theme}-#{@date.iso8601}"
     rng = Random.new(Zlib.crc32(seed))
     array.shuffle(random: rng)
-  end
-
-  def to_public_url(path)
-    path.to_s.sub(Rails.root.join("public").to_s, "")
   end
 end

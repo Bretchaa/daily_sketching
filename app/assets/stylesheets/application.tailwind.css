@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .btn.btn-black {
+    --btn-color: 0% 0 0;
+    color: #ffffff !important;
+  }
+  .btn.btn-black:hover {
+    --btn-color: 14% 0 0;
+  }
+}

@@ -1,19 +1,60 @@
-<h1>Today’s challenge</h1>
+<div class="min-h-screen flex items-center justify-center px-6" style="background: #f5f2ee;">
+  <div class="w-full" style="max-width: 38rem;">
 
-<p><strong>Theme:</strong> <%= @challenge.theme.humanize %></p>
+    <div class="bg-white rounded-[2rem] shadow-md" style="padding: 2.5rem; border: 1px solid #e2ddd8;">
 
-<h2>Focus</h2>
-<p><%= @challenge.focus %></p>
+      <%# Header %>
+      <div style="margin-bottom: 1.75rem;">
+        <h1 class="font-handwritten" style="font-size: 1.75rem; color: #1a1a1a;">Today's challenge</h1>
+        <p class="font-sans" style="font-size: 0.9rem; color: #888; margin-top: 0.25rem;">
+          Theme: <strong style="color: #444;"><%= @challenge.theme.humanize %> drawing</strong>
+        </p>
+      </div>
 
-<h2>Tip</h2>
-<p><%= @challenge.tip %></p>
+      <%# Body: details + example image %>
+      <div style="display: flex; gap: 1.5rem; align-items: flex-start;">
 
-<% if @challenge.example_image_url.present? %>
-  <img src="<%= @challenge.example_image_url %>"
-       alt="Example"
-       style="max-width:360px;height:auto;" />
-<% end %>
+        <%# Left: details %>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 1.25rem;">
 
-<p>
-  <%= link_to "Start drawing", draw_path(step: 1) %>
-</p>
+          <div style="background: #faf9f7; border-radius: 1rem; padding: 1rem 1.25rem;">
+            <p class="font-sans" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 0.35rem;">🎯 Focus</p>
+            <p class="font-sans" style="font-size: 0.95rem; color: #333; line-height: 1.4;"><%= @challenge.focus %></p>
+          </div>
+
+          <div style="background: #faf9f7; border-radius: 1rem; padding: 1rem 1.25rem;">
+            <p class="font-sans" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 0.35rem;">✏️ Tip</p>
+            <p class="font-sans" style="font-size: 0.95rem; color: #333; line-height: 1.4;"><%= @challenge.tip %></p>
+          </div>
+
+          <div style="background: #faf9f7; border-radius: 1rem; padding: 1rem 1.25rem;">
+            <p class="font-sans" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 0.35rem;">⏱ Exercise</p>
+            <p class="font-sans" style="font-size: 0.95rem; color: #333;">5 poses, 1 min each</p>
+          </div>
+
+        </div>
+
+        <%# Right: example image %>
+        <div style="width: 9rem; flex-shrink: 0;">
+          <% if @challenge.example_image_url.present? %>
+            <img src="<%= @challenge.example_image_url %>"
+                 alt="Example"
+                 style="width: 100%; border-radius: 1rem; object-fit: cover;" />
+          <% else %>
+            <div style="width: 100%; aspect-ratio: 3/4; background: #f0e68c; border-radius: 1rem; display: flex; align-items: center; justify-content: center;">
+              <span style="font-size: 0.75rem; color: #999; text-align: center; padding: 0.5rem;">Example<br>drawing</span>
+            </div>
+          <% end %>
+        </div>
+
+      </div>
+
+      <%# CTA %>
+      <div style="margin-top: 2rem;">
+        <%= link_to "Start drawing", draw_path(step: 1),
+          class: "btn btn-black btn-lg w-full rounded-2xl" %>
+      </div>
+
+    </div>
+  </div>
+</div>

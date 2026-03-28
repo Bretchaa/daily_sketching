@@ -1,26 +1,57 @@
-<div style="position: relative; height: 100vh;">
-  <div style="position:absolute;top:16px;right:16px;">
-    ⏱ <span id="timer"><%= @duration_seconds %></span>
-  </div>
+<div style="position: fixed; inset: 0; background: #111; display: flex; align-items: center; justify-content: center;">
 
+  <%# Pose image %>
   <img src="<%= @pose_url %>"
-       style="width:100%;height:100%;object-fit:contain;" />
+       style="max-width: 100%; max-height: 100%; object-fit: contain;" />
 
-  <div style="position:absolute;bottom:16px;left:16px;">
-    Pose <%= @step %> / <%= @total %>
+  <%# Bottom bar %>
+  <div style="position: fixed; bottom: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.75rem;">
+
+    <%# Back arrow %>
+    <div style="width: 3rem;">
+      <% if @prev_step %>
+        <%= link_to draw_path(@prev_step),
+          style: "display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 999px; background: rgba(255,255,255,0.1); color: white; font-size: 1.1rem; text-decoration: none;" do %>
+          ←
+        <% end %>
+      <% end %>
+    </div>
+
+    <%# Timer + next arrow %>
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <div style="display: flex; align-items: center; gap: 0.35rem;">
+        <span id="timer" class="font-sans" style="font-size: 1.1rem; font-weight: 600; color: white; min-width: 2rem; text-align: right;"><%= @duration_seconds %></span>
+        <span class="font-sans" style="font-size: 0.85rem; color: rgba(255,255,255,0.4);">s</span>
+      </div>
+      <%= link_to draw_path(@next_step),
+        id: "next-btn",
+        style: "display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 999px; background: rgba(255,255,255,0.1); color: white; font-size: 1.1rem; text-decoration: none;" do %>
+        →
+      <% end %>
+    </div>
+
   </div>
+
+  <%# Pose counter — top left %>
+  <div style="position: fixed; top: 1.25rem; left: 1.75rem;">
+    <span class="font-sans" style="font-size: 0.85rem; color: rgba(255,255,255,0.35);">
+      <%= @step %> / <%= @total %>
+    </span>
+  </div>
+
 </div>
 
 <script>
   (function () {
     let seconds = <%= @duration_seconds %>;
     const el = document.getElementById("timer");
+    const nextUrl = "<%= draw_path(@next_step) %>";
 
     function tick() {
       seconds--;
       el.textContent = seconds;
       if (seconds <= 0) {
-        window.location.href = "<%= draw_path(@next_step) %>";
+        window.location.href = nextUrl;
       } else {
         setTimeout(tick, 1000);
       }

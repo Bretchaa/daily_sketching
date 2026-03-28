@@ -1,0 +1,28 @@
+<div class="min-h-screen flex items-center justify-center px-6" style="background: #f5f2ee;">
+  <div class="w-full" style="max-width: 26rem;">
+    <div class="bg-white rounded-[2rem] shadow-md" style="padding: 2.5rem; border: 1px solid #e2ddd8;">
+
+      <% if @user.avatar_url.present? %>
+        <img src="<%= @user.avatar_url %>" style="width: 3.5rem; height: 3.5rem; border-radius: 999px; margin-bottom: 1.25rem;">
+      <% end %>
+
+      <h1 class="font-handwritten" style="font-size: 1.75rem; color: #1a1a1a; margin-bottom: 0.25rem;">One last thing</h1>
+      <p class="font-sans" style="font-size: 0.9rem; color: #888; margin-bottom: 2rem;">Pick a username for the community to see.</p>
+
+      <% if @error %>
+        <p class="font-sans" style="font-size: 0.85rem; color: #e53e3e; margin-bottom: 1rem; background: #fff5f5; padding: 0.75rem 1rem; border-radius: 0.75rem;"><%= @error %></p>
+      <% end %>
+
+      <%= form_with url: pick_username_path, method: :patch do |f| %>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <label class="font-sans" style="font-size: 0.8rem; font-weight: 600; color: #555; display: block; margin-bottom: 0.4rem;">Username</label>
+            <%= f.text_field :username, required: true, placeholder: "e.g. sketchmaster42", style: "width: 100%; padding: 0.75rem 1rem; border: 1.5px solid #e2ddd8; border-radius: 0.75rem; font-size: 0.95rem; outline: none; box-sizing: border-box;" %>
+          </div>
+          <%= f.submit "Let's go →", class: "btn btn-black btn-lg w-full rounded-2xl" %>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+</div>

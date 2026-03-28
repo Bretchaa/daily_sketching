@@ -7,10 +7,28 @@ module.exports = {
     "./app/javascript/**/*.js",
     "./app/components/**/*.{rb,html.erb}",
   ],
+
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ["Inter", "system-ui", "sans-serif"],
+        handwritten: ["Itim", "cursive"],
+      },
+    },
   },
+
+  plugins: [require("daisyui")],
+
   daisyui: {
-    themes: ["light"], // 👈 this is the correct place
+    themes: [
+      {
+        light: {
+          primary: "#000000",
+          "primary-content": "#ffffff",
+        },
+      },
+    ],
   },
+
+  safelist: ["font-sans", "font-handwritten"],
 };

@@ -1,2 +1,25 @@
 @import "tailwindcss";
 @plugin "daisyui";
+@layer utilities {
+  .font-handwritten { font-family: "Itim", cursive; }
+  .font-sans { font-family: "Inter", system-ui, sans-serif; }
+  .btn.btn-black {
+    --btn-bg: #000000;
+    --btn-fg: #ffffff;
+    --btn-border: #000000;
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border-color: #000000 !important;
+  }
+
+  .btn.btn-black:hover {
+    --btn-bg: #262626;
+    --btn-border: #262626;
+    background-color: #262626 !important;
+    border-color: #262626 !important;
+  }
+
+  .btn.btn-black:active {
+    transform: translateY(1px);
+  }
+}
