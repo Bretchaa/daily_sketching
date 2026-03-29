@@ -1,7 +1,18 @@
-# script/generate_image_manifest.rb
 require "json"
 
-THEMES = %w[gesture portrait long_poses].freeze
+THEMES = %w[
+  gesture
+  long_poses
+  portrait
+  line_of_action
+  negative_space
+  silhouette
+  proportion
+  hands_feet
+  animal_gesture
+  architecture
+].freeze
+
 IMAGE_EXTENSIONS = %w[jpg jpeg png webp].freeze
 
 def images_for(path)
@@ -31,3 +42,8 @@ File.write(
 )
 
 puts "✅ image_manifest.json generated"
+THEMES.each do |t|
+  count = manifest.dig(t, "poses")&.size || 0
+  status = count > 0 ? "#{count} poses" : "⚠️  empty — add images to public/poses/#{t}/"
+  puts "  #{t}: #{status}"
+end

@@ -19,10 +19,12 @@
 
     <%# Timer + next arrow %>
     <div style="display: flex; align-items: center; gap: 0.75rem;">
-      <div style="display: flex; align-items: center; gap: 0.35rem;">
-        <span id="timer" class="font-sans" style="font-size: 1.1rem; font-weight: 600; color: white; min-width: 2rem; text-align: right;"><%= @duration_seconds %></span>
-        <span class="font-sans" style="font-size: 0.85rem; color: rgba(255,255,255,0.4);">s</span>
-      </div>
+      <% if @duration_seconds > 0 %>
+        <div style="display: flex; align-items: center; gap: 0.35rem;">
+          <span id="timer" class="font-sans" style="font-size: 1.1rem; font-weight: 600; color: white; min-width: 2rem; text-align: right;"><%= @duration_seconds %></span>
+          <span class="font-sans" style="font-size: 0.85rem; color: rgba(255,255,255,0.4);">s</span>
+        </div>
+      <% end %>
       <%= link_to draw_path(@next_step),
         id: "next-btn",
         style: "display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 999px; background: rgba(255,255,255,0.1); color: white; font-size: 1.1rem; text-decoration: none;" do %>
@@ -41,6 +43,7 @@
 
 </div>
 
+<% if @duration_seconds > 0 %>
 <script>
   (function () {
     let seconds = <%= @duration_seconds %>;
@@ -59,3 +62,4 @@
     setTimeout(tick, 1000);
   })();
 </script>
+<% end %>

@@ -1,0 +1,83 @@
+# Weekday rotation — themes cycle in this order (skipping weekends)
+# poses_count: how many poses to show per session
+# duration_seconds: time per pose (0 = no timer, user advances manually)
+
+weekday_rotation:
+  - theme: gesture
+    display_name: Gesture Drawing
+    focus: Capture the movement and overall energy of the pose. Don't worry about details.
+    tip: Use long, continuous lines. Draw fast and loose.
+    poses_count: 5
+    duration_seconds: 120
+
+  - theme: line_of_action
+    display_name: Line of Action
+    focus: Find and exaggerate the main curve running through the body.
+    tip: Draw one single flowing line first, then build the figure around it.
+    poses_count: 5
+    duration_seconds: 120
+
+  - theme: silhouette
+    display_name: Silhouette
+    focus: Fill the entire figure as a solid shape — no internal lines.
+    tip: If the silhouette looks stiff, the pose is stiff. Exaggerate.
+    poses_count: 5
+    duration_seconds: 120
+
+  - theme: negative_space
+    display_name: Negative Space
+    focus: Draw the space around the figure, not the figure itself.
+    tip: Squint at the reference to see shapes more clearly.
+    poses_count: 5
+    duration_seconds: 120
+
+  - theme: proportion
+    display_name: Proportion Study
+    focus: Get the head-to-body ratio right before adding any detail.
+    tip: The average figure is 7–8 heads tall. Check yours.
+    poses_count: 3
+    duration_seconds: 300
+
+  - theme: hands_feet
+    display_name: Hands & Feet
+    focus: Observe the bony structure and foreshortening of extremities.
+    tip: Break hands into a box (palm) and cylinders (fingers) first.
+    poses_count: 4
+    duration_seconds: 300
+
+  - theme: portrait
+    display_name: Portrait
+    focus: Block in the big shapes of the face before adding any features.
+    tip: The eyes sit halfway down the skull — most beginners place them too high.
+    poses_count: 2
+    duration_seconds: 600
+
+  - theme: long_poses
+    display_name: Long Pose
+    focus: Observe carefully for a full minute before your pencil touches the page.
+    tip: Build from big shapes to small. Resist the urge to detail too early.
+    poses_count: 2
+    duration_seconds: 600
+
+  - theme: animal_gesture
+    display_name: Animal Gesture
+    focus: Apply the same energy and flow principles as figure drawing to animals.
+    tip: Find the spine line first — it drives everything else.
+    poses_count: 5
+    duration_seconds: 120
+
+  - theme: architecture
+    display_name: Architecture Sketch
+    focus: Capture the overall form and perspective — no ruler, no perfection.
+    tip: Find the horizon line and vanishing point before you draw anything.
+    poses_count: 2
+    duration_seconds: 600
+
+# Weekend — relaxed session, no timer, user advances at their own pace
+weekend:
+  theme: long_poses
+  display_name: Free Draw
+  focus: No rush today. Take as long as you need on each pose.
+  tip: This is your time. Put on some music and enjoy the process.
+  poses_count: 3
+  duration_seconds: 0
