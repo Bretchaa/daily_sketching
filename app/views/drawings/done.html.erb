@@ -112,6 +112,7 @@
             </div>
 
             <%= form_with url: sign_up_path, method: :post do |f| %>
+              <%= f.hidden_field :return_to, value: done_path %>
               <div style="display: flex; flex-direction: column; gap: 0.65rem;">
                 <%= f.text_field :username, placeholder: "Username", required: true, style: "width: 100%; padding: 0.7rem 1rem; border: 1.5px solid #e2ddd8; border-radius: 0.75rem; font-size: 0.9rem; outline: none; box-sizing: border-box;" %>
                 <%= f.email_field :email, placeholder: "Email", required: true, style: "width: 100%; padding: 0.7rem 1rem; border: 1.5px solid #e2ddd8; border-radius: 0.75rem; font-size: 0.9rem; outline: none; box-sizing: border-box;" %>

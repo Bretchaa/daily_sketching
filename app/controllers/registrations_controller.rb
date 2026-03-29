@@ -13,7 +13,7 @@ class RegistrationsController < ApplicationController
 
     if @user.save
       session[:user_id] = @user.id
-      redirect_to root_path
+      redirect_to params[:return_to].presence || root_path
     else
       @error = @user.errors.full_messages.first
       render :new, status: :unprocessable_entity
@@ -26,7 +26,7 @@ class RegistrationsController < ApplicationController
 
   def set_username
     if current_user.update(username: params[:username])
-      redirect_to root_path
+      redirect_to params[:return_to].presence || root_path
     else
       @error = current_user.errors.full_messages.first
       @user = current_user
