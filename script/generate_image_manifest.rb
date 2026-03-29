@@ -1,4 +1,5 @@
 require "json"
+require "aws-sdk-s3"
 
 THEMES = %w[
   gesture
@@ -13,37 +14,44 @@ THEMES = %w[
   architecture
 ].freeze
 
-IMAGE_EXTENSIONS = %w[jpg jpeg png webp].freeze
+account_id = ENV.fetch("R2_ACCOUNT_ID")
+bucket     = ENV.fetch("R2_BUCKET")
 
-def images_for(path)
-  IMAGE_EXTENSIONS.flat_map do |ext|
-    Dir.glob("#{path}/*.#{ext}")
-  end.sort
+s3 = Aws::S3::Client.new(
+  region: "auto",
+  endpoint: "https://#{account_id}.r2.cloudflarestorage.com",
+  access_key_id: ENV.fetch("R2_ACCESS_KEY_ID"),
+  secret_access_key: ENV.fetch("R2_SECRET_ACCESS_KEY")
+)
+
+def list_objects(s3, bucket, prefix)
+  keys = []
+  s3.list_objects_v2(bucket: bucket, prefix: prefix).each do |page|
+    page.contents.each { |obj| keys << obj.key }
+  end
+  keys
 end
 
 manifest = {}
 
 THEMES.each do |theme|
-  poses = images_for("public/poses/#{theme}")
-            .map { |p| p.sub("public/", "") }
-
-  examples = images_for("public/examples/#{theme}")
-               .map { |p| p.sub("public/", "") }
+  poses    = list_objects(s3, bucket, "poses/#{theme}/").sort
+  examples = list_objects(s3, bucket, "examples/#{theme}/").sort
 
   manifest[theme] = {
-    "poses" => poses,
+    "poses"    => poses,
     "examples" => examples
   }
 end
 
 File.write(
-  "config/image_manifest.json",
+  File.join(__dir__, "../config/image_manifest.json"),
   JSON.pretty_generate(manifest)
 )
 
-puts "✅ image_manifest.json generated"
+puts "✅ image_manifest.json generated from R2"
 THEMES.each do |t|
   count = manifest.dig(t, "poses")&.size || 0
-  status = count > 0 ? "#{count} poses" : "⚠️  empty — add images to public/poses/#{t}/"
+  status = count > 0 ? "#{count} poses" : "⚠️  empty — upload images to R2 under poses/#{t}/"
   puts "  #{t}: #{status}"
 end

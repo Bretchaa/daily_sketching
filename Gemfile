@@ -59,6 +59,8 @@ end
 gem "cssbundling-rails", "~> 1.4"
 gem "tailwindcss-rails"
 
+gem "aws-sdk-s3", require: false
+
 gem "rqrcode"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
