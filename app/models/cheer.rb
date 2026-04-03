@@ -1,5 +1,5 @@
 class Cheer < ApplicationRecord
-  MAX_PER_USER = 10
+  MAX_PER_USER = 3
 
   belongs_to :user
   belongs_to :submission
