@@ -49,6 +49,8 @@ weekday_rotation:
     display_name: Portrait
     focus: Block in the big shapes of the face before adding any features.
     tip: The eyes sit halfway down the skull — most beginners place them too high.
+    warmup_count: 2
+    warmup_duration_seconds: 120
     poses_count: 2
     duration_seconds: 600
 
@@ -56,6 +58,8 @@ weekday_rotation:
     display_name: Long Pose
     focus: Observe carefully for a full minute before your pencil touches the page.
     tip: Build from big shapes to small. Resist the urge to detail too early.
+    warmup_count: 2
+    warmup_duration_seconds: 120
     poses_count: 2
     duration_seconds: 600
 

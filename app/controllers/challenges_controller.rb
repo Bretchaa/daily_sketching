@@ -7,17 +7,24 @@ class ChallengesController < ApplicationController
     @challenge = Challenge.find_by!(date: Date.current)
 
     if @challenge.poses.empty?
-      theme_config = find_theme_config(@challenge.theme)
-      poses_count = theme_config["poses_count"]
-      duration    = theme_config["duration_seconds"]
+      theme_config    = find_theme_config(@challenge.theme)
+      poses_count     = theme_config["poses_count"]
+      duration        = theme_config["duration_seconds"]
+      warmup_count    = theme_config["warmup_count"] || 0
+      warmup_duration = theme_config["warmup_duration_seconds"] || duration
 
-      picker = DailyPicker.new(theme: @challenge.theme, date: @challenge.date, poses_count: poses_count)
-      picker.poses.each_with_index do |url, idx|
-        @challenge.poses.create!(
-          image_url: url,
-          duration_seconds: duration,
-          position: idx + 1
-        )
+      total_count = warmup_count + poses_count
+      picker = DailyPicker.new(theme: @challenge.theme, date: @challenge.date, poses_count: total_count)
+      urls = picker.poses
+
+      position = 1
+      warmup_count.times do |i|
+        @challenge.poses.create!(image_url: urls[i], duration_seconds: warmup_duration, position: position)
+        position += 1
+      end
+      poses_count.times do |i|
+        @challenge.poses.create!(image_url: urls[warmup_count + i], duration_seconds: duration, position: position)
+        position += 1
       end
     end
 
