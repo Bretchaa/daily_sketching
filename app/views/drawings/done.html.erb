@@ -20,8 +20,8 @@
       <div style="flex: 1; min-width: 18rem; max-width: 22rem;">
         <% if current_user %>
           <div style="background: white; border-radius: 1.5rem; padding: 1.75rem; border: 1px solid #e2ddd8;">
-            <p class="font-sans" style="font-size: 1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.35rem;">Share your drawing</p>
-            <p class="font-sans" style="font-size: 0.85rem; color: #999; margin-bottom: 1.25rem; line-height: 1.5;">Take a photo of your sketch and share it with the community.</p>
+            <p class="font-sans" style="font-size: 1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.35rem;">See what everyone drew today</p>
+            <p class="font-sans" style="font-size: 0.85rem; color: #999; margin-bottom: 1.25rem; line-height: 1.5;">Share your drawing to unlock today's community gallery.</p>
 
             <% if @my_submission&.image&.attached? %>
               <div style="border-radius: 1rem; overflow: hidden; margin-bottom: 1.25rem;">
@@ -96,8 +96,8 @@
 
         <% else %>
           <div style="background: white; border-radius: 1.5rem; padding: 1.75rem; border: 1px solid #e2ddd8;">
-            <p class="font-sans" style="font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.4rem;">Join the community</p>
-            <p class="font-sans" style="font-size: 0.85rem; color: #888; margin-bottom: 0.25rem; line-height: 1.5;">See how everyone else drew today's challenge. Share yours. Build a streak.</p>
+            <p class="font-sans" style="font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.4rem;">See what everyone drew today</p>
+            <p class="font-sans" style="font-size: 0.85rem; color: #888; margin-bottom: 0.25rem; line-height: 1.5;">Create a free account, share your drawing, and unlock today's community gallery.</p>
             <p class="font-sans" style="font-size: 0.8rem; color: #aaa; margin-bottom: 1.5rem; font-weight: 600;">Free, always.</p>
 
             <%= link_to "/auth/google_oauth2", style: "display: flex; align-items: center; justify-content: center; gap: 0.6rem; background: white; color: #333; border: 1.5px solid #e2ddd8; border-radius: 0.75rem; padding: 0.7rem 1rem; font-size: 0.9rem; font-weight: 600; text-decoration: none; width: 100%; box-sizing: border-box;" do %>
