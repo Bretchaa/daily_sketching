@@ -29,7 +29,16 @@
 
           <div style="background: #faf9f7; border-radius: 1rem; padding: 1rem 1.25rem;">
             <p class="font-sans" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 0.35rem;">⏱ Exercise</p>
-            <p class="font-sans" style="font-size: 0.95rem; color: #333;">5 poses, 1 min each</p>
+            <% poses_count = @theme_config["poses_count"]
+               duration    = @theme_config["duration_seconds"]
+               duration_text = if duration == 0
+                 "no timer"
+               elsif duration < 60
+                 "#{duration}s each"
+               else
+                 "#{duration / 60} min each"
+               end %>
+            <p class="font-sans" style="font-size: 0.95rem; color: #333;"><%= poses_count %> poses, <%= duration_text %></p>
           </div>
 
         </div>

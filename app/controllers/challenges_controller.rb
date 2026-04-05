@@ -22,6 +22,7 @@ class ChallengesController < ApplicationController
     end
 
     session[:challenge_id] = @challenge.id
+    @theme_config = find_theme_config(@challenge.theme)
   end
 
   private
