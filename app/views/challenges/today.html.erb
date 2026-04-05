@@ -29,17 +29,15 @@
 
           <div style="background: #faf9f7; border-radius: 1rem; padding: 1rem 1.25rem;">
             <p class="font-sans" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 0.35rem;">⏱ Exercise</p>
-            <% poses_count     = @theme_config["poses_count"]
-               duration        = @theme_config["duration_seconds"]
-               warmup_count    = @theme_config["warmup_count"] || 0
-               warmup_duration = @theme_config["warmup_duration_seconds"] || duration
-               format_duration = ->(s) { s == 0 ? "no timer" : s < 60 ? "#{s}s" : "#{s / 60} min" } %>
-            <% if warmup_count > 0 %>
-              <p class="font-sans" style="font-size: 0.95rem; color: #333;">
-                <%= warmup_count %> warm-up × <%= format_duration.call(warmup_duration) %>, then <%= poses_count %> poses × <%= format_duration.call(duration) %>
+            <% format_duration = ->(s) { s == 0 ? "no timer" : s < 60 ? "#{s}s" : "#{s / 60} min" } %>
+            <% if @theme_config["stages"] %>
+              <p class="font-sans" style="font-size: 0.95rem; color: #333; line-height: 1.6;">
+                <% @theme_config["stages"].each_with_index do |stage, i| %>
+                  <%= stage["count"] %> × <%= format_duration.call(stage["duration_seconds"]) %><%= i < @theme_config["stages"].size - 1 ? " — " : "" %>
+                <% end %>
               </p>
             <% else %>
-              <p class="font-sans" style="font-size: 0.95rem; color: #333;"><%= poses_count %> poses, <%= format_duration.call(duration) %> each</p>
+              <p class="font-sans" style="font-size: 0.95rem; color: #333;"><%= @theme_config["poses_count"] %> poses, <%= format_duration.call(@theme_config["duration_seconds"]) %> each</p>
             <% end %>
           </div>
 
