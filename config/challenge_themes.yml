@@ -16,12 +16,6 @@ weekday_rotation:
         duration_seconds: 300
 
 
-  - theme: proportion
-    display_name: Proportion Study
-    focus: Get the head-to-body ratio right before adding any detail.
-    tip: The average figure is 7–8 heads tall. Check yours.
-    poses_count: 3
-    duration_seconds: 300
 
   - theme: hands_feet
     display_name: Hands & Feet
@@ -43,7 +37,7 @@ weekday_rotation:
   - theme: long_poses
     display_name: Long Pose
     focus: Observe carefully for a full minute before your pencil touches the page.
-    tip: Build from big shapes to small. Resist the urge to detail too early.
+    tip: Build from big shapes to small. Check your proportions — the head should fit 7–8 times into the full figure.
     stages:
       - count: 2
         duration_seconds: 120
