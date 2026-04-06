@@ -15,19 +15,6 @@ weekday_rotation:
       - count: 1
         duration_seconds: 300
 
-  - theme: silhouette
-    display_name: Silhouette
-    focus: Fill the entire figure as a solid shape — no internal lines.
-    tip: If the silhouette looks stiff, the pose is stiff. Exaggerate.
-    poses_count: 5
-    duration_seconds: 120
-
-  - theme: negative_space
-    display_name: Negative Space
-    focus: Draw the space around the figure, not the figure itself.
-    tip: Squint at the reference to see shapes more clearly.
-    poses_count: 5
-    duration_seconds: 120
 
   - theme: proportion
     display_name: Proportion Study
