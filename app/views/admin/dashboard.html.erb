@@ -1,0 +1,84 @@
+<div style="background: #f5f2ee; min-height: 100vh; padding: 2rem 1.5rem 5rem;">
+  <div style="max-width: 56rem; margin: 0 auto;">
+
+    <div style="margin-bottom: 2rem;">
+      <h1 class="font-handwritten" style="font-size: 2rem; color: #1a1a1a;">Admin Dashboard</h1>
+      <p class="font-sans" style="font-size: 0.85rem; color: #aaa;"><%= Date.current.strftime("%B %d, %Y") %></p>
+    </div>
+
+    <%# Daily pulse %>
+    <h2 class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 0.75rem;">Today</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 2rem;">
+      <%= render_stat "New users", @new_users_today %>
+      <%= render_stat "Challenges done", @uploads_today %>
+      <%= render_stat "Drawings uploaded", @uploads_today %>
+    </div>
+
+    <%# Acquisition %>
+    <h2 class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 0.75rem;">Acquisition</h2>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 2rem;">
+      <%= render_stat "Total users", @total_users %>
+      <%= render_stat "New this week", @new_users_week %>
+      <%= render_stat "New this month", @new_users_month %>
+      <%= render_stat "Google sign-ups", @google_signups, detail: "#{@email_signups} via email" %>
+    </div>
+
+    <%# Activation %>
+    <h2 class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 0.75rem;">Activation</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 2rem;">
+      <%= render_stat "Completed a challenge", "#{@activation_rate}%", detail: "of all users" %>
+      <%= render_stat "Uploaded a drawing", "#{@upload_rate}%", detail: "of all users" %>
+      <%= render_stat "Avg challenges / user", @avg_challenges %>
+    </div>
+
+    <%# Retention %>
+    <h2 class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 0.75rem;">Retention</h2>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 2rem;">
+      <%= render_stat "Active last 7 days", @active_7d, detail: "users who did a challenge" %>
+      <%= render_stat "Active last 30 days", @active_30d, detail: "users who did a challenge" %>
+    </div>
+
+    <%# Engagement %>
+    <h2 class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 0.75rem;">Engagement</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 2rem;">
+      <%= render_stat "Uploads this week", @uploads_week %>
+      <%= render_stat "Total cheers given", @total_cheers %>
+      <% if @top_submission %>
+        <%= render_stat "Top drawing this week", @top_submission.user.username, detail: "#{@top_submission.cheer_total} cheers" %>
+      <% else %>
+        <%= render_stat "Top drawing this week", "—" %>
+      <% end %>
+    </div>
+
+    <%# 14-day table %>
+    <h2 class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 0.75rem;">Last 14 days</h2>
+    <div style="background: white; border-radius: 1.5rem; border: 1px solid #e2ddd8; overflow: hidden;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="border-bottom: 1px solid #f0ece6;">
+            <th class="font-sans" style="text-align: left; padding: 0.75rem 1.25rem; font-size: 0.75rem; color: #aaa; font-weight: 600;">Date</th>
+            <th class="font-sans" style="text-align: right; padding: 0.75rem 1.25rem; font-size: 0.75rem; color: #aaa; font-weight: 600;">New users</th>
+            <th class="font-sans" style="text-align: right; padding: 0.75rem 1.25rem; font-size: 0.75rem; color: #aaa; font-weight: 600;">Challenges</th>
+            <th class="font-sans" style="text-align: right; padding: 0.75rem 1.25rem; font-size: 0.75rem; color: #aaa; font-weight: 600;">Uploads</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @daily_stats.reverse.each do |day| %>
+            <tr style="border-bottom: 1px solid #f9f7f4;">
+              <td class="font-sans" style="padding: 0.65rem 1.25rem; font-size: 0.85rem; color: #444;">
+                <%= day[:date].strftime("%a %b %d") %>
+                <% if day[:date] == Date.current %>
+                  <span style="font-size: 0.7rem; color: #aaa; margin-left: 0.35rem;">today</span>
+                <% end %>
+              </td>
+              <td class="font-sans" style="text-align: right; padding: 0.65rem 1.25rem; font-size: 0.85rem; color: <%= day[:new_users] > 0 ? '#1a1a1a' : '#ccc' %>; font-weight: <%= day[:new_users] > 0 ? '600' : '400' %>"><%= day[:new_users] %></td>
+              <td class="font-sans" style="text-align: right; padding: 0.65rem 1.25rem; font-size: 0.85rem; color: <%= day[:challenges] > 0 ? '#1a1a1a' : '#ccc' %>; font-weight: <%= day[:challenges] > 0 ? '600' : '400' %>"><%= day[:challenges] %></td>
+              <td class="font-sans" style="text-align: right; padding: 0.65rem 1.25rem; font-size: 0.85rem; color: <%= day[:uploads] > 0 ? '#1a1a1a' : '#ccc' %>; font-weight: <%= day[:uploads] > 0 ? '600' : '400' %>"><%= day[:uploads] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
