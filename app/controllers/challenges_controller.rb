@@ -11,7 +11,8 @@ class ChallengesController < ApplicationController
       stages = build_stages(theme_config)
 
       total_count = stages.sum { |s| s[:count] }
-      picker = DailyPicker.new(theme: @challenge.theme, date: @challenge.date, poses_count: total_count)
+      image_theme = theme_config["image_theme"] || @challenge.theme
+      picker = DailyPicker.new(theme: image_theme, date: @challenge.date, poses_count: total_count)
       urls = picker.poses
 
       position = 1

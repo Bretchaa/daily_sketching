@@ -84,6 +84,19 @@ weekday_rotation:
     poses_count: 2
     duration_seconds: 600
 
+  - theme: construction
+    display_name: Rib Cage & Hips
+    image_theme: gesture
+    focus: Draw two boxes — one for the rib cage, one for the hips. Ignore everything else.
+    tip: The angle between the two boxes creates the twist and rhythm of the pose. That's all you need.
+    stages:
+      - count: 3
+        duration_seconds: 60
+      - count: 2
+        duration_seconds: 120
+      - count: 1
+        duration_seconds: 300
+
 # Weekend — relaxed session, no timer, user advances at their own pace
 weekend:
   theme: long_poses
