@@ -1,4 +1,5 @@
 class UploadsController < ApplicationController
+  rate_limit to: 10, within: 1.hour, only: :create
   before_action :set_user_from_token
 
   def show

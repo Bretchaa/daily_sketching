@@ -1,4 +1,6 @@
 class SubmissionsController < ApplicationController
+  rate_limit to: 10, within: 1.hour, only: :create
+
   def create
     challenge = Challenge.find_by!(date: Date.current)
 
