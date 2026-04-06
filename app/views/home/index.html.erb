@@ -1,85 +1,139 @@
+<style>
+  .home-hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .home-split {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+  }
+  .home-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 3rem 3rem 4rem 4rem;
+    min-width: 0;
+  }
+  .home-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem 3rem 2rem 0;
+    min-width: 0;
+    border-left: 1px solid #e8e3dd;
+    background: rgba(0,0,0,0.015);
+  }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+  }
+  @media (max-width: 768px) {
+    .home-split {
+      flex-direction: column;
+    }
+    .home-left {
+      padding: 2.5rem 1.5rem 2rem;
+      align-items: flex-start;
+    }
+    .home-right {
+      border-left: none;
+      border-top: 1px solid #e8e3dd;
+      background: rgba(0,0,0,0.015);
+      padding: 2rem 1.5rem 3rem;
+    }
+    .gallery-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
+
 <div style="background: #f5f2ee; min-height: 100vh;">
+  <div class="home-hero">
+    <div class="home-split">
 
-  <%# Hero — split layout %>
-  <div style="min-height: 100vh; display: flex; align-items: stretch;">
+      <%# Left — CTA %>
+      <div class="home-left">
 
-    <%# Left — CTA %>
-    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 4rem 3rem 4rem 4rem; min-width: 0;">
+        <%= image_tag "logo_home.svg", style: "height: 6rem; width: auto; margin-bottom: 2.5rem; display: block;", alt: "Daily Sketching" %>
 
-      <%= image_tag "logo_home.svg", style: "height: 7rem; width: auto; margin-bottom: 3rem; display: block;", alt: "Daily Sketching" %>
+        <% if current_user %>
+          <h1 class="font-handwritten" style="font-size: 2.75rem; line-height: 1.15; color: #1a1a1a; margin-bottom: 0.75rem;">
+            Welcome back,<br><%= current_user.username %>
+          </h1>
+          <p class="font-sans" style="font-size: 1rem; color: #888; margin-bottom: 2rem; line-height: 1.6;">
+            Your daily challenge is waiting.
+          </p>
+        <% else %>
+          <h1 class="font-handwritten" style="font-size: 2.75rem; line-height: 1.15; color: #1a1a1a; margin-bottom: 0.75rem;">
+            Build the drawing habit<br>that actually sticks.
+          </h1>
+          <p class="font-sans" style="font-size: 1rem; color: #888; margin-bottom: 2rem; line-height: 1.6;">
+            One 15-minute challenge per day.<br>Same prompt for everyone. Free, forever.
+          </p>
+        <% end %>
 
-      <% if current_user %>
-        <h1 class="font-handwritten" style="font-size: 2.75rem; line-height: 1.15; color: #1a1a1a; margin-bottom: 0.75rem;">
-          Welcome back,<br><%= current_user.username %>
-        </h1>
-        <p class="font-sans" style="font-size: 1rem; color: #888; margin-bottom: 2rem; line-height: 1.6;">
-          Your daily challenge is waiting.
-        </p>
-      <% else %>
-        <h1 class="font-handwritten" style="font-size: 2.75rem; line-height: 1.15; color: #1a1a1a; margin-bottom: 0.75rem;">
-          One drawing challenge,<br>every day.
-        </h1>
-        <p class="font-sans" style="font-size: 1rem; color: #888; margin-bottom: 2rem; line-height: 1.6;">
-          15 minutes. One prompt.<br>Same challenge for everyone.
-        </p>
-      <% end %>
+        <%= link_to "Start today's challenge", today_challenge_path,
+          class: "btn btn-black btn-lg rounded-2xl",
+          style: "padding-left: 2rem; padding-right: 2rem;" %>
 
-      <%= link_to "Start today's challenge", today_challenge_path,
-        class: "btn btn-black btn-lg rounded-2xl",
-        style: "width: fit-content; padding-left: 2rem; padding-right: 2rem;" %>
+        <% if current_user %>
+          <p class="font-sans" style="margin-top: 1.25rem; font-size: 0.82rem; color: #bbb;">
+            <%= link_to "Upload today's drawing →", done_path, style: "color: #888; font-weight: 600; text-decoration: none;" %>
+          </p>
+        <% else %>
+          <p class="font-sans" style="margin-top: 1.25rem; font-size: 0.82rem; color: #bbb;">
+            <%= link_to "Sign in", sign_in_path, style: "color: #888; font-weight: 600; text-decoration: none;" %>
+            <span style="margin: 0 0.4rem;">·</span>
+            <%= link_to "Create account", sign_up_path, style: "color: #888; font-weight: 600; text-decoration: none;" %>
+          </p>
+        <% end %>
 
-      <% if current_user %>
-        <p class="font-sans" style="margin-top: 1.25rem; font-size: 0.82rem; color: #bbb;">
-          <%= link_to "Upload today's drawing →", done_path, style: "color: #888; font-weight: 600; text-decoration: none;" %>
-        </p>
-      <% else %>
-        <p class="font-sans" style="margin-top: 1.25rem; font-size: 0.82rem; color: #bbb;">
-          <%= link_to "Sign in", sign_in_path, style: "color: #888; font-weight: 600; text-decoration: none;" %>
-          <span style="margin: 0 0.4rem;">·</span>
-          <%= link_to "Create account", sign_up_path, style: "color: #888; font-weight: 600; text-decoration: none;" %>
-        </p>
-      <% end %>
+      </div>
 
-    </div>
-
-    <%# Right — yesterday's gallery %>
-    <% if @yesterday_submissions.any? %>
-      <div style="flex: 1; padding: 2rem 2rem 2rem 1rem; display: flex; flex-direction: column; justify-content: center; min-width: 0; overflow: hidden;">
-        <p class="font-sans" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #bbb; margin-bottom: 0.75rem;">
-          Yesterday · <%= @yesterday_count %> <%= @yesterday_count == 1 ? "person" : "people" %> drew<% if @yesterday_theme.present? %> · <%= @yesterday_theme.humanize %><% end %>
-        </p>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
-          <% @yesterday_submissions.first(6).each do |submission| %>
-            <div style="position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; aspect-ratio: 3/4; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-              <%= image_tag url_for(submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block;" %>
-              <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.4rem 0.6rem; background: linear-gradient(transparent, rgba(0,0,0,0.6));">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <p class="font-sans" style="font-size: 0.7rem; color: rgba(255,255,255,0.95); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= submission.user.username %></p>
-                  <% total = submission.total_cheers %>
-                  <% if total > 0 %>
-                    <div style="display: flex; align-items: center; gap: 0.2rem; flex-shrink: 0;">
-                      <span style="font-size: 0.7rem;">👏</span>
-                      <span class="font-sans" style="font-size: 0.65rem; color: white; font-weight: 600;"><%= total %></span>
-                    </div>
-                  <% end %>
+      <%# Right — yesterday's gallery %>
+      <div class="home-right">
+        <% if @yesterday_submissions.any? %>
+          <p class="font-sans" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #bbb; margin-bottom: 0.75rem; padding-left: 1rem;">
+            Yesterday · <%= @yesterday_count %> <%= @yesterday_count == 1 ? "person" : "people" %> drew<% if @yesterday_theme.present? %> · <%= @yesterday_theme.humanize %><% end %>
+          </p>
+          <div class="gallery-grid" style="padding-left: 1rem;">
+            <% @yesterday_submissions.first(6).each do |submission| %>
+              <div style="position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; aspect-ratio: 3/4; box-shadow: 0 2px 12px rgba(0,0,0,0.1);">
+                <%= image_tag url_for(submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block;" %>
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.5rem 0.75rem; background: linear-gradient(transparent, rgba(0,0,0,0.65));">
+                  <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <p class="font-sans" style="font-size: 0.72rem; color: rgba(255,255,255,0.95); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= submission.user.username %></p>
+                    <% total = submission.total_cheers %>
+                    <% if total > 0 %>
+                      <div style="display: flex; align-items: center; gap: 0.2rem; flex-shrink: 0;">
+                        <span style="font-size: 0.72rem;">👏</span>
+                        <span class="font-sans" style="font-size: 0.68rem; color: white; font-weight: 600;"><%= total %></span>
+                      </div>
+                    <% end %>
+                  </div>
                 </div>
               </div>
-            </div>
+            <% end %>
+          </div>
+          <% if @yesterday_submissions.size > 6 %>
+            <p class="font-sans" style="font-size: 0.78rem; color: #bbb; margin-top: 0.75rem; padding-left: 1rem;">
+              +<%= @yesterday_submissions.size - 6 %> more drawings
+            </p>
           <% end %>
-        </div>
-        <% if @yesterday_submissions.size > 6 %>
-          <p class="font-sans" style="font-size: 0.78rem; color: #bbb; margin-top: 0.75rem; text-align: right;">
-            +<%= @yesterday_submissions.size - 6 %> more
-          </p>
+        <% else %>
+          <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 2rem;">
+            <p class="font-handwritten" style="font-size: 1.5rem; color: #ccc; text-align: center; line-height: 1.5;">Your drawing<br>could be here.</p>
+          </div>
         <% end %>
       </div>
 
-    <% else %>
-      <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem;">
-        <p class="font-handwritten" style="font-size: 1.25rem; color: #ccc; text-align: center;">Your drawing<br>could be here.</p>
-      </div>
-    <% end %>
-
+    </div>
   </div>
-
 </div>
