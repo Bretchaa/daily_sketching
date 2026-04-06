@@ -63,7 +63,7 @@
 
             <% else %>
               <%# On desktop: QR code is the primary option %>
-              <% qr_url = upload_url(token: current_user.upload_token, host: request.host, port: request.port) %>
+              <% qr_url = done_url(host: request.host, port: request.port) %>
               <% qr = RQRCode::QRCode.new(qr_url) %>
               <div style="text-align: center;">
                 <p class="font-sans" style="font-size: 0.9rem; font-weight: 600; color: #1a1a1a; margin-bottom: 0.35rem;">Scan with your phone</p>

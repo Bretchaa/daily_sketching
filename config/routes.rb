@@ -29,6 +29,7 @@ Rails.application.routes.draw do
   get    "/account", to: "account#show",    as: :account
   delete "/account", to: "account#destroy"
   get  "/admin", to: "admin#dashboard", as: :admin
+  get  "/gallery/:date", to: "gallery#show", as: :gallery
   get  "/privacy", to: "pages#privacy", as: :privacy
   get  "/terms", to: "pages#terms", as: :terms
   get  "/sign_up",  to: "registrations#new",    as: :sign_up

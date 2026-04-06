@@ -15,6 +15,6 @@ class CheersController < ApplicationController
       cheer.save!
     end
 
-    redirect_to done_path
+    redirect_back fallback_location: done_path
   end
 end
