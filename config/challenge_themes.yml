@@ -89,6 +89,8 @@ weekday_rotation:
     image_theme: gesture
     focus: Draw two boxes — one for the rib cage, one for the hips. Ignore everything else.
     tip: The angle between the two boxes creates the twist and rhythm of the pose. That's all you need.
+    resource_url: https://www.proko.com/course-lesson/how-to-draw-structure-in-the-body-robo-bean
+    resource_label: How to do this exercise →
     stages:
       - count: 3
         duration_seconds: 60
