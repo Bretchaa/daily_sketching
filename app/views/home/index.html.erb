@@ -1,45 +1,32 @@
 <div style="background: #f5f2ee; min-height: 100vh;">
 
-  <%# Hero — full width, gallery as background %>
-  <div style="position: relative; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
+  <%# Hero — split layout %>
+  <div style="min-height: 100vh; display: flex; align-items: stretch;">
 
-    <%# Background gallery grid %>
-    <% if @yesterday_submissions.any? %>
-      <div style="position: absolute; inset: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; padding: 0.5rem; opacity: 0.18; transform: scale(1.05);">
-        <% (@yesterday_submissions.to_a * 8).first(16).each do |submission| %>
-          <div style="border-radius: 0.75rem; overflow: hidden; background: #e8e3db; aspect-ratio: 3/4;">
-            <%= image_tag url_for(submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block;" %>
-          </div>
-        <% end %>
-      </div>
-      <%# Gradient fade to make text readable %>
-      <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(245,242,238,0.6) 0%, rgba(245,242,238,0.85) 60%, rgba(245,242,238,0.97) 100%);"></div>
-    <% end %>
+    <%# Left — CTA %>
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 4rem 3rem 4rem 4rem; min-width: 0;">
 
-    <%# Hero content %>
-    <div style="position: relative; z-index: 10; text-align: center; padding: 2rem 1.5rem; max-width: 32rem;">
-
-      <%= image_tag "logo_home.svg", style: "height: 7rem; width: auto; margin: 0 auto 2.5rem;", alt: "Daily Sketching" %>
+      <%= image_tag "logo_home.svg", style: "height: 3rem; width: auto; margin-bottom: 2.5rem;", alt: "Daily Sketching" %>
 
       <% if current_user %>
         <h1 class="font-handwritten" style="font-size: 2.75rem; line-height: 1.15; color: #1a1a1a; margin-bottom: 0.75rem;">
           Welcome back,<br><%= current_user.username %>
         </h1>
         <p class="font-sans" style="font-size: 1rem; color: #888; margin-bottom: 2rem; line-height: 1.6;">
-          Your daily drawing challenge is waiting.
+          Your daily challenge is waiting.
         </p>
       <% else %>
         <h1 class="font-handwritten" style="font-size: 2.75rem; line-height: 1.15; color: #1a1a1a; margin-bottom: 0.75rem;">
           One drawing challenge,<br>every day.
         </h1>
         <p class="font-sans" style="font-size: 1rem; color: #888; margin-bottom: 2rem; line-height: 1.6;">
-          15 minutes. One prompt. Same challenge for everyone.
+          15 minutes. One prompt.<br>Same challenge for everyone.
         </p>
       <% end %>
 
       <%= link_to "Start today's challenge", today_challenge_path,
         class: "btn btn-black btn-lg rounded-2xl",
-        style: "padding-left: 2rem; padding-right: 2rem;" %>
+        style: "width: fit-content; padding-left: 2rem; padding-right: 2rem;" %>
 
       <% if current_user %>
         <p class="font-sans" style="margin-top: 1.25rem; font-size: 0.82rem; color: #bbb;">
@@ -55,56 +42,45 @@
 
     </div>
 
-    <%# Scroll hint %>
+    <%# Right — yesterday's gallery %>
     <% if @yesterday_submissions.any? %>
-      <div style="position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); text-align: center;">
-        <p class="font-sans" style="font-size: 0.75rem; color: #bbb; letter-spacing: 0.05em;">↓ see yesterday's drawings</p>
+      <div style="flex: 1; padding: 2rem 2rem 2rem 1rem; display: flex; flex-direction: column; justify-content: center; min-width: 0; overflow: hidden;">
+        <p class="font-sans" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #bbb; margin-bottom: 0.75rem;">
+          Yesterday · <%= @yesterday_count %> <%= @yesterday_count == 1 ? "person" : "people" %> drew<% if @yesterday_theme.present? %> · <%= @yesterday_theme.humanize %><% end %>
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+          <% @yesterday_submissions.first(6).each do |submission| %>
+            <div style="position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; aspect-ratio: 3/4; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+              <%= image_tag url_for(submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block;" %>
+              <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.4rem 0.6rem; background: linear-gradient(transparent, rgba(0,0,0,0.6));">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <p class="font-sans" style="font-size: 0.7rem; color: rgba(255,255,255,0.95); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= submission.user.username %></p>
+                  <% total = submission.total_cheers %>
+                  <% if total > 0 %>
+                    <div style="display: flex; align-items: center; gap: 0.2rem; flex-shrink: 0;">
+                      <span style="font-size: 0.7rem;">👏</span>
+                      <span class="font-sans" style="font-size: 0.65rem; color: white; font-weight: 600;"><%= total %></span>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <% if @yesterday_submissions.size > 6 %>
+          <p class="font-sans" style="font-size: 0.78rem; color: #bbb; margin-top: 0.75rem; text-align: right;">
+            +<%= @yesterday_submissions.size - 6 %> more
+          </p>
+        <% end %>
+      </div>
+
+    <% else %>
+      <%# No drawings yet — fill right side with a teaser %>
+      <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+        <p class="font-handwritten" style="font-size: 1.25rem; color: #ccc; text-align: center;">Your drawing<br>could be here.</p>
       </div>
     <% end %>
 
   </div>
-
-  <%# Community gallery — below the fold %>
-  <% if @yesterday_submissions.any? %>
-    <div style="max-width: 56rem; margin: 0 auto; padding: 4rem 1.5rem 6rem;">
-
-      <div style="margin-bottom: 2rem; text-align: center;">
-        <h2 class="font-handwritten" style="font-size: 2rem; color: #1a1a1a;">Yesterday's drawings</h2>
-        <p class="font-sans" style="font-size: 0.875rem; color: #999; margin-top: 0.4rem;">
-          <%= @yesterday_count %> <%= @yesterday_count == 1 ? "person" : "people" %> showed up<% if @yesterday_theme.present? %> · <%= @yesterday_theme.humanize %><% end %>
-        </p>
-      </div>
-
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
-        <% @yesterday_submissions.each do |submission| %>
-          <div style="position: relative; border-radius: 1.25rem; overflow: hidden; background: #e8e3db; aspect-ratio: 3/4; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-            <%= image_tag url_for(submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block;" %>
-            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.75rem 1rem; background: linear-gradient(transparent, rgba(0,0,0,0.65));">
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <p class="font-sans" style="font-size: 0.8rem; color: rgba(255,255,255,0.95); font-weight: 600;">
-                  <%= submission.user.username %>
-                </p>
-                <% total = submission.total_cheers %>
-                <% if total > 0 %>
-                  <div style="display: flex; align-items: center; gap: 0.25rem;">
-                    <span style="font-size: 0.8rem;">👏</span>
-                    <span class="font-sans" style="font-size: 0.75rem; color: rgba(255,255,255,0.9); font-weight: 600;"><%= total %></span>
-                  </div>
-                <% end %>
-              </div>
-            </div>
-          </div>
-        <% end %>
-      </div>
-
-      <div style="margin-top: 2.5rem; text-align: center;">
-        <p class="font-sans" style="font-size: 0.9rem; color: #aaa;">
-          Your drawing could be here tomorrow. &nbsp;
-          <%= link_to "Start today's challenge →", today_challenge_path, style: "color: #1a1a1a; font-weight: 700; text-decoration: none;" %>
-        </p>
-      </div>
-
-    </div>
-  <% end %>
 
 </div>
