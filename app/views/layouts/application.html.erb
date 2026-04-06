@@ -21,7 +21,34 @@
   </head>
 
   <body class="font-sans">
-    <%= yield %>
+
+    <%# Top nav %>
+    <nav style="position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.5rem; background: rgba(245, 242, 238, 0.85); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(226, 221, 216, 0.6);">
+      <%= link_to root_path, style: "display: flex; align-items: center;" do %>
+        <%= image_tag "logo_home.svg", style: "height: 1.5rem; width: auto;", alt: "Daily Sketching" %>
+      <% end %>
+
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <% if current_user %>
+          <%= link_to account_path, style: "display: flex; align-items: center; gap: 0.5rem; text-decoration: none;" do %>
+            <% if current_user.avatar_url.present? %>
+              <img src="<%= current_user.avatar_url %>" style="width: 2rem; height: 2rem; border-radius: 999px; border: 2px solid #e2ddd8;">
+            <% else %>
+              <div style="width: 2rem; height: 2rem; border-radius: 999px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; border: 2px solid #1a1a1a;">
+                <span class="font-sans" style="color: white; font-weight: 700; font-size: 0.75rem;"><%= current_user.username[0].upcase %></span>
+              </div>
+            <% end %>
+          <% end %>
+        <% else %>
+          <%= link_to "Sign in", sign_in_path, class: "font-sans", style: "font-size: 0.85rem; font-weight: 600; color: #1a1a1a; text-decoration: none;" %>
+        <% end %>
+      </div>
+    </nav>
+
+    <div style="padding-top: 3.5rem;">
+      <%= yield %>
+    </div>
+
     <footer style="text-align: center; padding: 1.5rem; background: #f5f2ee;">
       <p class="font-sans" style="font-size: 0.78rem; color: #ccc;">
         <%= link_to "Privacy Policy", privacy_path, style: "color: #bbb; text-decoration: none;" %>
@@ -29,5 +56,6 @@
         <%= link_to "Terms of Service", terms_path, style: "color: #bbb; text-decoration: none;" %>
       </p>
     </footer>
+
   </body>
 </html>

@@ -1,42 +1,23 @@
 <div style="background: #f5f2ee; min-height: 100vh;">
 
   <%# Hero card %>
-  <div style="display: flex; justify-content: center; padding: 5rem 1.5rem 3rem;">
+  <div style="display: flex; justify-content: center; padding: 4rem 1.5rem 3rem;">
     <div class="w-full" style="max-width: 28rem;">
       <div class="bg-white rounded-[2rem] shadow-md" style="padding: 2.5rem; border: 1px solid #e2ddd8; transform: rotate(-0.3deg);">
         <div class="flex flex-col" style="gap: 1.5rem;">
 
+          <%= image_tag "logo_home.svg", class: "w-56", alt: "Daily Sketching" %>
+
           <% if current_user %>
-            <%# Logged in state %>
-            <%= image_tag "logo_home.svg", class: "w-64", alt: "Daily Sketching" %>
-
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <% if current_user.avatar_url.present? %>
-                <img src="<%= current_user.avatar_url %>" style="width: 2.75rem; height: 2.75rem; border-radius: 999px; flex-shrink: 0;">
-              <% else %>
-                <div style="width: 2.75rem; height: 2.75rem; border-radius: 999px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                  <span class="font-sans" style="color: white; font-weight: 700; font-size: 1rem;"><%= current_user.username[0].upcase %></span>
-                </div>
-              <% end %>
-              <div>
-                <p class="font-sans" style="font-size: 0.75rem; color: #aaa; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Welcome back</p>
-                <p class="font-sans" style="font-size: 1rem; font-weight: 700; color: #1a1a1a;"><%= current_user.username %> 👋</p>
-              </div>
-            </div>
-
             <div>
               <h1 class="font-handwritten" style="font-size: 2rem; line-height: 1.2; color: #1a1a1a;">
-                Ready for today's challenge?
+                Welcome back, <%= current_user.username %>
               </h1>
               <p class="font-sans" style="margin-top: 0.5rem; font-size: 0.95rem; color: #888; line-height: 1.5;">
-                A new gesture drawing session is waiting for you.
+                Your daily drawing challenge is ready.
               </p>
             </div>
-
           <% else %>
-            <%# Logged out state %>
-            <%= image_tag "logo_home.svg", class: "w-64", alt: "Daily Sketching" %>
-
             <div>
               <h1 class="font-handwritten" style="font-size: 2rem; line-height: 1.2; color: #1a1a1a;">
                 Practice drawing.<br>Every day.
@@ -50,14 +31,13 @@
           <%= link_to "Start today's challenge", today_challenge_path,
             class: "btn btn-black btn-lg w-full rounded-2xl" %>
 
-          <% if !current_user %>
+          <% if current_user %>
             <p class="font-sans text-center" style="font-size: 0.82rem; color: #bbb; margin-top: -0.5rem;">
-              <%= link_to "Sign in", sign_in_path, style: "color: #888; font-weight: 600; text-decoration: none;" %> · <%= link_to "Create account", sign_up_path, style: "color: #888; font-weight: 600; text-decoration: none;" %>
+              <%= link_to "Upload today's drawing →", done_path, style: "color: #888; font-weight: 600; text-decoration: none;" %>
             </p>
           <% else %>
             <p class="font-sans text-center" style="font-size: 0.82rem; color: #bbb; margin-top: -0.5rem;">
-              <%= link_to "Upload today's drawing →", done_path, style: "color: #888; font-weight: 600; text-decoration: none;" %>
-               · <%= link_to "Account", account_path, style: "color: #bbb; text-decoration: none;" %>
+              <%= link_to "Sign in", sign_in_path, style: "color: #888; font-weight: 600; text-decoration: none;" %> · <%= link_to "Create account", sign_up_path, style: "color: #888; font-weight: 600; text-decoration: none;" %>
             </p>
           <% end %>
 
