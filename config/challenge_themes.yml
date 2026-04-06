@@ -6,7 +6,7 @@ weekday_rotation:
   - theme: gesture
     display_name: Gesture Drawing
     focus: Capture the movement and overall energy of the pose. Don't worry about details.
-    tip: Use long, continuous lines. Draw fast and loose.
+    tip: Start by finding the line of action — the single curve running from head to feet — then build the figure around it. Draw fast and loose.
     stages:
       - count: 3
         duration_seconds: 60
@@ -14,13 +14,6 @@ weekday_rotation:
         duration_seconds: 120
       - count: 1
         duration_seconds: 300
-
-  - theme: line_of_action
-    display_name: Line of Action
-    focus: Find and exaggerate the main curve running through the body.
-    tip: Draw one single flowing line first, then build the figure around it.
-    poses_count: 5
-    duration_seconds: 120
 
   - theme: silhouette
     display_name: Silhouette
