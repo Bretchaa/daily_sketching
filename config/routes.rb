@@ -26,6 +26,8 @@ Rails.application.routes.draw do
   post "/cheers", to: "cheers#create", as: :cheers
   get  "/upload", to: "uploads#show", as: :upload
   post "/upload", to: "uploads#create"
+  get    "/account", to: "account#show",    as: :account
+  delete "/account", to: "account#destroy"
   get  "/admin", to: "admin#dashboard", as: :admin
   get  "/privacy", to: "pages#privacy", as: :privacy
   get  "/terms", to: "pages#terms", as: :terms

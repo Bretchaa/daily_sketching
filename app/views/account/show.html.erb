@@ -1,0 +1,66 @@
+<div style="background: #f5f2ee; min-height: 100vh; padding: 4rem 1.5rem 6rem;">
+  <div style="max-width: 28rem; margin: 0 auto;">
+
+    <%= image_tag "logo_home.svg", class: "w-32", alt: "Daily Sketching", style: "margin-bottom: 2.5rem;" %>
+
+    <h1 class="font-handwritten" style="font-size: 2rem; color: #1a1a1a; margin-bottom: 2rem;">Account</h1>
+
+    <%# Profile %>
+    <div style="background: white; border-radius: 1.5rem; padding: 1.5rem; border: 1px solid #e2ddd8; margin-bottom: 1rem;">
+      <p class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 1rem;">Profile</p>
+      <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+        <div style="display: flex; justify-content: space-between;">
+          <span class="font-sans" style="font-size: 0.875rem; color: #aaa;">Username</span>
+          <span class="font-sans" style="font-size: 0.875rem; color: #1a1a1a; font-weight: 600;"><%= current_user.username %></span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span class="font-sans" style="font-size: 0.875rem; color: #aaa;">Email</span>
+          <span class="font-sans" style="font-size: 0.875rem; color: #1a1a1a;"><%= current_user.email %></span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span class="font-sans" style="font-size: 0.875rem; color: #aaa;">Joined</span>
+          <span class="font-sans" style="font-size: 0.875rem; color: #1a1a1a;"><%= current_user.created_at.strftime("%B %Y") %></span>
+        </div>
+      </div>
+    </div>
+
+    <%# Activity %>
+    <div style="background: white; border-radius: 1.5rem; padding: 1.5rem; border: 1px solid #e2ddd8; margin-bottom: 1rem;">
+      <p class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 1rem;">Activity</p>
+      <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+        <div style="display: flex; justify-content: space-between;">
+          <span class="font-sans" style="font-size: 0.875rem; color: #aaa;">Challenges completed</span>
+          <span class="font-sans" style="font-size: 0.875rem; color: #1a1a1a; font-weight: 600;"><%= current_user.submissions.count %></span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span class="font-sans" style="font-size: 0.875rem; color: #aaa;">Drawings shared</span>
+          <span class="font-sans" style="font-size: 0.875rem; color: #1a1a1a; font-weight: 600;"><%= current_user.submissions.joins(:image_attachment).count %></span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span class="font-sans" style="font-size: 0.875rem; color: #aaa;">Cheers given</span>
+          <span class="font-sans" style="font-size: 0.875rem; color: #1a1a1a; font-weight: 600;"><%= current_user.cheers.sum(:count) %></span>
+        </div>
+      </div>
+    </div>
+
+    <%# Sign out %>
+    <div style="background: white; border-radius: 1.5rem; padding: 1.5rem; border: 1px solid #e2ddd8; margin-bottom: 1rem;">
+      <p class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 1rem;">Session</p>
+      <%= link_to "Sign out", sign_out_path, data: { turbo_method: :delete }, style: "font-size: 0.875rem; color: #1a1a1a; font-weight: 600; text-decoration: none;" %>
+    </div>
+
+    <%# Danger zone %>
+    <div style="background: white; border-radius: 1.5rem; padding: 1.5rem; border: 1px solid #e2ddd8;">
+      <p class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 0.5rem;">Danger zone</p>
+      <p class="font-sans" style="font-size: 0.8rem; color: #bbb; margin-bottom: 1rem; line-height: 1.5;">Permanently deletes your account, all your drawings, and your data. This cannot be undone.</p>
+      <%= button_to "Delete my account", account_path, method: :delete,
+            data: { confirm: "Are you sure? This will permanently delete your account and all your drawings." },
+            style: "background: none; border: none; padding: 0; font-size: 0.875rem; color: #e57373; font-weight: 600; cursor: pointer; text-decoration: underline;" %>
+    </div>
+
+    <div style="margin-top: 2rem; text-align: center;">
+      <%= link_to "← Back to home", root_path, class: "font-sans", style: "font-size: 0.82rem; color: #bbb; text-decoration: none;" %>
+    </div>
+
+  </div>
+</div>
