@@ -27,6 +27,8 @@ Rails.application.routes.draw do
   get  "/upload", to: "uploads#show", as: :upload
   post "/upload", to: "uploads#create"
   get  "/admin", to: "admin#dashboard", as: :admin
+  get  "/privacy", to: "pages#privacy", as: :privacy
+  get  "/terms", to: "pages#terms", as: :terms
   get  "/sign_up",  to: "registrations#new",    as: :sign_up
   post "/sign_up",  to: "registrations#create"
   get  "/username", to: "registrations#pick_username", as: :pick_username

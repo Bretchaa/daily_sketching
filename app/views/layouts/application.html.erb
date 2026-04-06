@@ -22,5 +22,12 @@
 
   <body class="font-sans">
     <%= yield %>
+    <footer style="text-align: center; padding: 1.5rem; background: #f5f2ee;">
+      <p class="font-sans" style="font-size: 0.78rem; color: #ccc;">
+        <%= link_to "Privacy Policy", privacy_path, style: "color: #bbb; text-decoration: none;" %>
+        <span style="margin: 0 0.5rem;">·</span>
+        <%= link_to "Terms of Service", terms_path, style: "color: #bbb; text-decoration: none;" %>
+      </p>
+    </footer>
   </body>
 </html>
