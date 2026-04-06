@@ -1,15 +1,12 @@
 <div style="background: #f5f2ee; min-height: 100vh;">
 
-  <%# Logo — centered, full width %>
-  <div style="display: flex; justify-content: center; padding: 3rem 1.5rem 0;">
-    <%= image_tag "logo_home.svg", style: "height: 6rem; width: auto; display: block;", alt: "Daily Sketching" %>
-  </div>
-
   <%# Hero — split layout %>
-  <div style="min-height: calc(100vh - 9rem); display: flex; align-items: stretch;">
+  <div style="min-height: 100vh; display: flex; align-items: stretch;">
 
     <%# Left — CTA %>
-    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 2rem 3rem 4rem 4rem; min-width: 0;">
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 4rem 3rem 4rem 4rem; min-width: 0;">
+
+      <%= image_tag "logo_home.svg", style: "height: 4rem; width: auto; margin-bottom: 3rem; opacity: 0.9;", alt: "Daily Sketching" %>
 
       <% if current_user %>
         <h1 class="font-handwritten" style="font-size: 2.75rem; line-height: 1.15; color: #1a1a1a; margin-bottom: 0.75rem;">
@@ -78,7 +75,6 @@
       </div>
 
     <% else %>
-      <%# No drawings yet — fill right side with a teaser %>
       <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem;">
         <p class="font-handwritten" style="font-size: 1.25rem; color: #ccc; text-align: center;">Your drawing<br>could be here.</p>
       </div>
