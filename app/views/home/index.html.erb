@@ -6,7 +6,7 @@
     <%# Background gallery grid %>
     <% if @yesterday_submissions.any? %>
       <div style="position: absolute; inset: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; padding: 0.5rem; opacity: 0.18; transform: scale(1.05);">
-        <% (@yesterday_submissions * 8).first(16).each do |submission| %>
+        <% (@yesterday_submissions.to_a * 8).first(16).each do |submission| %>
           <div style="border-radius: 0.75rem; overflow: hidden; background: #e8e3db; aspect-ratio: 3/4;">
             <%= image_tag url_for(submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block;" %>
           </div>
@@ -19,21 +19,21 @@
     <%# Hero content %>
     <div style="position: relative; z-index: 10; text-align: center; padding: 2rem 1.5rem; max-width: 32rem;">
 
-      <%= image_tag "logo_home.svg", style: "height: 3rem; width: auto; margin: 0 auto 2rem;", alt: "Daily Sketching" %>
+      <%= image_tag "logo_home.svg", style: "height: 7rem; width: auto; margin: 0 auto 2.5rem;", alt: "Daily Sketching" %>
 
       <% if current_user %>
         <h1 class="font-handwritten" style="font-size: 2.75rem; line-height: 1.15; color: #1a1a1a; margin-bottom: 0.75rem;">
           Welcome back,<br><%= current_user.username %>
         </h1>
         <p class="font-sans" style="font-size: 1rem; color: #888; margin-bottom: 2rem; line-height: 1.6;">
-          Your daily challenge is waiting.
+          Your daily drawing challenge is waiting.
         </p>
       <% else %>
         <h1 class="font-handwritten" style="font-size: 2.75rem; line-height: 1.15; color: #1a1a1a; margin-bottom: 0.75rem;">
-          Draw every day.<br>Get better fast.
+          One drawing challenge,<br>every day.
         </h1>
         <p class="font-sans" style="font-size: 1rem; color: #888; margin-bottom: 2rem; line-height: 1.6;">
-          A 15-minute guided drawing challenge, every day.<br>Join a community of artists building the habit.
+          15 minutes. One prompt. Same challenge for everyone.
         </p>
       <% end %>
 
