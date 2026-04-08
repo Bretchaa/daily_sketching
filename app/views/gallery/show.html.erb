@@ -1,9 +1,24 @@
+<%# Lightbox overlay %>
+<div id="lightbox" onclick="closeLightbox()" style="display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; cursor: zoom-out;">
+  <img id="lightbox-img" style="max-width: 90vw; max-height: 90vh; object-fit: contain; border-radius: 0.5rem;">
+</div>
+
+<script>
+  function openLightbox(src) {
+    const lb = document.getElementById("lightbox");
+    document.getElementById("lightbox-img").src = src;
+    lb.style.display = "flex";
+  }
+  function closeLightbox() {
+    document.getElementById("lightbox").style.display = "none";
+  }
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") closeLightbox();
+  });
+</script>
+
 <div style="background: #f5f2ee; min-height: 100vh; padding: 4rem 2rem 5rem;">
   <div style="max-width: 52rem; margin: 0 auto;">
-
-    <div style="margin-bottom: 2rem;">
-      <%= link_to "← Back", root_path, class: "font-sans", style: "font-size: 0.85rem; color: #bbb; text-decoration: none;" %>
-    </div>
 
     <h1 class="font-handwritten" style="font-size: 2rem; color: #1a1a1a; margin-bottom: 0.35rem;">
       <%= @date == Date.yesterday ? "Yesterday's drawings" : @date.strftime("%B %-d") %>
@@ -12,38 +27,78 @@
       <%= @submissions.size %> <%= @submissions.size == 1 ? "person" : "people" %> drew<% if @challenge.theme.present? %> · <%= @challenge.theme.humanize %><% end %>
     </p>
 
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
-      <% @submissions.each do |submission| %>
-        <% is_mine = submission.user == current_user %>
-        <% my_cheer = @my_cheers[submission.id] %>
-        <% my_cheer_count = my_cheer&.count || 0 %>
-        <% total = submission.total_cheers %>
-        <div style="position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; aspect-ratio: 3/4; box-shadow: 0 2px 8px rgba(0,0,0,0.08); <%= is_mine ? 'box-shadow: 0 0 0 3px #1a1a1a;' : '' %>">
-          <%= image_tag url_for(submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block;" %>
-          <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.5rem 0.75rem; background: linear-gradient(transparent, rgba(0,0,0,0.6));">
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-              <p class="font-sans" style="font-size: 0.75rem; color: rgba(255,255,255,0.95); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                <%= is_mine ? "You" : submission.user.username %>
-              </p>
-              <% unless is_mine %>
-                <% can_cheer = current_user && my_cheer_count < Cheer::MAX_PER_USER %>
-                <% if can_cheer %>
-                  <%= button_to cheers_path, method: :post, params: { submission_id: submission.id }, style: "background: rgba(255,255,255,0.2); border: none; border-radius: 999px; padding: 0.2rem 0.5rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;" do %>
-                    <span style="font-size: 0.8rem;">👏</span>
-                    <span class="font-sans" style="font-size: 0.7rem; color: white; font-weight: 600;"><%= total > 0 ? total : "" %></span>
-                  <% end %>
-                <% else %>
-                  <div style="display: flex; align-items: center; gap: 0.25rem; padding: 0.2rem 0.5rem;">
-                    <span style="font-size: 0.8rem;">👏</span>
-                    <span class="font-sans" style="font-size: 0.7rem; color: rgba(255,255,255,0.8); font-weight: 600;"><%= total > 0 ? total : "" %></span>
-                  </div>
-                <% end %>
+    <%
+      my_submission = current_user ? @submissions.find { |s| s.user_id == current_user.id } : nil
+      first_other = my_submission ? @submissions.find { |s| s != my_submission } : @submissions.first
+      rest = @submissions.reject { |s| s == my_submission || s == first_other }
+      paywall_limit = 6
+    %>
+
+    <div style="position: relative;">
+
+      <%# Featured row — only if user drew %>
+      <% if my_submission %>
+        <% my_total = my_submission.total_cheers %>
+        <div style="display: flex; gap: 0.75rem; margin-bottom: 0.75rem; align-items: stretch; max-height: 22rem;">
+          <div style="flex: 2; position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; box-shadow: 0 2px 12px rgba(0,0,0,0.1);">
+            <%= image_tag url_for(my_submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in;", onclick: "openLightbox(this.src)" %>
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.4rem 0.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.6)); display: flex; align-items: center; justify-content: space-between;">
+              <p class="font-sans" style="font-size: 0.65rem; color: white; font-weight: 600;"><%= my_submission.user.username %></p>
+              <% if my_total > 0 %>
+                <div style="display: flex; align-items: center; gap: 0.2rem;">
+                  <span style="font-size: 0.7rem;">👏</span>
+                  <span class="font-sans" style="font-size: 0.65rem; color: white; font-weight: 700;"><%= my_total %></span>
+                </div>
               <% end %>
             </div>
           </div>
+          <% if first_other %>
+            <div style="flex: 1; aspect-ratio: 3/4; position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+              <%= image_tag url_for(first_other.image), style: "width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in;", onclick: "openLightbox(this.src)" %>
+              <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.4rem 0.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.6)); display: flex; align-items: center; justify-content: space-between;">
+                <p class="font-sans" style="font-size: 0.65rem; color: white; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= first_other.user.username %></p>
+                <%= render "cheers/button", submission: first_other %>
+              </div>
+            </div>
+          <% end %>
         </div>
       <% end %>
+
+      <%# Regular grid %>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+        <%# If no featured row, first_other goes into grid %>
+        <% grid_submissions = my_submission ? rest : @submissions %>
+        <% grid_submissions.each_with_index do |submission, i| %>
+          <% next if !current_user && i >= paywall_limit %>
+          <div style="position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; aspect-ratio: 3/4; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+            <%= image_tag url_for(submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in;", onclick: "openLightbox(this.src)" %>
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.5rem 0.75rem; background: linear-gradient(transparent, rgba(0,0,0,0.6)); display: flex; align-items: center; justify-content: space-between;">
+              <p class="font-sans" style="font-size: 0.75rem; color: rgba(255,255,255,0.95); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= submission.user.username %></p>
+              <%= render "cheers/button", submission: submission %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <%# Gradient fade overlay for paywall %>
+      <% if !current_user && @submissions.size > paywall_limit %>
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 45%; background: linear-gradient(transparent, #f5f2ee); pointer-events: none;"></div>
+      <% end %>
     </div>
+
+    <%# CTA card below the fade %>
+    <% if !current_user && @submissions.size > paywall_limit %>
+      <div style="display: flex; justify-content: center; padding-top: 2rem;">
+        <div style="background: white; border-radius: 1.5rem; padding: 2rem 2.5rem; border: 1px solid #e2ddd8; text-align: center; max-width: 22rem; box-shadow: 0 4px 24px rgba(0,0,0,0.06);">
+          <p class="font-handwritten" style="font-size: 1.5rem; color: #1a1a1a; margin-bottom: 0.4rem;">See more drawings</p>
+          <p class="font-sans" style="font-size: 0.85rem; color: #999; margin-bottom: 1.5rem; line-height: 1.5;">Create a free account to unlock the full community gallery.</p>
+          <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <%= link_to "Create free account", sign_up_path, class: "btn btn-black w-full rounded-2xl" %>
+            <%= link_to "Sign in", sign_in_path, class: "font-sans", style: "font-size: 0.85rem; color: #888; font-weight: 600; text-decoration: none;" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
 
   </div>
 </div>

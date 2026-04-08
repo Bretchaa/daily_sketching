@@ -42,4 +42,22 @@ class User < ApplicationRecord
   def password_reset_expired?
     reset_password_sent_at < 2.hours.ago
   end
+
+  def streak
+    drawn_dates = submissions.joins(:image_attachment)
+                             .joins(:challenge)
+                             .pluck("challenges.date")
+                             .map(&:to_date)
+                             .to_set
+
+    count = 0
+    # Start from today; if not drawn today, start from yesterday
+    start = drawn_dates.include?(Date.current) ? Date.current : Date.yesterday
+    day = start
+    while drawn_dates.include?(day)
+      count += 1
+      day -= 1
+    end
+    count
+  end
 end

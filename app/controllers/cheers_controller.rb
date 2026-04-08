@@ -10,11 +10,17 @@ class CheersController < ApplicationController
     submission = Submission.find(params[:submission_id])
     cheer = current_user.cheers.find_or_initialize_by(submission: submission)
 
-    if cheer.count < Cheer::MAX_PER_USER
-      cheer.count += 1
-      cheer.save!
+    if cheer.count > 0
+      cheer.update!(count: 0)
+    else
+      cheer.update!(count: 1)
     end
 
-    redirect_back fallback_location: done_path
+    respond_to do |format|
+      format.json do
+        render json: { cheered: cheer.count > 0, total: submission.reload.total_cheers }
+      end
+      format.html { redirect_back fallback_location: done_path }
+    end
   end
 end

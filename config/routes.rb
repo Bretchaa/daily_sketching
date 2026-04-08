@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   get "/today", to: "challenges#today", as: :today_challenge
   get "/draw/:step", to: "drawings#show", as: :draw
   get "/done", to: "drawings#done", as: :done
+  get "/upload_status", to: "drawings#upload_status"
   get   "/password_reset",          to: "password_resets#new",    as: :new_password_reset
   post  "/password_reset",          to: "password_resets#create"
   get   "/password_reset/edit",     to: "password_resets#edit",   as: :edit_password_reset

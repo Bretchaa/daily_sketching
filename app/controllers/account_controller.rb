@@ -2,6 +2,12 @@ class AccountController < ApplicationController
   before_action :require_login
 
   def show
+    @submissions = current_user.submissions
+                               .joins(:image_attachment)
+                               .includes(:image_attachment, :challenge)
+                               .order(created_at: :desc)
+    @streak = current_user.streak
+    @tab = params[:tab] == "settings" ? "settings" : "drawings"
   end
 
   def destroy

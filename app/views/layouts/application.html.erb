@@ -13,19 +13,53 @@
     <%= yield :head %>
 
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" href="/icon.png?v=2" type="image/png">
+    <link rel="apple-touch-icon" href="/icon.png?v=2">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
 
   <body class="font-sans">
+  <script>
+    function toggleCheer(submissionId, btn) {
+      var csrf = document.querySelector('meta[name="csrf-token"]').content;
+      fetch("/cheers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf, "Accept": "application/json" },
+        body: JSON.stringify({ submission_id: submissionId })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        btn.style.background = data.cheered ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.15)";
+        var count = document.getElementById("cheer-count-" + submissionId);
+        count.textContent = data.total > 0 ? data.total : "";
+        count.style.color = data.cheered ? "white" : "rgba(255,255,255,0.7)";
+      });
+    }
+  </script>
 
-    <%# Top nav — minimal, floating — hidden during drawing session %>
+    <%# Top left — mascot linking to home — hidden during drawing session %>
+    <% unless (controller_name == 'drawings' && action_name == 'show') || (controller_name == 'home') %>
+      <div style="position: fixed; top: 0; left: 0; z-index: 50; padding: 0.5rem 1rem;">
+        <%= link_to root_path, style: "display: block; text-decoration: none;" do %>
+          <%= image_tag "mascotte_DS.png", style: "width: 3.5rem; height: 3.5rem; object-fit: contain;", alt: "Home" %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%# Top right — profile + streak — hidden during drawing session %>
     <nav style="position: fixed; top: 0; right: 0; z-index: 50; padding: 1rem 1.25rem;<%= ' display: none;' if controller_name == 'drawings' && action_name == 'show' %>">
       <% if current_user %>
-        <%= link_to account_path, style: "display: block; text-decoration: none;" do %>
+        <% nav_streak = current_user.streak %>
+        <%= link_to account_path, style: "display: flex; align-items: center; gap: 0.5rem; text-decoration: none;" do %>
+          <% if nav_streak > 0 %>
+            <div style="position: relative; width: 1.8rem; height: 2.25rem; flex-shrink: 0;">
+              <svg viewBox="0 0 36 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; filter: drop-shadow(0 1px 4px rgba(255,212,0,0.6));">
+                <path d="M24 2L4 26L15 26L11 46L32 22L21 22Z" fill="#FFD400"/>
+              </svg>
+              <span class="font-sans" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding-left: 0.1rem; font-size: <%= nav_streak >= 10 ? '0.5rem' : '0.65rem' %>; font-weight: 900; color: #1a1a1a; line-height: 1;"><%= nav_streak %></span>
+            </div>
+          <% end %>
           <% if current_user.avatar_url.present? %>
             <img src="<%= current_user.avatar_url %>" style="width: 2.25rem; height: 2.25rem; border-radius: 999px; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 1px 4px rgba(0,0,0,0.12);">
           <% else %>

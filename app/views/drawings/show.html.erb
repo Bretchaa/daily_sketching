@@ -1,3 +1,31 @@
+<% if @step == 1 %>
+<div id="countdown-overlay" style="position: fixed; inset: 0; z-index: 999; background: #0a0a0a; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem;">
+  <img src="<%= asset_path('mascotte_focus.png') %>" style="height: 14rem; width: auto;" alt="">
+  <div id="countdown-number" style="font-family: 'Itim', cursive; font-size: 8rem; color: white; line-height: 1; transition: opacity 0.3s ease;">5</div>
+  <div id="countdown-label" style="font-family: 'Inter', sans-serif; font-size: 1rem; color: rgba(255,255,255,0.4); letter-spacing: 0.15em; text-transform: uppercase;">Get ready</div>
+</div>
+<script>
+  (function() {
+    let count = 5;
+    const overlay = document.getElementById("countdown-overlay");
+    const number = document.getElementById("countdown-number");
+    const label = document.getElementById("countdown-label");
+    const tick = setInterval(function() {
+      count--;
+      if (count === 0) {
+        clearInterval(tick);
+        label.textContent = "Go!";
+        number.style.opacity = "0";
+        setTimeout(function() { overlay.style.display = "none"; }, 400);
+      } else {
+        number.style.opacity = "0";
+        setTimeout(function() { number.textContent = count; number.style.opacity = "1"; }, 300);
+      }
+    }, 1000);
+  })();
+</script>
+<% end %>
+
 <div style="position: fixed; inset: 0; background: #111; display: flex; align-items: center; justify-content: center;">
 
   <%# Pose image %>

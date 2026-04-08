@@ -5,6 +5,18 @@
   }
 </style>
 
+<div id="lightbox" onclick="this.style.display='none'" style="display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.92); align-items: center; justify-content: center; cursor: zoom-out;">
+  <img id="lightbox-img" style="max-width: 92vw; max-height: 92vh; object-fit: contain; border-radius: 0.5rem;">
+</div>
+<script>
+  function openLightbox(src) {
+    document.getElementById("lightbox-img").src = src;
+    document.getElementById("lightbox").style.display = "flex";
+  }
+  document.addEventListener("keydown", function(e) { if (e.key === "Escape") document.getElementById("lightbox").style.display = "none"; });
+</script>
+
+
 <div style="background: #f5f2ee; min-height: 100vh;">
 
   <%# Hero — split layout %>
@@ -17,10 +29,15 @@
 
       <% if current_user %>
         <h1 class="font-handwritten" style="font-size: 2.75rem; line-height: 1.15; color: #1a1a1a; margin-bottom: 0.75rem;">
-          Welcome back,<% if current_user.username.length > 10 %><br><% end %> <%= current_user.username %>
+          <% if @drew_today %>
+            Well done,<% if current_user.username.length > 10 %><br><% end %> <%= current_user.username %>!
+          <% else %>
+            Welcome back,<% if current_user.username.length > 10 %><br><% end %> <%= current_user.username %>
+          <% end %>
         </h1>
+
         <p class="font-sans" style="font-size: 1rem; color: #888; margin-bottom: 2rem; line-height: 1.6;">
-          Your daily challenge is waiting.
+          <%= @drew_today ? "Come back tomorrow for a new challenge." : "Your daily challenge is waiting." %>
         </p>
       <% else %>
         <h1 class="font-handwritten" style="font-size: 2.75rem; line-height: 1.15; color: #1a1a1a; margin-bottom: 0.75rem;">
@@ -31,42 +48,72 @@
         </p>
       <% end %>
 
-      <%= link_to "Start today's challenge", today_challenge_path,
-        class: "btn btn-black btn-lg rounded-2xl",
-        style: "width: fit-content; padding-left: 2rem; padding-right: 2rem;" %>
-
+      <% if @drew_today %>
+        <%= link_to "See today's drawings", done_path,
+          class: "btn btn-black btn-lg rounded-2xl",
+          style: "width: fit-content; padding-left: 2rem; padding-right: 2rem;" %>
+      <% else %>
+        <%= link_to "Start today's challenge", today_challenge_path,
+          class: "btn btn-black btn-lg rounded-2xl",
+          style: "width: fit-content; padding-left: 2rem; padding-right: 2rem;" %>
+      <% end %>
 
     </div>
 
     <%# Right — yesterday's gallery %>
     <% if @yesterday_submissions.any? %>
-      <div class="hero-right" style="flex: 1; padding: 2rem 2rem 2rem 1rem; display: flex; flex-direction: column; justify-content: center; min-width: 0; overflow: hidden;">
-        <p class="font-sans" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #bbb; margin-bottom: 0.75rem;">
-          <%= @gallery_date == Date.yesterday ? "Yesterday" : @gallery_date.strftime("%B %-d") %> · <%= @yesterday_count %> <%= @yesterday_count == 1 ? "person" : "people" %> drew<% if @yesterday_theme.present? %> · <%= @yesterday_theme.humanize %><% end %>
+      <div class="hero-right" style="flex: 1; padding: 2.5rem 1.5rem 2.5rem 0.75rem; display: flex; flex-direction: column; min-width: 0; overflow: hidden; height: 100vh;">
+        <p class="font-sans" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #bbb; margin-bottom: 0.4rem; flex-shrink: 0;">
+          <%= @gallery_date == Date.yesterday ? "Yesterday" : @gallery_date.strftime("%B %-d") %><% if @yesterday_theme.present? %> · <%= @yesterday_theme.humanize %><% end %>
         </p>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
-          <% @yesterday_submissions.first(5).each do |submission| %>
-            <div style="position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; aspect-ratio: 3/4; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-              <%= image_tag url_for(submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block;" %>
-              <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.4rem 0.6rem; background: linear-gradient(transparent, rgba(0,0,0,0.6));">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <p class="font-sans" style="font-size: 0.7rem; color: rgba(255,255,255,0.95); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= submission.user.username %></p>
-                  <% total = submission.total_cheers %>
-                  <% if total > 0 %>
-                    <div style="display: flex; align-items: center; gap: 0.2rem; flex-shrink: 0;">
-                      <span style="font-size: 0.7rem;">👏</span>
-                      <span class="font-sans" style="font-size: 0.65rem; color: white; font-weight: 600;"><%= total %></span>
-                    </div>
-                  <% end %>
-                </div>
+        <% total_count = @yesterday_submissions.size %>
+        <% if total_count == 1 %>
+          <% grid_cols = 1; grid_rows = 1 %>
+          <% grid_submissions = @yesterday_submissions %>
+          <% show_browse_all = false %>
+        <% elsif total_count == 2 %>
+          <% grid_cols = 2; grid_rows = 1 %>
+          <% grid_submissions = @yesterday_submissions %>
+          <% show_browse_all = false %>
+        <% elsif total_count == 3 %>
+          <% grid_cols = 2; grid_rows = 2 %>
+          <% grid_submissions = @yesterday_submissions %>
+          <% show_browse_all = true %>
+        <% elsif total_count == 4 %>
+          <% grid_cols = 2; grid_rows = 2 %>
+          <% grid_submissions = @yesterday_submissions %>
+          <% show_browse_all = false %>
+        <% else %>
+          <% grid_cols = 3; grid_rows = 2 %>
+          <% grid_submissions = @yesterday_submissions.first(5) %>
+          <% show_browse_all = true %>
+        <% end %>
+
+        <div style="flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(<%= grid_cols %>, 1fr); grid-template-rows: repeat(<%= grid_rows %>, 1fr); gap: 0.4rem;">
+          <% grid_submissions.each do |submission| %>
+            <% total = submission.total_cheers %>
+            <div style="position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; min-height: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+              <%= image_tag url_for(submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in;", onclick: "openLightbox(this.src)" %>
+              <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.3rem 0.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.6)); display: flex; align-items: center; justify-content: space-between;">
+                <p class="font-sans" style="font-size: 0.65rem; color: white; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= submission.user.username %></p>
+                <% if total > 0 %>
+                  <div style="display: flex; align-items: center; gap: 0.2rem; flex-shrink: 0;">
+                    <span style="font-size: 0.65rem;">👏</span>
+                    <span class="font-sans" style="font-size: 0.6rem; color: white; font-weight: 600;"><%= total %></span>
+                  </div>
+                <% end %>
               </div>
             </div>
           <% end %>
-          <% if @yesterday_submissions.size > 5 %>
-            <%= link_to gallery_path(date: @gallery_date.to_s), style: "text-decoration: none;" do %>
-              <div style="border-radius: 1rem; background: #e8e3db; aspect-ratio: 3/4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem; cursor: pointer;">
-                <span class="font-sans" style="font-size: 1.5rem; color: #aaa;">+<%= @yesterday_submissions.size - 5 %></span>
-                <span class="font-sans" style="font-size: 0.7rem; font-weight: 600; color: #bbb; text-align: center;">Browse all</span>
+
+          <% if show_browse_all %>
+            <%= link_to gallery_path(date: @gallery_date.to_s), style: "text-decoration: none; display: block; height: 100%;" do %>
+              <div style="border-radius: 1rem; background: #e8e3db; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem; cursor: pointer; height: 100%;">
+                <% remaining = [@yesterday_submissions.size - grid_submissions.size, 0].max %>
+                <% if remaining > 0 %>
+                  <span class="font-sans" style="font-size: 1.25rem; color: #aaa;">+<%= remaining %></span>
+                <% end %>
+                <span class="font-sans" style="font-size: 0.65rem; font-weight: 600; color: #bbb; text-align: center;">Browse all</span>
               </div>
             <% end %>
           <% end %>

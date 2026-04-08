@@ -6,6 +6,7 @@ class DrawingsController < ApplicationController
       others = @challenge.submissions.includes(:user, :cheers).where.not(id: @my_submission&.id).order(created_at: :desc)
       @submissions = [ @my_submission ].compact + others.to_a
       @my_submission&.association(:cheers)&.load_target
+      @streak = current_user ? current_user.streak : 0
       submission_ids = @submissions.map(&:id)
       if current_user
         @my_cheers = current_user.cheers.where(submission_id: submission_ids).index_by(&:submission_id)
@@ -15,6 +16,13 @@ class DrawingsController < ApplicationController
     else
       @submissions = []
     end
+  end
+
+  def upload_status
+    challenge = Challenge.find_by(date: Date.current)
+    uploaded = current_user && challenge &&
+               current_user.submissions.joins(:image_attachment).exists?(challenge: challenge)
+    render json: { uploaded: uploaded }
   end
 
   def show

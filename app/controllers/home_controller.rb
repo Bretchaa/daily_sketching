@@ -8,15 +8,24 @@ class HomeController < ApplicationController
     end
 
     if recent_challenge.is_a?(Challenge)
-      @yesterday_submissions = recent_challenge.submissions
-                                               .joins(:image_attachment)
-                                               .includes(:user, :cheers)
-                                               .order(created_at: :desc)
+      subs = recent_challenge.submissions
+                             .joins(:image_attachment)
+                             .includes(:user, :cheers)
+                             .order(created_at: :desc)
+                             .to_a
+      my_sub = current_user ? subs.find { |s| s.user_id == current_user.id } : nil
+      @yesterday_submissions = ([my_sub] + subs.reject { |s| s == my_sub }).compact
+      @my_yesterday_submission = my_sub
       @yesterday_theme = recent_challenge.theme
       @yesterday_count = @yesterday_submissions.size
       @gallery_date = recent_challenge.date
     else
       @yesterday_submissions = []
     end
+
+    @streak = current_user ? current_user.streak : 0
+    @drew_today = current_user && Challenge.find_by(date: Date.current)&.then { |c|
+      current_user.submissions.joins(:image_attachment).exists?(challenge: c)
+    }
   end
 end

@@ -1,0 +1,21 @@
+<% my_cheer = current_user ? current_user.cheers.find_by(submission: submission) : nil %>
+<% my_cheer_count = my_cheer&.count || 0 %>
+<% total = submission.total_cheers %>
+<% has_cheered = my_cheer_count > 0 %>
+
+<% if current_user %>
+  <button
+    id="cheer-btn-<%= submission.id %>"
+    onclick="toggleCheer(<%= submission.id %>, this)"
+    style="background: <%= has_cheered ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)' %>; border: none; border-radius: 999px; padding: 0.2rem 0.5rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;">
+    <span style="font-size: 0.75rem;">👏</span>
+    <span id="cheer-count-<%= submission.id %>" class="font-sans" style="font-size: 0.68rem; color: <%= has_cheered ? 'white' : 'rgba(255,255,255,0.7)' %>; font-weight: 700;"><%= total > 0 ? total : "" %></span>
+  </button>
+<% else %>
+  <% if total > 0 %>
+    <div style="display: flex; align-items: center; gap: 0.25rem; padding: 0.2rem 0.5rem;">
+      <span style="font-size: 0.75rem;">👏</span>
+      <span class="font-sans" style="font-size: 0.68rem; color: rgba(255,255,255,0.7); font-weight: 700;"><%= total %></span>
+    </div>
+  <% end %>
+<% end %>

@@ -1,66 +1,123 @@
-<div style="background: #f5f2ee; min-height: 100vh; padding: 4rem 1.5rem 6rem;">
-  <div style="max-width: 28rem; margin: 0 auto;">
+<%# Lightbox %>
+<div id="lightbox" onclick="this.style.display='none'" style="display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.92); align-items: center; justify-content: center; cursor: zoom-out;">
+  <img id="lightbox-img" style="max-width: 92vw; max-height: 92vh; object-fit: contain; border-radius: 0.5rem;">
+</div>
+<script>
+  function openLightbox(src) {
+    document.getElementById("lightbox-img").src = src;
+    document.getElementById("lightbox").style.display = "flex";
+  }
+  document.addEventListener("keydown", function(e) { if (e.key === "Escape") document.getElementById("lightbox").style.display = "none"; });
+</script>
 
-    <%= image_tag "logo_home.svg", class: "w-32", alt: "Daily Sketching", style: "margin-bottom: 2.5rem;" %>
+<div style="background: #f5f2ee; min-height: 100vh; padding-bottom: 6rem;">
 
-    <h1 class="font-handwritten" style="font-size: 2rem; color: #1a1a1a; margin-bottom: 2rem;">Account</h1>
+  <%# Profile header %>
+  <div style="padding: 5rem 1.5rem 2rem; text-align: center;">
 
-    <%# Profile %>
-    <div style="background: white; border-radius: 1.5rem; padding: 1.5rem; border: 1px solid #e2ddd8; margin-bottom: 1rem;">
-      <p class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 1rem;">Profile</p>
-      <div style="display: flex; flex-direction: column; gap: 0.6rem;">
-        <div style="display: flex; justify-content: space-between;">
-          <span class="font-sans" style="font-size: 0.875rem; color: #aaa;">Username</span>
-          <span class="font-sans" style="font-size: 0.875rem; color: #1a1a1a; font-weight: 600;"><%= current_user.username %></span>
+    <%# Avatar %>
+    <% if current_user.avatar_url.present? %>
+      <img src="<%= current_user.avatar_url %>" style="width: 5rem; height: 5rem; border-radius: 999px; border: 3px solid white; box-shadow: 0 2px 12px rgba(0,0,0,0.12); margin: 0 auto 1rem; display: block;">
+    <% else %>
+      <div style="width: 5rem; height: 5rem; border-radius: 999px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; box-shadow: 0 2px 12px rgba(0,0,0,0.12);">
+        <span class="font-sans" style="color: white; font-weight: 700; font-size: 1.5rem;"><%= current_user.username[0].upcase %></span>
+      </div>
+    <% end %>
+
+    <%# Username %>
+    <h1 class="font-handwritten" style="font-size: 1.75rem; color: #1a1a1a; margin-bottom: 1.25rem;"><%= current_user.username %></h1>
+
+    <%# Stats %>
+    <div style="display: flex; justify-content: center; gap: 2.5rem;">
+      <div style="text-align: center;">
+        <p class="font-sans" style="font-size: 1.25rem; font-weight: 700; color: #1a1a1a; line-height: 1;"><%= @submissions.size %></p>
+        <p class="font-sans" style="font-size: 0.7rem; color: #aaa; margin-top: 0.2rem;">drawings</p>
+      </div>
+      <div style="text-align: center;">
+        <div style="display: flex; align-items: center; gap: 0.3rem; justify-content: center;">
+          <svg viewBox="0 0 36 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 1rem; height: 1.3rem; filter: drop-shadow(0 2px 6px rgba(255,212,0,0.5));">
+            <path d="M24 2L4 26L15 26L11 46L32 22L21 22Z" fill="#FFD400"/>
+          </svg>
+          <p class="font-sans" style="font-size: 1.25rem; font-weight: 700; color: #1a1a1a; line-height: 1;"><%= @streak %></p>
         </div>
-        <div style="display: flex; justify-content: space-between;">
-          <span class="font-sans" style="font-size: 0.875rem; color: #aaa;">Email</span>
-          <span class="font-sans" style="font-size: 0.875rem; color: #1a1a1a;"><%= current_user.email %></span>
-        </div>
-        <div style="display: flex; justify-content: space-between;">
-          <span class="font-sans" style="font-size: 0.875rem; color: #aaa;">Joined</span>
-          <span class="font-sans" style="font-size: 0.875rem; color: #1a1a1a;"><%= current_user.created_at.strftime("%B %Y") %></span>
-        </div>
+        <p class="font-sans" style="font-size: 0.7rem; color: #aaa; margin-top: 0.2rem;">day streak</p>
       </div>
     </div>
+  </div>
 
-    <%# Activity %>
-    <div style="background: white; border-radius: 1.5rem; padding: 1.5rem; border: 1px solid #e2ddd8; margin-bottom: 1rem;">
-      <p class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 1rem;">Activity</p>
-      <div style="display: flex; flex-direction: column; gap: 0.6rem;">
-        <div style="display: flex; justify-content: space-between;">
-          <span class="font-sans" style="font-size: 0.875rem; color: #aaa;">Challenges completed</span>
-          <span class="font-sans" style="font-size: 0.875rem; color: #1a1a1a; font-weight: 600;"><%= current_user.submissions.count %></span>
+  <%# Tab nav %>
+  <div style="display: flex; justify-content: center; gap: 0; border-bottom: 1px solid #e2ddd8; margin-bottom: 2rem;">
+    <%= link_to account_path, style: "text-decoration: none; padding: 0.6rem 1.5rem; font-size: 0.8rem; font-weight: 700; color: #{@tab == 'drawings' ? '#1a1a1a' : '#bbb'}; border-bottom: 2px solid #{@tab == 'drawings' ? '#1a1a1a' : 'transparent'}; margin-bottom: -1px;" do %>
+      Drawings
+    <% end %>
+    <%= link_to account_path(tab: "settings"), style: "text-decoration: none; padding: 0.6rem 1.5rem; font-size: 0.8rem; font-weight: 700; color: #{@tab == 'settings' ? '#1a1a1a' : '#bbb'}; border-bottom: 2px solid #{@tab == 'settings' ? '#1a1a1a' : 'transparent'}; margin-bottom: -1px;" do %>
+      Settings
+    <% end %>
+  </div>
+
+  <div style="max-width: 52rem; margin: 0 auto; padding: 0 1.5rem;">
+
+    <% if @tab == "drawings" %>
+
+      <% if @submissions.any? %>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+          <% @submissions.each do |submission| %>
+            <div style="position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; aspect-ratio: 3/4; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+              <%= image_tag url_for(submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in;", onclick: "openLightbox(this.src)" %>
+              <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.4rem 0.6rem; background: linear-gradient(transparent, rgba(0,0,0,0.6));">
+                <p class="font-sans" style="font-size: 0.65rem; color: rgba(255,255,255,0.85); font-weight: 500;">
+                  <%= submission.created_at.strftime("%b %-d") %><% if submission.challenge&.theme.present? %> · <%= submission.challenge.theme.humanize %><% end %>
+                </p>
+              </div>
+            </div>
+          <% end %>
         </div>
-        <div style="display: flex; justify-content: space-between;">
-          <span class="font-sans" style="font-size: 0.875rem; color: #aaa;">Drawings shared</span>
-          <span class="font-sans" style="font-size: 0.875rem; color: #1a1a1a; font-weight: 600;"><%= current_user.submissions.joins(:image_attachment).count %></span>
+      <% else %>
+        <p class="font-handwritten" style="font-size: 1.1rem; color: #ccc; text-align: center; padding: 4rem 0;">No drawings yet —<br>complete today's challenge!</p>
+      <% end %>
+
+    <% else %>
+
+      <%# Settings %>
+      <div style="max-width: 28rem; margin: 0 auto;">
+
+        <%# Profile info %>
+        <div style="background: white; border-radius: 1.5rem; padding: 1.5rem; border: 1px solid #e2ddd8; margin-bottom: 1rem;">
+          <p class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 1rem;">Profile</p>
+          <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <div style="display: flex; justify-content: space-between;">
+              <span class="font-sans" style="font-size: 0.875rem; color: #aaa;">Username</span>
+              <span class="font-sans" style="font-size: 0.875rem; color: #1a1a1a; font-weight: 600;"><%= current_user.username %></span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span class="font-sans" style="font-size: 0.875rem; color: #aaa;">Email</span>
+              <span class="font-sans" style="font-size: 0.875rem; color: #1a1a1a;"><%= current_user.email %></span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span class="font-sans" style="font-size: 0.875rem; color: #aaa;">Joined</span>
+              <span class="font-sans" style="font-size: 0.875rem; color: #1a1a1a;"><%= current_user.created_at.strftime("%B %Y") %></span>
+            </div>
+          </div>
         </div>
-        <div style="display: flex; justify-content: space-between;">
-          <span class="font-sans" style="font-size: 0.875rem; color: #aaa;">Cheers given</span>
-          <span class="font-sans" style="font-size: 0.875rem; color: #1a1a1a; font-weight: 600;"><%= current_user.cheers.sum(:count) %></span>
+
+        <%# Sign out %>
+        <div style="background: white; border-radius: 1.5rem; padding: 1.5rem; border: 1px solid #e2ddd8; margin-bottom: 1rem;">
+          <p class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 1rem;">Session</p>
+          <%= link_to "Sign out", sign_out_path, data: { turbo_method: :delete }, style: "font-size: 0.875rem; color: #1a1a1a; font-weight: 600; text-decoration: none;" %>
         </div>
+
+        <%# Danger zone %>
+        <div style="background: white; border-radius: 1.5rem; padding: 1.5rem; border: 1px solid #e2ddd8;">
+          <p class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 0.5rem;">Danger zone</p>
+          <p class="font-sans" style="font-size: 0.8rem; color: #bbb; margin-bottom: 1rem; line-height: 1.5;">Permanently deletes your account, all your drawings, and your data. This cannot be undone.</p>
+          <%= button_to "Delete my account", account_path, method: :delete,
+                data: { confirm: "Are you sure? This will permanently delete your account and all your drawings." },
+                style: "background: none; border: none; padding: 0; font-size: 0.875rem; color: #e57373; font-weight: 600; cursor: pointer; text-decoration: underline;" %>
+        </div>
+
       </div>
-    </div>
 
-    <%# Sign out %>
-    <div style="background: white; border-radius: 1.5rem; padding: 1.5rem; border: 1px solid #e2ddd8; margin-bottom: 1rem;">
-      <p class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 1rem;">Session</p>
-      <%= link_to "Sign out", sign_out_path, data: { turbo_method: :delete }, style: "font-size: 0.875rem; color: #1a1a1a; font-weight: 600; text-decoration: none;" %>
-    </div>
-
-    <%# Danger zone %>
-    <div style="background: white; border-radius: 1.5rem; padding: 1.5rem; border: 1px solid #e2ddd8;">
-      <p class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 0.5rem;">Danger zone</p>
-      <p class="font-sans" style="font-size: 0.8rem; color: #bbb; margin-bottom: 1rem; line-height: 1.5;">Permanently deletes your account, all your drawings, and your data. This cannot be undone.</p>
-      <%= button_to "Delete my account", account_path, method: :delete,
-            data: { confirm: "Are you sure? This will permanently delete your account and all your drawings." },
-            style: "background: none; border: none; padding: 0; font-size: 0.875rem; color: #e57373; font-weight: 600; cursor: pointer; text-decoration: underline;" %>
-    </div>
-
-    <div style="margin-top: 2rem; text-align: center;">
-      <%= link_to "← Back to home", root_path, class: "font-sans", style: "font-size: 0.82rem; color: #bbb; text-decoration: none;" %>
-    </div>
+    <% end %>
 
   </div>
 </div>
