@@ -14,7 +14,7 @@ class HomeController < ApplicationController
                              .order(created_at: :desc)
                              .to_a
       my_sub = current_user ? subs.find { |s| s.user_id == current_user.id } : nil
-      @yesterday_submissions = ([my_sub] + subs.reject { |s| s == my_sub }).compact
+      @yesterday_submissions = ([ my_sub ] + subs.reject { |s| s == my_sub }).compact
       @my_yesterday_submission = my_sub
       @yesterday_theme = recent_challenge.theme
       @yesterday_count = @yesterday_submissions.size
