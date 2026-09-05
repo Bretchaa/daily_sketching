@@ -1,0 +1,4 @@
+gesture_figure:
+  theme: figures
+  path: poses/figures/test_gesture.jpg
+  tags: gesture,figure

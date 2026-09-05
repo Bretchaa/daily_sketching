@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_28_230422) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_14_193303) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -60,6 +60,16 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_28_230422) do
     t.index ["user_id"], name: "index_cheers_on_user_id"
   end
 
+  create_table "pose_images", force: :cascade do |t|
+    t.string "theme", null: false
+    t.string "path", null: false
+    t.string "tags", default: ""
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["path"], name: "index_pose_images_on_path", unique: true
+    t.index ["theme"], name: "index_pose_images_on_theme"
+  end
+
   create_table "poses", force: :cascade do |t|
     t.integer "challenge_id", null: false
     t.string "image_url"
@@ -75,7 +85,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_28_230422) do
     t.integer "challenge_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "note"
     t.index ["challenge_id"], name: "index_submissions_on_challenge_id"
+    t.index ["user_id", "challenge_id"], name: "index_submissions_on_user_id_and_challenge_id", unique: true
     t.index ["user_id"], name: "index_submissions_on_user_id"
   end
 
@@ -92,6 +104,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_28_230422) do
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.string "upload_token"
+    t.string "unsubscribe_token"
+    t.boolean "email_notifications", default: true, null: false
+    t.datetime "first_followup_sent_at"
+    t.datetime "reengagement_sent_at"
+    t.datetime "streak_break_sent_at"
+    t.index ["unsubscribe_token"], name: "index_users_on_unsubscribe_token", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
