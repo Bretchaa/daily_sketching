@@ -1,0 +1,208 @@
+<div style="background: #f5f2ee; min-height: 100vh; padding: 2rem 1.5rem 5rem;">
+  <div style="max-width: 36rem; margin: 0 auto;">
+
+    <%= render "admin/tabs", active_tab: :images %>
+
+    <h2 class="font-handwritten" style="font-size: 1.5rem; color: #1a1a1a; margin-bottom: 1.75rem;">Upload images</h2>
+
+    <% if flash[:error] %>
+      <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.75rem; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.85rem; color: #dc2626;" class="font-sans"><%= flash[:error] %></div>
+    <% end %>
+
+    <%# data-turbo="false" forces a normal browser POST — Turbo has known issues with multipart file uploads %>
+    <%= form_with url: admin_images_path, method: :post, multipart: true, data: { turbo: false } do |f| %>
+
+      <%# Hidden file input — populated by drop zone or click %>
+      <input type="file" id="file-input" name="image_files[]" accept="image/*" multiple style="display: none;">
+
+      <%# Drop zone %>
+      <div id="drop-zone"
+           onclick="document.getElementById('file-input').click()"
+           style="border: 2px dashed #c8c2bb; border-radius: 1.25rem; padding: 2.5rem 1.5rem; text-align: center; cursor: pointer; background: white; transition: border-color 0.15s ease, background 0.15s ease; margin-bottom: 1.5rem; user-select: none;">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">&#128444;</div>
+        <p class="font-sans" style="font-size: 0.95rem; font-weight: 600; color: #1a1a1a; margin-bottom: 0.25rem;">Drop images here</p>
+        <p class="font-sans" style="font-size: 0.8rem; color: #aaa;">or click to browse — select as many as you want</p>
+      </div>
+
+      <%# Preview grid %>
+      <div id="preview-grid" style="display: none; margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem;">
+          <p class="font-sans" style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa;"><span id="file-count">0</span> files selected</p>
+          <button type="button" onclick="clearFiles()" style="font-family: inherit; font-size: 0.75rem; font-weight: 600; color: #cc3333; background: none; border: none; padding: 0; cursor: pointer;">Clear all</button>
+        </div>
+        <div id="preview-items" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;"></div>
+      </div>
+
+      <%# Category %>
+      <div style="margin-bottom: 1.5rem;">
+        <label class="font-sans" style="display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 0.5rem;">Category</label>
+        <select name="pose_image[theme]" id="theme-select" onchange="refreshSuggestions()"
+                style="font-family: inherit; font-size: 0.9rem; padding: 0.6rem 0.85rem; border: 1.5px solid #e2ddd8; border-radius: 0.75rem; background: white; color: #1a1a1a; width: 100%;">
+          <% PoseImage::THEMES.each do |t| %>
+            <option value="<%= t %>"><%= t.tr("_", " ").capitalize %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <%# Tags %>
+      <div style="margin-bottom: 2rem;">
+        <label class="font-sans" style="display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 0.5rem;">Tags <span style="font-weight: 400;">(comma-separated)</span></label>
+        <input type="text" id="tag-input" name="pose_image[tags]" placeholder="e.g. gesture, woman, dog"
+               style="font-family: inherit; font-size: 0.9rem; padding: 0.6rem 0.85rem; border: 1.5px solid #e2ddd8; border-radius: 0.75rem; background: white; color: #1a1a1a; width: 100%; box-sizing: border-box;" oninput="syncChips()">
+        <div id="tag-suggestions" style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem;"></div>
+      </div>
+
+      <button type="submit" id="submit-btn" class="btn btn-black btn-lg w-full rounded-2xl font-sans">
+        Upload all
+      </button>
+      <%= link_to "Cancel", admin_images_path, style: "display: block; text-align: center; margin-top: 0.85rem; font-size: 0.85rem; color: #aaa; text-decoration: none;", class: "font-sans" %>
+
+    <% end %>
+  </div>
+</div>
+
+<script>
+  var TAGS_BY_THEME = <%= PoseImage::TAGS_BY_THEME.to_json.html_safe %>;
+  var fileList      = [];   // single source of truth for all selected files
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+
+  function addFiles(newFiles) {
+    newFiles.forEach(function(f) {
+      var key = f.name + f.size;
+      var exists = fileList.some(function(x) { return x.name + x.size === key; });
+      if (!exists) fileList.push(f);
+    });
+    renderPreviews();
+  }
+
+  function renderPreviews() {
+    var grid  = document.getElementById("preview-grid");
+    var items = document.getElementById("preview-items");
+    var count = document.getElementById("file-count");
+
+    count.textContent  = fileList.length;
+    grid.style.display = fileList.length > 0 ? "block" : "none";
+
+    try {
+      var dt = new DataTransfer();
+      fileList.forEach(function(f) { dt.items.add(f); });
+      document.getElementById("file-input").files = dt.files;
+    } catch(e) {}
+
+    items.innerHTML = "";
+    fileList.forEach(function(file, i) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var div = document.createElement("div");
+        div.style.cssText = "position:relative;border-radius:0.5rem;overflow:hidden;background:#ede8e2;aspect-ratio:1;";
+        div.innerHTML =
+          '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;object-position:top;">' +
+          '<button type="button" onclick="rotateFile(' + i + ')" title="Rotate 90°" ' +
+            'style="position:absolute;top:0.3rem;right:0.3rem;width:1.6rem;height:1.6rem;border-radius:50%;' +
+            'background:rgba(0,0,0,0.5);border:none;color:white;font-size:0.85rem;cursor:pointer;' +
+            'display:flex;align-items:center;justify-content:center;line-height:1;">↻</button>' +
+          '<p style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.45);color:white;' +
+            'font-size:0.55rem;padding:2px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;' +
+            'font-family:inherit;">' + file.name + '</p>';
+        items.appendChild(div);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function rotateFile(index) {
+    var file = fileList[index];
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement("canvas");
+        canvas.width  = img.height;
+        canvas.height = img.width;
+        var ctx = canvas.getContext("2d");
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(Math.PI / 2);
+        ctx.drawImage(img, -img.width / 2, -img.height / 2);
+        canvas.toBlob(function(blob) {
+          fileList[index] = new File([blob], file.name, { type: file.type });
+          renderPreviews();
+        }, file.type);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearFiles() {
+    fileList = [];
+    document.getElementById("file-input").value = "";
+    renderPreviews();
+  }
+
+  // ── Drop zone ──────────────────────────────────────────────────────────────
+
+  var dropZone = document.getElementById("drop-zone");
+
+  dropZone.addEventListener("dragover", function(e) {
+    e.preventDefault();
+    dropZone.style.borderColor = "#1a1a1a";
+    dropZone.style.background  = "#f9f7f4";
+  });
+
+  ["dragleave", "dragend"].forEach(function(evt) {
+    dropZone.addEventListener(evt, function() {
+      dropZone.style.borderColor = "#c8c2bb";
+      dropZone.style.background  = "white";
+    });
+  });
+
+  dropZone.addEventListener("drop", function(e) {
+    e.preventDefault();
+    dropZone.style.borderColor = "#c8c2bb";
+    dropZone.style.background  = "white";
+    addFiles(Array.from(e.dataTransfer.files).filter(function(f) {
+      return f.type.startsWith("image/");
+    }));
+  });
+
+  // ── Native file picker ─────────────────────────────────────────────────────
+
+  document.getElementById("file-input").addEventListener("change", function(e) {
+    addFiles(Array.from(e.target.files));
+  });
+
+  // ── Tags ───────────────────────────────────────────────────────────────────
+
+  function currentTags() {
+    return document.getElementById("tag-input").value
+      .split(",").map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
+  }
+
+  function refreshSuggestions() {
+    var theme = document.getElementById("theme-select").value;
+    var suggestions = TAGS_BY_THEME[theme] || [];
+    var active = currentTags();
+    var container = document.getElementById("tag-suggestions");
+    container.innerHTML = suggestions.map(function(tag) {
+      var on = active.includes(tag);
+      return '<button type="button" onclick="toggleTag(\'' + tag + '\')" ' +
+        'style="font-family:inherit;font-size:0.8rem;font-weight:600;padding:0.25rem 0.75rem;' +
+        'border-radius:999px;border:1.5px solid ' + (on ? '#1a1a1a' : '#e2ddd8') + ';' +
+        'background:' + (on ? '#1a1a1a' : 'white') + ';color:' + (on ? 'white' : '#888') + ';cursor:pointer;">' +
+        tag + '</button>';
+    }).join("");
+  }
+
+  function toggleTag(tag) {
+    var tags = currentTags();
+    var idx = tags.indexOf(tag);
+    if (idx >= 0) { tags.splice(idx, 1); } else { tags.push(tag); }
+    document.getElementById("tag-input").value = tags.join(", ");
+    refreshSuggestions();
+  }
+
+  function syncChips() { refreshSuggestions(); }
+
+  refreshSuggestions();
+</script>

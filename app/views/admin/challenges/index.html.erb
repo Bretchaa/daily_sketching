@@ -1,0 +1,113 @@
+<div style="background: #f5f2ee; min-height: 100vh; padding: 2rem 1.5rem 5rem;">
+  <div style="max-width: 56rem; margin: 0 auto;">
+
+    <%= render "admin/tabs", active_tab: :challenges %>
+
+    <%# Upcoming challenges %>
+    <h2 class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 0.75rem;">Upcoming challenges</h2>
+    <div style="background: white; border-radius: 1.5rem; border: 1px solid #e2ddd8; overflow: hidden; margin-bottom: 2.5rem;">
+      <% if @upcoming.any? %>
+        <% @upcoming.each do |challenge| %>
+          <% config = @theme_configs.find { |t| t["theme"] == challenge.theme } %>
+          <div style="display: grid; grid-template-columns: 7rem 1fr auto; align-items: center; gap: 1rem; padding: 0.75rem 1.25rem; border-bottom: 1px solid #f9f7f4;">
+            <div>
+              <p class="font-sans" style="font-size: 0.85rem; font-weight: 600; color: #1a1a1a;">
+                <%= challenge.date == Date.current ? "Today" : challenge.date.strftime("%a %b %d") %>
+              </p>
+              <% if challenge.date == Date.current %>
+                <p class="font-sans" style="font-size: 0.7rem; color: #aaa;"><%= challenge.date.strftime("%b %d") %></p>
+              <% end %>
+            </div>
+            <div>
+              <p class="font-sans" style="font-size: 0.85rem; font-weight: 600; color: #1a1a1a;"><%= config&.dig("display_name") || challenge.theme %></p>
+              <p class="font-sans" style="font-size: 0.75rem; color: #aaa; margin-top: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><%= challenge.focus %></p>
+            </div>
+            <div style="display: flex; gap: 0.3rem; flex-wrap: wrap; justify-content: flex-end;">
+              <% if config %>
+                <% image_theme = config["image_theme"] || config["theme"] %>
+                <span style="font-size: 0.65rem; background: #f0ece6; color: #666; padding: 0.15rem 0.5rem; border-radius: 999px;" class="font-sans"><%= image_theme.tr("_", " ") %></span>
+                <% Array(config["filter_tags"]).each do |tag| %>
+                  <span style="font-size: 0.65rem; background: #e8f4e8; color: #2d6a2d; padding: 0.15rem 0.5rem; border-radius: 999px;" class="font-sans"><%= tag %></span>
+                <% end %>
+                <% if config["no_image"] %>
+                  <span style="font-size: 0.65rem; background: #f0f0f0; color: #888; padding: 0.15rem 0.5rem; border-radius: 999px;" class="font-sans">no image</span>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="font-sans" style="padding: 1.25rem; font-size: 0.85rem; color: #aaa;">No upcoming challenges scheduled.</p>
+      <% end %>
+    </div>
+
+    <%# Challenge types %>
+    <h2 class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 0.75rem;">All challenge types</h2>
+    <div style="background: white; border-radius: 1.5rem; border: 1px solid #e2ddd8; overflow: hidden;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="border-bottom: 1px solid #f0ece6;">
+            <th class="font-sans" style="padding: 0.75rem 1.25rem; font-size: 0.72rem; color: #aaa; font-weight: 600;"></th>
+            <th class="font-sans" style="text-align: left; padding: 0.75rem 1.25rem; font-size: 0.72rem; color: #aaa; font-weight: 600;">Challenge</th>
+            <th class="font-sans" style="text-align: left; padding: 0.75rem 1.25rem; font-size: 0.72rem; color: #aaa; font-weight: 600;">Category</th>
+            <th class="font-sans" style="text-align: left; padding: 0.75rem 1.25rem; font-size: 0.72rem; color: #aaa; font-weight: 600;">Tags</th>
+            <th class="font-sans" style="text-align: left; padding: 0.75rem 1.25rem; font-size: 0.72rem; color: #aaa; font-weight: 600;">Cadence</th>
+            <th class="font-sans" style="text-align: right; padding: 0.75rem 1.25rem; font-size: 0.72rem; color: #aaa; font-weight: 600;">Weight</th>
+            <th class="font-sans" style="text-align: right; padding: 0.75rem 1.25rem; font-size: 0.72rem; color: #aaa; font-weight: 600;">Cooldown</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @theme_configs.each do |t| %>
+            <tr style="border-bottom: 1px solid #f9f7f4;">
+              <td style="padding: 0.5rem 0 0.5rem 1.25rem; width: 3.5rem;">
+                <% if t["example_image_url"].present? %>
+                  <div style="width:3rem;height:3rem;border-radius:0.5rem;overflow:hidden;background:#ede8e2;">
+                    <img src="<%= t["example_image_url"] %>" style="width:100%;height:100%;object-fit:cover;object-position:top;" loading="lazy">
+                  </div>
+                <% else %>
+                  <div style="width:3rem;height:3rem;border-radius:0.5rem;background:#f0ece6;display:flex;align-items:center;justify-content:center;">
+                    <span style="font-size:1.2rem;">✏️</span>
+                  </div>
+                <% end %>
+              </td>
+              <td class="font-sans" style="padding: 0.65rem 1.25rem; font-size: 0.85rem; font-weight: 600; color: #1a1a1a;"><%= t["display_name"] %></td>
+              <td style="padding: 0.65rem 1.25rem;">
+                <% if t["no_image"] %>
+                  <span style="font-size: 0.75rem; color: #aaa;" class="font-sans">no image</span>
+                <% else %>
+                  <span style="font-size: 0.75rem; background: #f0ece6; color: #666; padding: 0.15rem 0.5rem; border-radius: 999px;" class="font-sans"><%= (t["image_theme"] || t["theme"]).tr("_", " ") %></span>
+                <% end %>
+              </td>
+              <td style="padding: 0.65rem 1.25rem;">
+                <div style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
+                  <% Array(t["filter_tags"]).each do |tag| %>
+                    <span style="font-size: 0.75rem; background: #e8f4e8; color: #2d6a2d; padding: 0.15rem 0.5rem; border-radius: 999px;" class="font-sans"><%= tag %></span>
+                  <% end %>
+                  <% if Array(t["filter_tags"]).empty? && !t["no_image"] %>
+                    <span style="font-size: 0.75rem; color: #ccc;" class="font-sans">—</span>
+                  <% end %>
+                </div>
+              </td>
+              <td style="padding: 0.65rem 1.25rem;">
+                <% stages = Array(t["stages"]) %>
+                <% if stages.any? %>
+                  <div style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
+                    <% stages.each do |s| %>
+                      <% mins = s["duration_seconds"].to_i / 60 %>
+                      <span style="font-size: 0.75rem; background: #f0f0f0; color: #555; padding: 0.15rem 0.5rem; border-radius: 999px; white-space: nowrap;" class="font-sans"><%= s["count"] %> × <%= mins %> min</span>
+                    <% end %>
+                  </div>
+                <% else %>
+                  <span style="font-size: 0.75rem; color: #ccc;" class="font-sans">—</span>
+                <% end %>
+              </td>
+              <td class="font-sans" style="text-align: right; padding: 0.65rem 1.25rem; font-size: 0.85rem; color: #444;"><%= t["weight"] %></td>
+              <td class="font-sans" style="text-align: right; padding: 0.65rem 1.25rem; font-size: 0.85rem; color: #444;"><%= t["cooldown_days"] %>d</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>

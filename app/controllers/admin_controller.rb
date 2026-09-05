@@ -33,6 +33,13 @@ class AdminController < ApplicationController
                                     .includes(:user)
                                     .first
 
+    # All users
+    @all_users = User.order(created_at: :desc)
+
+    # Today's participants
+    today_challenge = Challenge.find_by(date: Date.current)
+    @today_participants = today_challenge ? today_challenge.submissions.includes(:user, :image_attachment).order(:created_at) : []
+
     # Daily pulse — last 14 days
     @daily_stats = (13.downto(0)).map do |i|
       date = Date.current - i.days
@@ -43,6 +50,60 @@ class AdminController < ApplicationController
         new_users: User.where(created_at: date.all_day).count
       }
     end
+  end
+
+  def daily_report
+    AdminMailer.daily_report.deliver_now
+    render plain: "Report sent."
+  end
+
+  def generate_challenges
+    days = 30
+    config = YAML.load_file(Rails.root.join("config", "challenge_themes.yml"))
+    themes = config["challenges"]
+    cooldowns = themes.each_with_object({}) { |t, h| h[t["theme"]] = t["cooldown_days"] || 1 }
+    pool = themes.flat_map { |t| Array.new(t["weight"], t["theme"]) }
+
+    generated = 0
+    skipped = 0
+
+    recent_history = Challenge.where(date: (Date.current - 14)...Date.current)
+                              .order(:date).pluck(:date, :theme).to_h
+
+    (0...days).each do |offset|
+      date = Date.current + offset
+
+      if Challenge.exists?(date: date)
+        recent_history[date] = Challenge.find_by(date: date).theme
+        skipped += 1
+        next
+      end
+
+      on_cooldown = themes.filter_map { |t|
+        cooldown = cooldowns[t["theme"]]
+        t["theme"] if (1..cooldown).any? { |d| recent_history[date - d] == t["theme"] }
+      }
+
+      seed = Zlib.crc32("challenge-#{date.iso8601}")
+      rng = Random.new(seed)
+      available_pool = pool.reject { |t| on_cooldown.include?(t) }
+      available_pool = pool if available_pool.empty?
+      theme = available_pool.sample(random: rng)
+      theme_config = themes.find { |t| t["theme"] == theme }
+
+      Challenge.create!(
+        date: date,
+        theme: theme,
+        focus: theme_config["focus"],
+        tip: theme_config["tip"],
+        example_image_url: theme_config["example_image_url"]
+      )
+
+      recent_history[date] = theme
+      generated += 1
+    end
+
+    render plain: "Done. #{generated} challenges created, #{skipped} already existed."
   end
 
   private

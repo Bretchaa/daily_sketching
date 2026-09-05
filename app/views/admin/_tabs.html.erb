@@ -1,0 +1,14 @@
+<div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 2rem;">
+  <div>
+    <h1 class="font-handwritten" style="font-size: 2rem; color: #1a1a1a; margin-bottom: 0.6rem;">Admin</h1>
+    <div style="display: flex; gap: 0.25rem;">
+      <%= link_to "Dashboard", admin_path,
+            style: "font-family: inherit; font-size: 0.85rem; font-weight: 600; padding: 0.35rem 0.9rem; border-radius: 999px; text-decoration: none; #{active_tab == :dashboard ? 'background:#1a1a1a; color:white;' : 'color:#888;'}" %>
+      <%= link_to "Reference images", admin_images_path,
+            style: "font-family: inherit; font-size: 0.85rem; font-weight: 600; padding: 0.35rem 0.9rem; border-radius: 999px; text-decoration: none; #{active_tab == :images ? 'background:#1a1a1a; color:white;' : 'color:#888;'}" %>
+      <%= link_to "Challenges", admin_challenges_path,
+            style: "font-family: inherit; font-size: 0.85rem; font-weight: 600; padding: 0.35rem 0.9rem; border-radius: 999px; text-decoration: none; #{active_tab == :challenges ? 'background:#1a1a1a; color:white;' : 'color:#888;'}" %>
+    </div>
+  </div>
+  <%= yield :header_action if content_for?(:header_action) %>
+</div>

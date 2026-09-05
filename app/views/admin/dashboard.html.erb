@@ -1,10 +1,8 @@
 <div style="background: #f5f2ee; min-height: 100vh; padding: 2rem 1.5rem 5rem;">
   <div style="max-width: 56rem; margin: 0 auto;">
 
-    <div style="margin-bottom: 2rem;">
-      <h1 class="font-handwritten" style="font-size: 2rem; color: #1a1a1a;">Admin Dashboard</h1>
-      <p class="font-sans" style="font-size: 0.85rem; color: #aaa;"><%= Date.current.strftime("%B %d, %Y") %></p>
-    </div>
+    <%= render "admin/tabs", active_tab: :dashboard %>
+    <p class="font-sans" style="font-size: 0.85rem; color: #aaa; margin-top: -1.25rem; margin-bottom: 2rem;"><%= Date.current.strftime("%B %d, %Y") %></p>
 
     <%# Daily pulse %>
     <h2 class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 0.75rem;">Today</h2>
@@ -12,6 +10,25 @@
       <%= render_stat "New users", @new_users_today %>
       <%= render_stat "Challenges done", @uploads_today %>
       <%= render_stat "Drawings uploaded", @uploads_today %>
+    </div>
+
+    <%# Today's participants %>
+    <h2 class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 0.75rem;">Who drew today</h2>
+    <div style="background: white; border-radius: 1.5rem; border: 1px solid #e2ddd8; overflow: hidden; margin-bottom: 2rem;">
+      <% if @today_participants.any? %>
+        <% @today_participants.each do |s| %>
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 1.25rem; border-bottom: 1px solid #f9f7f4;">
+            <span class="font-sans" style="font-size: 0.85rem; color: #1a1a1a; font-weight: 500;"><%= s.user.username %></span>
+            <% if s.image.attached? %>
+              <span style="font-size: 0.75rem; color: #16a34a; font-weight: 600;">✓ uploaded</span>
+            <% else %>
+              <span style="font-size: 0.75rem; color: #aaa;">drew, no upload</span>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="font-sans" style="padding: 1.25rem; font-size: 0.85rem; color: #aaa;">No one yet today.</p>
+      <% end %>
     </div>
 
     <%# Acquisition %>
@@ -78,6 +95,23 @@
           <% end %>
         </tbody>
       </table>
+    </div>
+
+    <%# All users %>
+    <h2 class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 0.75rem; margin-top: 2rem;">All users (<%= @all_users.count %>)</h2>
+    <div style="background: white; border-radius: 1.5rem; border: 1px solid #e2ddd8; overflow: hidden;">
+      <% @all_users.each do |user| %>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 1.25rem; border-bottom: 1px solid #f9f7f4;">
+          <div>
+            <span class="font-sans" style="font-size: 0.85rem; color: #1a1a1a; font-weight: 500;"><%= user.username || "—" %></span>
+            <span class="font-sans" style="font-size: 0.8rem; color: #aaa; margin-left: 0.5rem;"><%= user.email %></span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <span class="font-sans" style="font-size: 0.75rem; color: #aaa;"><%= user.google? ? "Google" : "Email" %></span>
+            <span class="font-sans" style="font-size: 0.75rem; color: #aaa;"><%= user.created_at.strftime("%b %d") %></span>
+          </div>
+        </div>
+      <% end %>
     </div>
 
   </div>

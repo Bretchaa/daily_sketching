@@ -1,0 +1,76 @@
+<div style="background: #f5f2ee; min-height: 100vh; padding: 2rem 1.5rem 5rem;">
+  <div style="max-width: 36rem; margin: 0 auto;">
+
+    <%= render "admin/tabs", active_tab: :images %>
+
+    <h2 class="font-handwritten" style="font-size: 1.5rem; color: #1a1a1a; margin-bottom: 0.5rem;">Edit image</h2>
+    <p class="font-sans" style="font-size: 0.8rem; color: #aaa; margin-bottom: 1.75rem;"><%= @image.filename %></p>
+
+    <div style="background: #ede8e2; border-radius: 1rem; overflow: hidden; height: 12rem; margin-bottom: 1.75rem;">
+      <img src="<%= @image.url %>" style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
+    </div>
+
+    <%= form_with url: admin_image_path(@image), method: :patch do |f| %>
+
+      <%# Category %>
+      <div style="margin-bottom: 1.5rem;">
+        <label class="font-sans" style="display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 0.5rem;">Category</label>
+        <select name="pose_image[theme]" id="theme-select" onchange="refreshSuggestions()"
+                style="font-family: inherit; font-size: 0.9rem; padding: 0.6rem 0.85rem; border: 1.5px solid #e2ddd8; border-radius: 0.75rem; background: white; color: #1a1a1a; width: 100%;">
+          <% PoseImage::THEMES.each do |t| %>
+            <option value="<%= t %>" <%= "selected" if @image.theme == t %>><%= t.tr("_", " ").capitalize %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <%# Tags %>
+      <div style="margin-bottom: 2rem;">
+        <label class="font-sans" style="display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 0.5rem;">Tags <span style="font-weight: 400;">(comma-separated)</span></label>
+        <input type="text" id="tag-input" name="pose_image[tags]" value="<%= @image.tags_array.join(", ") %>"
+               placeholder="e.g. portrait, woman"
+               style="font-family: inherit; font-size: 0.9rem; padding: 0.6rem 0.85rem; border: 1.5px solid #e2ddd8; border-radius: 0.75rem; background: white; color: #1a1a1a; width: 100%; box-sizing: border-box;" oninput="syncChips()">
+        <div id="tag-suggestions" style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem;"></div>
+      </div>
+
+      <button type="submit" class="btn btn-black btn-lg w-full rounded-2xl font-sans">Save changes</button>
+      <%= link_to "Cancel", admin_images_path(theme: @image.theme), style: "display: block; text-align: center; margin-top: 0.85rem; font-size: 0.85rem; color: #aaa; text-decoration: none;", class: "font-sans" %>
+
+    <% end %>
+  </div>
+</div>
+
+<script>
+  var TAGS_BY_THEME = <%= PoseImage::TAGS_BY_THEME.to_json.html_safe %>;
+
+  function currentTags() {
+    return document.getElementById("tag-input").value
+      .split(",").map(s => s.trim()).filter(s => s.length > 0);
+  }
+
+  function refreshSuggestions() {
+    var theme = document.getElementById("theme-select").value;
+    var suggestions = TAGS_BY_THEME[theme] || [];
+    var active = currentTags();
+    var container = document.getElementById("tag-suggestions");
+    container.innerHTML = suggestions.map(function(tag) {
+      var on = active.includes(tag);
+      return '<button type="button" onclick="toggleTag(\'' + tag + '\')" ' +
+        'style="font-family:inherit; font-size:0.8rem; font-weight:600; padding:0.25rem 0.75rem; ' +
+        'border-radius:999px; border:1.5px solid ' + (on ? '#1a1a1a' : '#e2ddd8') + '; ' +
+        'background:' + (on ? '#1a1a1a' : 'white') + '; color:' + (on ? 'white' : '#888') + '; cursor:pointer;">' +
+        tag + '</button>';
+    }).join("");
+  }
+
+  function toggleTag(tag) {
+    var tags = currentTags();
+    var idx = tags.indexOf(tag);
+    if (idx >= 0) { tags.splice(idx, 1); } else { tags.push(tag); }
+    document.getElementById("tag-input").value = tags.join(", ");
+    refreshSuggestions();
+  }
+
+  function syncChips() { refreshSuggestions(); }
+
+  refreshSuggestions();
+</script>

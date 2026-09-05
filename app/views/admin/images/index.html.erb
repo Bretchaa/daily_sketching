@@ -1,0 +1,245 @@
+<% content_for :header_action do %>
+  <div style="display:flex; gap:0.5rem;">
+    <%= link_to "+ Upload", new_admin_image_path(theme: @theme_filter || "figures"),
+          class: "btn btn-black rounded-2xl font-sans",
+          style: "font-size: 0.85rem; height: 2.25rem; padding: 0 1.1rem;" %>
+  </div>
+<% end %>
+
+<div style="background: #f5f2ee; min-height: 100vh; padding: 2rem 1.5rem 8rem;">
+  <div style="max-width: 64rem; margin: 0 auto;">
+
+    <%= render "admin/tabs", active_tab: :images %>
+
+    <% if flash[:notice] %>
+      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.75rem; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.85rem; color: #15803d;" class="font-sans"><%= flash[:notice] %></div>
+    <% end %>
+    <% if flash[:error] %>
+      <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.75rem; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.85rem; color: #dc2626;" class="font-sans"><%= flash[:error] %></div>
+    <% end %>
+
+    <%# Category filter %>
+    <p class="font-sans" style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #bbb; margin-bottom: 0.5rem;">Category</p>
+    <div style="display: flex; gap: 0.4rem; margin-bottom: 1rem; flex-wrap: wrap;">
+      <% active = @theme_filter.nil? %>
+      <%= link_to "All (#{@counts.values.sum})", admin_images_path(tag: @tag_filter),
+            style: "font-size:0.8rem;font-weight:600;padding:0.3rem 0.85rem;border-radius:999px;text-decoration:none;border:1.5px solid #{active ? '#1a1a1a' : '#e2ddd8'};color:#{active ? '#1a1a1a' : '#888'};background:#{active ? 'white' : 'transparent'};",
+            class: "font-sans" %>
+      <% PoseImage::THEMES.each do |t| %>
+        <% active = @theme_filter == t %>
+        <%= link_to "#{t.tr('_',' ').capitalize} (#{@counts[t] || 0})", admin_images_path(theme: t, tag: @tag_filter),
+              style: "font-size:0.8rem;font-weight:600;padding:0.3rem 0.85rem;border-radius:999px;text-decoration:none;border:1.5px solid #{active ? '#1a1a1a' : '#e2ddd8'};color:#{active ? '#1a1a1a' : '#888'};background:#{active ? 'white' : 'transparent'};",
+              class: "font-sans" %>
+      <% end %>
+    </div>
+
+    <%# Tag filter %>
+    <% if @all_tags.any? %>
+      <p class="font-sans" style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #bbb; margin-bottom: 0.5rem;">Tag</p>
+      <div style="display: flex; gap: 0.4rem; margin-bottom: 1.75rem; flex-wrap: wrap;">
+        <% active = @tag_filter.nil? %>
+        <%= link_to "Any", admin_images_path(theme: @theme_filter),
+              style: "font-size:0.8rem;font-weight:600;padding:0.3rem 0.85rem;border-radius:999px;text-decoration:none;border:1.5px solid #{active ? '#1a1a1a' : '#e2ddd8'};color:#{active ? '#1a1a1a' : '#888'};background:#{active ? 'white' : 'transparent'};",
+              class: "font-sans" %>
+        <% @all_tags.each do |tag| %>
+          <% active = @tag_filter == tag %>
+          <%= link_to tag, admin_images_path(theme: @theme_filter, tag: tag),
+                style: "font-size:0.8rem;font-weight:600;padding:0.3rem 0.85rem;border-radius:999px;text-decoration:none;border:1.5px solid #{active ? '#1a1a1a' : '#e2ddd8'};color:#{active ? '#1a1a1a' : '#888'};background:#{active ? 'white' : 'transparent'};",
+                class: "font-sans" %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%# Count + pagination %>
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+      <p class="font-sans" style="font-size: 0.8rem; color: #aaa;"><%= @total %> image<%= "s" if @total != 1 %></p>
+      <% if @total_pages > 1 %>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <% if @page > 1 %>
+            <%= link_to "← Prev", admin_images_path(theme: @theme_filter, tag: @tag_filter, page: @page - 1),
+                  style: "font-size:0.8rem;font-weight:600;color:#1a1a1a;text-decoration:none;", class: "font-sans" %>
+          <% end %>
+          <span class="font-sans" style="font-size: 0.8rem; color: #aaa;">Page <%= @page %> / <%= @total_pages %></span>
+          <% if @page < @total_pages %>
+            <%= link_to "Next →", admin_images_path(theme: @theme_filter, tag: @tag_filter, page: @page + 1),
+                  style: "font-size:0.8rem;font-weight:600;color:#1a1a1a;text-decoration:none;", class: "font-sans" %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @images.empty? %>
+      <p class="font-sans" style="color: #aaa; font-size: 0.9rem;">No images match. <a href="<%= new_admin_image_path(theme: @theme_filter || 'figures') %>" style="color:#1a1a1a;font-weight:600;">Upload one</a>.</p>
+    <% else %>
+      <div id="image-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: 0.85rem;">
+        <% @images.each do |img| %>
+          <div class="img-card" data-id="<%= img.id %>"
+               onclick="handleCardClick(event, this)"
+               style="background:white;border-radius:1rem;border:1.5px solid #e2ddd8;overflow:hidden;cursor:pointer;transition:border-color 0.1s,box-shadow 0.1s;position:relative;">
+            <%# Checkbox — always visible, highlighted when selected %>
+            <div class="card-check" style="position:absolute;top:0.4rem;left:0.4rem;z-index:2;
+                 width:1.25rem;height:1.25rem;border-radius:50%;border:2px solid white;background:rgba(0,0,0,0.25);
+                 display:flex;align-items:center;justify-content:center;">
+              <span class="check-mark" style="display:none;color:white;font-size:0.7rem;line-height:1;">✓</span>
+            </div>
+            <div style="height:12rem;background:#ede8e2;overflow:hidden;">
+              <img src="<%= img.url %>" style="width:100%;height:100%;object-fit:cover;object-position:center top;" loading="lazy">
+            </div>
+            <div style="padding:0.6rem 0.75rem;">
+              <p class="font-sans" style="font-size:0.7rem;color:#1a1a1a;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:0.3rem;" title="<%= img.filename %>"><%= img.filename %></p>
+              <div style="display:flex;flex-wrap:wrap;gap:0.2rem;margin-bottom:0.5rem;">
+                <span style="font-size:0.65rem;background:#f0ece6;color:#666;padding:0.1rem 0.4rem;border-radius:999px;" class="font-sans"><%= img.theme.tr("_"," ") %></span>
+                <% img.tags_array.each do |tag| %>
+                  <span style="font-size:0.65rem;background:#e8f4e8;color:#2d6a2d;padding:0.1rem 0.4rem;border-radius:999px;" class="font-sans"><%= tag %></span>
+                <% end %>
+              </div>
+              <div class="card-actions" style="display:flex;gap:0.4rem;">
+                <a href="<%= edit_admin_image_path(img) %>" onclick="event.stopPropagation()"
+                   style="font-size:0.7rem;font-weight:600;color:#1a1a1a;text-decoration:none;" class="font-sans">Edit</a>
+                <%= button_to "Delete", admin_image_path(img), method: :delete,
+                      form: { style: "display:inline;", data: { turbo_confirm: "Remove #{img.filename}?" }, onclick: "event.stopPropagation()" },
+                      style: "font-size:0.7rem;font-weight:600;color:#cc3333;background:none;border:none;padding:0;cursor:pointer;",
+                      class: "font-sans" %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+  </div>
+</div>
+
+<%# Bulk action bar (hidden until items are selected) %>
+<div id="bulk-bar" style="display:none;position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);
+     background:#1a1a1a;color:white;border-radius:1.25rem;padding:0.85rem 1.25rem;
+     box-shadow:0 4px 24px rgba(0,0,0,0.25);z-index:100;min-width:min(44rem,calc(100vw - 2rem));
+     flex-wrap:wrap;gap:0.6rem;align-items:center;">
+
+  <span id="bulk-count" class="font-sans" style="font-size:0.85rem;font-weight:700;color:white;margin-right:0.25rem;">0 selected</span>
+
+  <%# Change category %>
+  <select id="bulk-theme" style="font-family:inherit;font-size:0.8rem;padding:0.35rem 0.6rem;border-radius:0.6rem;border:none;background:#333;color:white;cursor:pointer;">
+    <option value="">Move to…</option>
+    <% PoseImage::THEMES.each do |t| %>
+      <option value="<%= t %>"><%= t.tr("_"," ").capitalize %></option>
+    <% end %>
+  </select>
+  <button type="button" onclick="bulkChangeTheme()" class="font-sans"
+          style="font-size:0.8rem;font-weight:600;padding:0.35rem 0.75rem;border-radius:0.6rem;border:none;background:#444;color:white;cursor:pointer;">Apply</button>
+
+  <div style="width:1px;height:1.5rem;background:#444;"></div>
+
+  <%# Add / remove tag %>
+  <input id="bulk-tag-input" type="text" placeholder="tag name"
+         style="font-family:inherit;font-size:0.8rem;padding:0.35rem 0.6rem;border-radius:0.6rem;border:none;background:#333;color:white;width:7rem;outline:none;" class="font-sans">
+  <button type="button" onclick="bulkAddTag()" class="font-sans"
+          style="font-size:0.8rem;font-weight:600;padding:0.35rem 0.75rem;border-radius:0.6rem;border:none;background:#444;color:white;cursor:pointer;">+ Add tag</button>
+  <button type="button" onclick="bulkRemoveTag()" class="font-sans"
+          style="font-size:0.8rem;font-weight:600;padding:0.35rem 0.75rem;border-radius:0.6rem;border:none;background:#444;color:#f87171;cursor:pointer;">− Remove tag</button>
+
+  <div style="width:1px;height:1.5rem;background:#444;"></div>
+
+  <%# Delete %>
+  <button type="button" onclick="bulkDelete()" class="font-sans"
+          style="font-size:0.8rem;font-weight:600;padding:0.35rem 0.75rem;border-radius:0.6rem;border:none;background:#7f1d1d;color:#fca5a5;cursor:pointer;">Delete</button>
+
+  <button type="button" onclick="clearSelection()" class="font-sans"
+          style="font-size:0.8rem;font-weight:600;padding:0.35rem 0.75rem;border-radius:0.6rem;border:none;background:transparent;color:#aaa;cursor:pointer;margin-left:auto;">Deselect all</button>
+</div>
+
+<%# Hidden form for bulk actions %>
+<%= form_with url: bulk_action_admin_images_path, method: :post, id: "bulk-form", data: { turbo: false } do |f| %>
+  <input type="hidden" name="action_type" id="bulk-action-type">
+  <input type="hidden" name="new_theme"   id="bulk-new-theme">
+  <input type="hidden" name="tag"         id="bulk-tag-value">
+  <input type="hidden" name="return_theme" value="<%= @theme_filter %>">
+  <input type="hidden" name="return_tag"   value="<%= @tag_filter %>">
+  <div id="bulk-ids"></div>
+<% end %>
+
+<script>
+  var selected = new Set();
+
+  function handleCardClick(event, card) {
+    var id = card.dataset.id;
+    if (selected.has(id)) {
+      selected.delete(id);
+      deselectCard(card);
+    } else {
+      selected.add(id);
+      selectCard(card);
+    }
+    updateBulkBar();
+  }
+
+  function selectCard(card) {
+    card.style.borderColor = "#1a1a1a";
+    card.style.boxShadow   = "0 0 0 1px #1a1a1a";
+    var check = card.querySelector(".card-check");
+    check.style.background  = "#1a1a1a";
+    check.style.borderColor = "#1a1a1a";
+    check.querySelector(".check-mark").style.display = "block";
+  }
+
+  function deselectCard(card) {
+    card.style.borderColor = "#e2ddd8";
+    card.style.boxShadow   = "none";
+    var check = card.querySelector(".card-check");
+    check.style.background  = "rgba(0,0,0,0.25)";
+    check.style.borderColor = "white";
+    check.querySelector(".check-mark").style.display = "none";
+  }
+
+  function clearSelection() {
+    selected.clear();
+    document.querySelectorAll(".img-card").forEach(function(c) { deselectCard(c); });
+    updateBulkBar();
+  }
+
+  function updateBulkBar() {
+    var bar = document.getElementById("bulk-bar");
+    bar.style.display = selected.size > 0 ? "flex" : "none";
+    document.getElementById("bulk-count").textContent = selected.size + " selected";
+  }
+
+  function submitBulk(actionType, extra) {
+    if (selected.size === 0) return;
+    document.getElementById("bulk-action-type").value = actionType;
+    document.getElementById("bulk-new-theme").value   = extra.theme || "";
+    document.getElementById("bulk-tag-value").value   = extra.tag   || "";
+    var container = document.getElementById("bulk-ids");
+    container.innerHTML = "";
+    selected.forEach(function(id) {
+      var inp = document.createElement("input");
+      inp.type  = "hidden";
+      inp.name  = "ids[]";
+      inp.value = id;
+      container.appendChild(inp);
+    });
+    document.getElementById("bulk-form").submit();
+  }
+
+  function bulkChangeTheme() {
+    var theme = document.getElementById("bulk-theme").value;
+    if (!theme) { alert("Pick a category first."); return; }
+    submitBulk("change_theme", { theme: theme });
+  }
+
+  function bulkAddTag() {
+    var tag = document.getElementById("bulk-tag-input").value.trim();
+    if (!tag) { alert("Enter a tag name."); return; }
+    submitBulk("add_tag", { tag: tag });
+  }
+
+  function bulkRemoveTag() {
+    var tag = document.getElementById("bulk-tag-input").value.trim();
+    if (!tag) { alert("Enter the tag to remove."); return; }
+    submitBulk("remove_tag", { tag: tag });
+  }
+
+  function bulkDelete() {
+    if (!confirm("Delete " + selected.size + " image" + (selected.size !== 1 ? "s" : "") + " from the library?")) return;
+    submitBulk("delete", {});
+  }
+</script>
