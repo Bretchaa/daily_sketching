@@ -1,0 +1,14 @@
+<div style="text-align: center; margin-bottom: 8px; margin-top: -8px;">
+  <img src="https://assets.dailysketching.app/mascots/reactivate_mascotte.png" alt="" style="height: 200px; width: auto;">
+</div>
+
+<div style="font-family: 'Comic Sans MS', 'Comic Sans', Arial, sans-serif; font-size: 32px; color: #1a1a1a; margin: 0 0 28px; line-height: 1.2; font-weight: bold;">It's been a week, <%= @user.username %>.</div>
+
+<p>You haven't drawn in 7 days. That's okay, life happens.</p>
+
+<p style="margin-bottom: 28px;">Today's challenge is a fresh start. 15 minutes, a new pose, and the community is drawing right now.</p>
+
+<div class="btn-wrap">
+  <%= link_to "Start today's challenge", today_challenge_url, class: "btn" %>
+</div>
+

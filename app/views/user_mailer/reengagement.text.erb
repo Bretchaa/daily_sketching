@@ -1,0 +1,13 @@
+It's been a week, <%= @user.username %>.
+
+You haven't drawn in 7 days. That's okay, life happens.
+
+Today's challenge is a fresh start. 15 minutes, a new pose, and the community is drawing right now.
+
+Jump back in: <%= today_challenge_url %>
+
+No streak to protect, no pressure. Just draw.
+
+---
+Daily Sketching · dailysketching.app
+Unsubscribe: <%= unsubscribe_url(token: @user.unsubscribe_token) %>

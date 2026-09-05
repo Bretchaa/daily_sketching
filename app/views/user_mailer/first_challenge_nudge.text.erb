@@ -1,0 +1,13 @@
+Your first challenge is waiting, <%= @user.username %>.
+
+You signed up for Daily Sketching but haven't done your first challenge yet.
+
+It's 15 minutes. One pose at a time. No experience needed, just pick up a pencil and see what comes out.
+
+Start here: <%= today_challenge_url %>
+
+Today's challenge is shared by everyone. See what the community draws.
+
+---
+Daily Sketching · dailysketching.app
+Unsubscribe: <%= unsubscribe_url(token: @user.unsubscribe_token) %>

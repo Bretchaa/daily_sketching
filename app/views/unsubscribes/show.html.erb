@@ -1,0 +1,13 @@
+<div style="min-height: 100vh; background: #f5f2ee; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+  <div style="max-width: 420px; text-align: center;">
+    <%= image_tag "mascotte_DS.png", style: "height: 6rem; width: auto; margin-bottom: 1.5rem;" %>
+    <% if @invalid %>
+      <h1 class="font-handwritten" style="font-size: 1.75rem; color: #1a1a1a; margin-bottom: 0.75rem;">Link not found</h1>
+      <p class="font-sans" style="color: #888; font-size: 0.95rem;">This unsubscribe link is invalid or has already been used.</p>
+    <% else %>
+      <h1 class="font-handwritten" style="font-size: 1.75rem; color: #1a1a1a; margin-bottom: 0.75rem;">You're unsubscribed.</h1>
+      <p class="font-sans" style="color: #888; font-size: 0.95rem; line-height: 1.6;">You won't receive any more emails from Daily Sketching.</p>
+      <p class="font-sans" style="color: #bbb; font-size: 0.85rem; margin-top: 1rem;">Changed your mind? <%= link_to "Sign in to your account", sign_in_path, style: "color: #888;" %>.</p>
+    <% end %>
+  </div>
+</div>
