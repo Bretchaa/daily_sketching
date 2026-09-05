@@ -1,0 +1,35 @@
+<div class="bg-paper" style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem;">
+  <div style="text-align: center; max-width: 22rem; width: 100%;">
+    <img src="<%= asset_path('congrats.png') %>" style="height: 10rem; width: auto; margin: 0 auto 1.5rem; display: block;" alt="">
+    <h1 class="font-handwritten" style="font-size: 2.25rem; color: #1a1a1a; margin-bottom: 0.5rem;">Nice session!</h1>
+    <% if @pose_count > 0 %>
+      <p class="font-sans" style="font-size: 0.95rem; color: #aaa; margin-bottom: 2rem;"><%= @pose_count %> <%= @pose_count == 1 ? "pose" : "poses" %> completed.</p>
+    <% else %>
+      <p class="font-sans" style="font-size: 0.95rem; color: #aaa; margin-bottom: 2rem;">Keep it up!</p>
+    <% end %>
+    <% if @practice_theme %>
+      <%= form_with url: practice_start_path, method: :post, style: "width: 100%;" do |f| %>
+        <%= hidden_field_tag :theme,        @practice_theme %>
+        <%= hidden_field_tag :filter_tag,   @practice_filter_tag %>
+        <%= hidden_field_tag :filter_tags,  @practice_filter_tags.to_json %>
+        <%= hidden_field_tag :duration,     @practice_duration %>
+        <%= hidden_field_tag :poses_count,  @practice_poses_count %>
+        <button type="submit" class="btn-sketchy" style="width: 100%;">Repeat session</button>
+      <% end %>
+      <%= link_to "Change settings", practice_path, class: "btn-sketchy-secondary", style: "width: 100%; margin-top: 0.75rem;" %>
+    <% else %>
+      <%= link_to "Practice again", practice_path, class: "btn-sketchy", style: "width: 100%;" %>
+    <% end %>
+  </div>
+
+  <div style="margin-top: 2rem; padding: 1.75rem 2rem; background: white; border-radius: 1.5rem; border: 1px solid #e2ddd8; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; max-width: 36rem; width: 100%;">
+    <div>
+      <p class="font-sans" style="font-size: 0.95rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.25rem;">Help us add better reference photos</p>
+      <p class="font-sans" style="font-size: 0.85rem; color: #999; line-height: 1.5;">We're always looking for full body poses and portrait shots to add to the app.</p>
+    </div>
+    <%= link_to "https://docs.google.com/forms/d/1qKFf56XuMdM-vRrmizgwxEzd7QgWlRXh0CUQpGtSHKU/viewform", target: "_blank", rel: "noopener", class: "font-sans", style: "display: flex; align-items: center; gap: 0.35rem; font-size: 0.85rem; font-weight: 600; color: #1a1a1a; text-decoration: none; flex-shrink: 0;" do %>
+      Submit a photo
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    <% end %>
+  </div>
+</div>

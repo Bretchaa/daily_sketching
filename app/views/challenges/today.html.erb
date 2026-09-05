@@ -1,76 +1,101 @@
-<div class="min-h-screen flex items-center justify-center px-6" style="background: #f5f2ee;">
-  <div class="w-full" style="max-width: 38rem;">
+<% content_for :head do %>
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="<%= root_url %>">
+<% end %>
 
-    <div class="bg-white rounded-[2rem] shadow-md" style="padding: 2.5rem; border: 1px solid #e2ddd8;">
+<div class="challenge-page bg-paper min-h-screen flex items-center justify-center px-4 py-10">
+  <div class="w-full" style="max-width: 52rem;">
 
-      <%# Header %>
-      <div style="margin-bottom: 1.75rem;">
-        <h1 class="font-handwritten" style="font-size: 1.75rem; color: #1a1a1a;">Today's challenge</h1>
-        <p class="font-sans" style="font-size: 0.9rem; color: #888; margin-top: 0.25rem;">
-          Theme: <strong style="color: #444;"><%= @challenge.theme.humanize %> drawing</strong>
-        </p>
-      </div>
+    <div class="bg-white rounded-[2rem] overflow-hidden" style="border: 2px solid #1a1a1a;">
 
       <%# Body: details + example image %>
-      <div style="display: flex; gap: 1.5rem; align-items: flex-start;">
+      <div class="challenge-body" style="display: flex; align-items: stretch;">
 
         <%# Left: details %>
-        <div style="flex: 1; display: flex; flex-direction: column; gap: 1.25rem;">
+        <div style="flex: 1; padding: 2.5rem 3rem; display: flex; flex-direction: column; gap: 2rem;">
 
-          <div style="background: #faf9f7; border-radius: 1rem; padding: 1rem 1.25rem;">
-            <p class="font-sans" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 0.35rem;">🎯 Focus</p>
-            <p class="font-sans" style="font-size: 0.95rem; color: #333; line-height: 1.4;"><%= @challenge.focus %></p>
+          <div>
+            <p class="font-sans" style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #bbb; margin-bottom: 0.4rem;">Today's challenge <span style="font-weight: 400; text-transform: none; letter-spacing: 0; color: #ccc;">· <%= Date.current.strftime("%A, %B %-d") %></span></p>
+            <h1 class="font-handwritten" style="font-size: 2.25rem; color: #1a1a1a; line-height: 1.1;"><%= @theme_config["display_name"] %></h1>
           </div>
 
-          <div style="background: #faf9f7; border-radius: 1rem; padding: 1rem 1.25rem;">
-            <p class="font-sans" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 0.35rem;">✏️ Tip</p>
-            <p class="font-sans" style="font-size: 0.95rem; color: #333; line-height: 1.4;"><%= @challenge.tip %></p>
+          <div>
+            <p class="font-handwritten" style="font-size: 1.1rem; color: #1a1a1a; margin-bottom: 0.2rem;">Focus</p>
+            <p class="font-sans" style="font-size: 1rem; color: #2a2a2a; line-height: 1.6;"><%= @theme_config["focus"] %></p>
           </div>
 
-          <div style="background: #faf9f7; border-radius: 1rem; padding: 1rem 1.25rem;">
-            <p class="font-sans" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 0.35rem;">⏱ Exercise</p>
+          <div>
+            <p class="font-handwritten" style="font-size: 1.1rem; color: #1a1a1a; margin-bottom: 0.2rem;">Tip</p>
+            <p class="font-sans" style="font-size: 1rem; color: #2a2a2a; line-height: 1.6;"><%= @theme_config["tip"] %></p>
+          </div>
+
+          <div>
+            <p class="font-handwritten" style="font-size: 1.1rem; color: #1a1a1a; margin-bottom: 0.4rem;">Exercise</p>
             <% format_duration = ->(s) { s == 0 ? "no timer" : s < 60 ? "#{s}s" : "#{s / 60} min" } %>
             <% if @theme_config["stages"] %>
-              <p class="font-sans" style="font-size: 0.95rem; color: #333; line-height: 1.6;">
+              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
                 <% @theme_config["stages"].each_with_index do |stage, i| %>
-                  <%= stage["count"] %> × <%= format_duration.call(stage["duration_seconds"]) %><%= i < @theme_config["stages"].size - 1 ? " — " : "" %>
+                  <span class="font-sans" style="background: #1a1a1a; border-radius: 0.4rem; padding: 0.3rem 0.9rem; font-size: 0.875rem; color: #fff; font-weight: 600;"><%= stage["count"] %> × <%= format_duration.call(stage["duration_seconds"]) %></span>
+                  <% if i < @theme_config["stages"].size - 1 %>
+                    <span style="color: #1a1a1a;">→</span>
+                  <% end %>
                 <% end %>
-              </p>
+              </div>
             <% else %>
-              <p class="font-sans" style="font-size: 0.95rem; color: #333;"><%= @theme_config["poses_count"] %> poses, <%= format_duration.call(@theme_config["duration_seconds"]) %> each</p>
+              <span class="font-sans" style="background: #1a1a1a; border-radius: 0.4rem; padding: 0.3rem 0.9rem; font-size: 0.875rem; color: #fff; font-weight: 600;"><%= @theme_config["poses_count"] %> poses · <%= format_duration.call(@theme_config["duration_seconds"]) %> each</span>
             <% end %>
           </div>
 
           <% if @theme_config["resource_url"].present? %>
-            <div style="background: #faf9f7; border-radius: 1rem; padding: 1rem 1.25rem;">
-              <p class="font-sans" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; margin-bottom: 0.35rem;">📖 Learn</p>
-              <%= link_to @theme_config["resource_label"], @theme_config["resource_url"], target: "_blank", rel: "noopener", class: "font-sans", style: "font-size: 0.95rem; color: #1a1a1a; font-weight: 600; text-decoration: none;" %>
+            <div>
+              <p class="font-handwritten" style="font-size: 1.1rem; color: #1a1a1a; margin-bottom: 0.2rem;">Learn</p>
+              <%= link_to @theme_config["resource_label"], @theme_config["resource_url"], target: "_blank", rel: "noopener", class: "font-sans", style: "font-size: 0.95rem; color: #1a1a1a; font-weight: 600; text-decoration: underline; text-underline-offset: 3px;" %>
             </div>
           <% end %>
 
+          <p class="font-sans" style="font-size: 1rem; color: #2a2a2a; line-height: 1.6;">Grab a sheet of paper and a pencil, and have fun!</p>
+
         </div>
 
-        <%# Right: example image %>
-        <div style="width: 9rem; flex-shrink: 0;">
-          <% if @challenge.example_image_url.present? %>
-            <img src="<%= @challenge.example_image_url %>"
-                 alt="Example"
-                 style="width: 100%; border-radius: 1rem; object-fit: cover;" />
-          <% else %>
-            <div style="width: 100%; aspect-ratio: 3/4; background: #f0e68c; border-radius: 1rem; display: flex; align-items: center; justify-content: center;">
-              <span style="font-size: 0.75rem; color: #999; text-align: center; padding: 0.5rem;">Example<br>drawing</span>
-            </div>
-          <% end %>
-        </div>
+        <%# Right: example image — full image visible, contained in column %>
+        <% if @theme_config["example_image_url"].present? %>
+          <div class="challenge-image-panel" style="width: 18rem; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 2rem 2rem 0; gap: 0.5rem;">
+            <span class="img-skeleton" style="display: block; border-radius: 1rem; min-height: 12rem; width: 100%;">
+              <img src="<%= @theme_config["example_image_url"] %>"
+                   alt="Example drawing"
+                   fetchpriority="high"
+                   style="max-width: 100%; max-height: 100%; width: auto; height: auto; border-radius: 1rem; object-fit: contain; display: block;"
+                   onload="this.parentElement.classList.remove('img-skeleton')" />
+            </span>
+          </div>
+        <% end %>
 
       </div>
 
-      <%# CTA %>
-      <div style="margin-top: 2rem;">
-        <%= link_to "Start drawing", draw_path(step: 1),
-          class: "btn btn-black btn-lg w-full rounded-2xl" %>
+      <%# CTA — full width, sticky on mobile %>
+      <div class="challenge-cta" style="padding: 0 2.5rem 2.5rem;">
+        <% if @theme_config["skip_session"] %>
+          <%= link_to "Upload my sketch", done_path, class: "btn-sketchy", style: "width: 100%;" %>
+        <% else %>
+          <%= link_to "Start drawing", draw_path(step: 1), class: "btn-sketchy", style: "width: 100%;" %>
+        <% end %>
       </div>
 
     </div>
   </div>
 </div>
+
+<style>
+  @media (max-width: 600px) {
+    .challenge-body { flex-direction: column !important; }
+    .challenge-image-panel { width: 100% !important; padding: 0 2rem 1rem !important; }
+    .challenge-page { padding-top: 4.75rem !important; padding-bottom: 6rem !important; }
+    .challenge-cta {
+      position: fixed !important;
+      bottom: 0; left: 0; right: 0;
+      padding: 4rem 1.25rem 1.75rem !important;
+      background: linear-gradient(to bottom, transparent, #f5f2ee 40%);
+      z-index: 10;
+    }
+  }
+</style>

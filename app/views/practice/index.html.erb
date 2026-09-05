@@ -1,0 +1,233 @@
+<div class="bg-paper" style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5.5rem 1.25rem 8rem;">
+
+  <div style="width: 100%; max-width: 36rem;">
+
+    <h1 class="font-handwritten" style="font-size: 2.25rem; color: #1a1a1a; margin-bottom: 0.4rem;">Free Practice</h1>
+    <p class="font-sans" style="font-size: 0.9rem; color: #aaa; margin-bottom: 2.5rem;">Pick a subject and a timer. Draw as many poses as you want.</p>
+
+    <form action="<%= practice_start_path %>" method="post">
+      <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+      <input type="hidden" id="selected-theme" name="theme" value="">
+      <input type="hidden" id="selected-filter-tag" name="filter_tag" value="">
+      <input type="hidden" id="selected-filter-tags" name="filter_tags" value="[]">
+      <input type="hidden" id="selected-duration" name="duration" value="60">
+      <input type="hidden" id="selected-poses" name="poses_count" value="10">
+
+      <%# Theme picker %>
+      <p class="font-sans" style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #1a1a1a; margin-bottom: 0.75rem;">Subject</p>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.65rem; margin-bottom: 2rem;">
+        <% @themes.each do |theme| %>
+          <% if theme[:coming_soon] %>
+            <div style="border-radius: 1rem; overflow: hidden; border: 2px solid #1a1a1a; background: white; opacity: 0.5; cursor: not-allowed;">
+              <div style="height: 5.5rem; background: #ede8e2; display: flex; align-items: center; justify-content: center;">
+                <span class="font-sans" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #bbb;">Coming soon</span>
+              </div>
+              <div style="padding: 0.6rem 0.75rem;">
+                <p class="font-sans" style="font-size: 0.85rem; font-weight: 600; color: #1a1a1a;"><%= theme[:display_name] %></p>
+              </div>
+            </div>
+          <% else %>
+            <div class="practice-theme-card"
+                 data-theme-key="<%= theme[:key] %>"
+                 data-filter-tag="<%= theme[:filter_tag] %>"
+                 onclick="selectTheme('<%= theme[:key] %>', '<%= theme[:filter_tag] %>')"
+                 style="border-radius: 1rem; overflow: hidden; border: 2px solid #1a1a1a; cursor: pointer; background: white; transition: border-color 0.15s ease, box-shadow 0.15s ease;">
+              <div class="img-skeleton" style="height: 5.5rem; background: #e8e3db; overflow: hidden;">
+                <img src="<%= theme[:example_image_url] %>" style="width: 100%; height: 100%; object-fit: cover; object-position: <%= theme[:object_position] || "top" %>; display: block;" loading="lazy" onload="this.parentElement.classList.remove('img-skeleton')">
+              </div>
+              <div style="padding: 0.6rem 0.75rem;">
+                <p class="font-sans" style="font-size: 0.85rem; font-weight: 600; color: #1a1a1a;"><%= theme[:display_name] %></p>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+
+      <%# Sub-filter area (shown when selected theme has sub-filters or filter_groups) %>
+      <div id="sub-filter-row" style="display: none; margin-top: -1rem; margin-bottom: 1.75rem;">
+        <div id="sub-filter-chips"></div>
+        <div id="filter-groups"></div>
+      </div>
+
+      <%# Poses count %>
+      <p class="font-sans" style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #1a1a1a; margin-bottom: 0.75rem;">Number of poses</p>
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+        <button type="button" onclick="changePoses(-1)"
+                style="width: 2.25rem; height: 2.25rem; border-radius: 999px; border: 2px solid #1a1a1a; background: white; font-size: 1.2rem; font-weight: 500; color: #555; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;">−</button>
+        <span id="poses-display" class="font-sans" style="font-size: 1.4rem; font-weight: 700; color: #1a1a1a; min-width: 2rem; text-align: center;">10</span>
+        <button type="button" onclick="changePoses(1)"
+                style="width: 2.25rem; height: 2.25rem; border-radius: 999px; border: 2px solid #1a1a1a; background: white; font-size: 1.2rem; font-weight: 500; color: #555; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;">+</button>
+        <span class="font-sans" style="font-size: 0.82rem; color: #bbb;">max 20</span>
+      </div>
+
+      <%# Timer picker %>
+      <p class="font-sans" style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #1a1a1a; margin-bottom: 0.75rem;">Timer per pose</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2.5rem;">
+        <% @timers.each_with_index do |timer, i| %>
+          <button type="button"
+                  class="practice-timer-btn font-sans"
+                  data-seconds="<%= timer[:seconds] %>"
+                  onclick="selectTimer(<%= timer[:seconds] %>)"
+                  style="padding: 0.45rem 1rem; border-radius: 999px; border: 2px solid <%= i == 1 ? '#1a1a1a' : '#1a1a1a' %>; background: <%= i == 1 ? '#1a1a1a' : 'white' %>; color: <%= i == 1 ? 'white' : '#555' %>; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.15s ease;">
+            <%= timer[:label] %>
+          </button>
+        <% end %>
+        <div style="display: flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.75rem; border-radius: 999px; border: 2px solid #1a1a1a; background: white;">
+          <input id="custom-timer-input" type="number" min="1" placeholder="Custom"
+                 oninput="selectCustomTimer(this.value)"
+                 style="width: 4.5rem; border: none; outline: none; font-size: 0.85rem; font-weight: 500; color: #555; background: transparent; font-family: inherit;">
+          <span class="font-sans" style="font-size: 0.85rem; color: #bbb;">min</span>
+        </div>
+      </div>
+
+      <%# Start button %>
+      <button type="submit" id="start-btn" class="btn-sketchy font-sans"
+              style="width: 100%; opacity: 0.35; pointer-events: none; transition: opacity 0.2s ease;">
+        Start practicing
+      </button>
+    </form>
+
+  </div>
+</div>
+
+<script>
+  var posesCount    = 10;
+  var groupSelections = {};
+  var SUB_FILTERS   = <%= @themes.each_with_object({}) { |t, h| h[t[:key]] = t[:sub_filters] if t[:sub_filters] }.to_json.html_safe %>;
+  var FILTER_GROUPS = <%= @themes.each_with_object({}) { |t, h| h[t[:key]] = t[:filter_groups] if t[:filter_groups] }.to_json.html_safe %>;
+
+  function chipStyle(active) {
+    return 'padding:0.35rem 0.9rem;border-radius:999px;border:1.5px solid ' + (active ? "#1a1a1a" : "#1a1a1a") + ';' +
+      'background:' + (active ? "#1a1a1a" : "white") + ';color:' + (active ? "white" : "#555") + ';' +
+      'font-size:0.82rem;font-weight:600;cursor:pointer;';
+  }
+
+  function selectTheme(key, filterTag) {
+    document.getElementById("selected-theme").value      = key;
+    document.getElementById("selected-filter-tag").value = filterTag || "";
+    document.getElementById("selected-filter-tags").value = "[]";
+    groupSelections = {};
+
+    document.querySelectorAll(".practice-theme-card").forEach(function(card) {
+      var active = card.dataset.themeKey === key && (card.dataset.filterTag || "") === (filterTag || "");
+      card.style.boxShadow = active ? "0.25em 0.25em #1a1a1a" : "none";
+      card.style.transform  = active ? "translateX(-0.15em) translateY(-0.15em)" : "";
+      var label = card.querySelector("div:last-child");
+      if (label) label.style.background = active ? "#FFEE00" : "white";
+    });
+
+    var row        = document.getElementById("sub-filter-row");
+    var chipsEl    = document.getElementById("sub-filter-chips");
+    var groupsEl   = document.getElementById("filter-groups");
+    var subFilters = SUB_FILTERS[key];
+    var fGroups    = FILTER_GROUPS[key];
+
+    chipsEl.innerHTML  = "";
+    groupsEl.innerHTML = "";
+
+    if (fGroups) {
+      fGroups.forEach(function(group) {
+        groupSelections[group.id] = null;
+        var html = '<div style="margin-bottom:0.75rem;">' +
+          '<p class="font-sans" style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#1a1a1a;margin-bottom:0.5rem;">' + group.label + '</p>' +
+          '<div style="display:flex;gap:0.5rem;flex-wrap:wrap;">' +
+          group.options.map(function(opt) {
+            var isAll = opt.tag === null;
+            return '<button type="button" class="font-sans group-chip" data-group="' + group.id + '" data-tag="' + (opt.tag || "") + '" ' +
+              'onclick="selectGroupOption(\'' + group.id + '\',\'' + (opt.tag || "") + '\')" ' +
+              'style="' + chipStyle(isAll) + '">' + opt.label + '</button>';
+          }).join("") +
+          '</div></div>';
+        groupsEl.insertAdjacentHTML("beforeend", html);
+      });
+      row.style.display = "block";
+    } else if (subFilters) {
+      chipsEl.innerHTML = '<p class="font-sans" style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#1a1a1a;margin-bottom:0.5rem;">Filter</p>' +
+        '<div style="display:flex;gap:0.5rem;flex-wrap:wrap;">' +
+        subFilters.map(function(sf) {
+          var active = sf.filter_tag === null;
+          return '<button type="button" class="sub-filter-chip font-sans" data-filter-tag="' + (sf.filter_tag || "") + '" ' +
+            'onclick="selectSubFilter(\'' + (sf.filter_tag || "") + '\')" ' +
+            'style="' + chipStyle(active) + '">' + sf.label + '</button>';
+        }).join("") + '</div>';
+      row.style.display = "block";
+    } else {
+      row.style.display = "none";
+    }
+
+    updateStartBtn();
+  }
+
+  function selectGroupOption(groupId, tag) {
+    groupSelections[groupId] = tag || null;
+    document.querySelectorAll(".group-chip").forEach(function(chip) {
+      if (chip.dataset.group !== groupId) return;
+      var active = (chip.dataset.tag || "") === tag;
+      chip.style.background  = active ? "#1a1a1a" : "white";
+      chip.style.color       = active ? "white"   : "#555";
+      chip.style.boxShadow   = active ? "0.2em 0.2em #1a1a1a" : "none";
+      chip.style.transform   = active ? "translateX(-0.1em) translateY(-0.1em)" : "";
+    });
+    var tags = Object.values(groupSelections).filter(function(t) { return t !== null; });
+    document.getElementById("selected-filter-tags").value = JSON.stringify(tags);
+  }
+
+  function selectSubFilter(filterTag) {
+    document.getElementById("selected-filter-tag").value = filterTag;
+    document.querySelectorAll(".sub-filter-chip").forEach(function(chip) {
+      var active = (chip.dataset.filterTag || "") === filterTag;
+      chip.style.background  = active ? "#1a1a1a" : "white";
+      chip.style.color       = active ? "white"   : "#555";
+      chip.style.boxShadow   = active ? "0.2em 0.2em #1a1a1a" : "none";
+      chip.style.transform   = active ? "translateX(-0.1em) translateY(-0.1em)" : "";
+    });
+  }
+
+  function selectTimer(seconds) {
+    document.getElementById("selected-duration").value = seconds;
+    document.getElementById("custom-timer-input").value = "";
+    document.querySelectorAll(".practice-timer-btn").forEach(function(btn) {
+      var active = parseInt(btn.dataset.seconds) === seconds;
+      btn.style.background  = active ? "#1a1a1a" : "white";
+      btn.style.color       = active ? "white" : "#555";
+      btn.style.boxShadow   = active ? "0.2em 0.2em #1a1a1a" : "none";
+      btn.style.transform   = active ? "translateX(-0.1em) translateY(-0.1em)" : "";
+    });
+  }
+
+  function selectCustomTimer(val) {
+    var mins = parseFloat(val);
+    if (mins > 0) {
+      document.getElementById("selected-duration").value = Math.round(mins * 60);
+      document.querySelectorAll(".practice-timer-btn").forEach(function(btn) {
+        btn.style.background  = "white";
+        btn.style.color       = "#555";
+        btn.style.boxShadow   = "none";
+        btn.style.transform   = "";
+      });
+    }
+  }
+
+  function changePoses(delta) {
+    posesCount = Math.min(20, Math.max(1, posesCount + delta));
+    document.getElementById("poses-display").textContent = posesCount;
+    document.getElementById("selected-poses").value = posesCount;
+  }
+
+  function updateStartBtn() {
+    var btn = document.getElementById("start-btn");
+    var hasTheme = document.getElementById("selected-theme").value !== "";
+    btn.style.opacity = hasTheme ? "1" : "0.35";
+    btn.style.pointerEvents = hasTheme ? "auto" : "none";
+  }
+
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    var theme = params.get("theme");
+    var filterTag = params.get("filter_tag");
+    if (theme) {
+      selectTheme(theme, "");
+      if (filterTag) document.getElementById("selected-filter-tag").value = filterTag;
+    }
+  })();
+</script>

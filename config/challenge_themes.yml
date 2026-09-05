@@ -1,83 +1,226 @@
-# Weekday rotation — themes cycle in this order (skipping weekends)
-# poses_count: how many poses to show per session
-# duration_seconds: time per pose (0 = no timer, user advances manually)
+# Challenge types — each has a weight that controls how often it appears.
+# Higher weight = more frequent. The generator picks proportionally.
+# image_theme: which R2 folder to pull images from (defaults to theme key)
 
-weekday_rotation:
-  - theme: gesture
-    display_name: Gesture Drawing
+challenges:
+  - theme: gesture_warmup
+    display_name: Gesture Warm-up
+    image_theme: figures
+    filter_tags: ["gesture"]
+    weight: 4
+    cooldown_days: 2
+    homepage_example: true
+    example_image_url: https://assets.dailysketching.app/examples/gesture_warmup/quick_gesture2.jpeg
     focus: Capture the movement and overall energy of the pose. Don't worry about details.
-    tip: Start by finding the line of action — the single curve running from head to feet — then build the figure around it. Draw fast and loose.
+    tip: Start by finding the line of action, the single curve running from head to feet, then build the figure around it. Draw fast and loose.
     stages:
-      - count: 3
-        duration_seconds: 60
-      - count: 2
+      - count: 4
         duration_seconds: 120
       - count: 1
         duration_seconds: 300
 
+  - theme: gesture_deep_dive
+    display_name: Gesture Deep Dive
+    image_theme: figures
+    filter_tags: ["gesture"]
+    weight: 3
+    cooldown_days: 3
+    example_image_url: https://assets.dailysketching.app/examples/gesture_deep_dive/example_v2.jpeg
+    focus: Push beyond the quick sketch. Add weight, volume, and rhythm to your gestures.
+    tip: After finding the line of action, ask yourself where the weight is. Which foot is bearing the load? Let that drive the whole figure.
+    stages:
+      - count: 3
+        duration_seconds: 180
+      - count: 1
+        duration_seconds: 300
 
+  - theme: robo_bean
+    display_name: Robo Bean
+    image_theme: figures
+    filter_tags: ["gesture"]
+    weight: 1
+    cooldown_days: 14
+    example_image_url: https://assets.dailysketching.app/examples/robo_bean/example_v4.png
+    focus: Draw two bean shapes, one for the rib cage and one for the hips. Ignore everything else.
+    tip: The angle between the two beans creates the twist and rhythm of the pose. That's all you need to capture.
+    resource_url: https://www.proko.com/course-lesson/robo-bean-assignment-examples-step-by-step
+    resource_label: See Robo Bean examples →
+    stages:
+      - count: 3
+        duration_seconds: 120
+      - count: 1
+        duration_seconds: 300
+
+  - theme: portrait_quick
+    display_name: Portrait Quick Study
+    image_theme: faces
+    filter_tags: ["portrait"]
+    weight: 3
+    cooldown_days: 3
+    example_image_url: https://assets.dailysketching.app/examples/portrait_quick/example.webp
+    focus: Block in the big shapes of the face before adding any features.
+    tip: The eyes sit halfway down the skull. Most beginners place them too high. Start with that landmark.
+    stages:
+      - count: 3
+        duration_seconds: 180
+      - count: 1
+        duration_seconds: 300
+
+  - theme: portrait_study
+    display_name: Portrait Study
+    image_theme: faces
+    filter_tags: ["portrait"]
+    weight: 2
+    cooldown_days: 7
+    homepage_example: true
+    example_image_url: https://assets.dailysketching.app/examples/portrait_study/example.jpeg
+    focus: Slow down and observe. Look for the planes of the face, not just the features.
+    tip: Squint at your reference to see the big light and shadow shapes. Draw those first before any details.
+    stages:
+      - count: 1
+        duration_seconds: 300
+      - count: 1
+        duration_seconds: 600
+
+  - theme: figure_study
+    display_name: Figure Study
+    image_theme: figures
+    filter_tags: ["figure"]
+    weight: 3
+    cooldown_days: 4
+    example_image_url: https://assets.dailysketching.app/examples/figure_study/example_v2.jpeg
+    focus: Observe carefully for a full minute before your pencil touches the page.
+    tip: Build from big shapes to small. Check your proportions. The head should fit 7 to 8 times into the full figure.
+    stages:
+      - count: 1
+        duration_seconds: 300
+      - count: 1
+        duration_seconds: 600
+
+  - theme: long_pose_master
+    display_name: Long Pose Master
+    image_theme: figures
+    filter_tags: ["figure"]
+    weight: 2
+    cooldown_days: 10
+    example_image_url: https://assets.dailysketching.app/examples/long_pose_master/example_v2.jpeg
+    focus: One pose, full attention. This is about patience and observation.
+    tip: Check your drawing against the reference every 5 minutes. Measure proportions actively. Don't trust your eye alone.
+    stages:
+      - count: 1
+        duration_seconds: 300
+      - count: 1
+        duration_seconds: 600
 
   - theme: hands_feet
     display_name: Hands & Feet
+    image_theme: hands_feet
+    weight: 2
+    cooldown_days: 5
+    homepage_example: true
+    example_image_url: https://assets.dailysketching.app/examples/hands_feet/example.jpeg
     focus: Observe the bony structure and foreshortening of extremities.
-    tip: Break hands into a box (palm) and cylinders (fingers) first.
-    poses_count: 4
-    duration_seconds: 300
-
-  - theme: portrait
-    display_name: Portrait
-    focus: Block in the big shapes of the face before adding any features.
-    tip: The eyes sit halfway down the skull — most beginners place them too high.
-    stages:
-      - count: 2
-        duration_seconds: 120
-      - count: 2
-        duration_seconds: 600
-
-  - theme: long_poses
-    display_name: Long Pose
-    focus: Observe carefully for a full minute before your pencil touches the page.
-    tip: Build from big shapes to small. Check your proportions — the head should fit 7–8 times into the full figure.
-    stages:
-      - count: 2
-        duration_seconds: 120
-      - count: 2
-        duration_seconds: 600
-
-  - theme: animal_gesture
-    display_name: Animal Gesture
-    focus: Apply the same energy and flow principles as figure drawing to animals.
-    tip: Find the spine line first — it drives everything else.
-    poses_count: 5
-    duration_seconds: 120
-
-  - theme: architecture
-    display_name: Architecture Sketch
-    focus: Capture the overall form and perspective — no ruler, no perfection.
-    tip: Find the horizon line and vanishing point before you draw anything.
-    poses_count: 2
-    duration_seconds: 600
-
-  - theme: construction
-    display_name: Rib Cage & Hips
-    image_theme: gesture
-    focus: Draw two boxes — one for the rib cage, one for the hips. Ignore everything else.
-    tip: The angle between the two boxes creates the twist and rhythm of the pose. That's all you need.
-    resource_url: https://www.proko.com/course-lesson/how-to-draw-structure-in-the-body-robo-bean
-    resource_label: How to do this exercise →
+    tip: Break hands into a box (palm) and cylinders (fingers) first. Don't draw finger by finger. See the whole shape.
     stages:
       - count: 3
-        duration_seconds: 60
-      - count: 2
-        duration_seconds: 120
+        duration_seconds: 180
       - count: 1
         duration_seconds: 300
 
-# Weekend — relaxed session, no timer, user advances at their own pace
-weekend:
-  theme: long_poses
-  display_name: Free Draw
-  focus: No rush today. Take as long as you need on each pose.
-  tip: This is your time. Put on some music and enjoy the process.
-  poses_count: 3
-  duration_seconds: 0
+  - theme: self_portrait
+    display_name: Self Portrait
+    no_image: true
+    weight: 1
+    cooldown_days: 21
+    example_image_url: https://assets.dailysketching.app/examples/self_portrait/example.jpeg
+    focus: Look in a mirror and draw yourself. No reference photo, just you and your reflection.
+    tip: Start with the overall shape of your head before placing any features. The eyes sit exactly halfway down the skull. Most people draw them too high.
+    stages:
+      - count: 1
+        duration_seconds: 300
+      - count: 1
+        duration_seconds: 600
+
+  - theme: still_life
+    display_name: Basic Shapes & Still Life
+    image_theme: basic_shapes
+    weight: 2
+    cooldown_days: 14
+    homepage_example: true
+    example_image_url: https://assets.dailysketching.app/examples/still_life/example.jpeg
+    focus: Draw each object from the reference photo. Focus on proportions, light, and shadow.
+    tip: Before drawing, observe the negative space around the object. That's what holds the composition together. Lightly sketch the overall shape first before committing to any details.
+    stages:
+      - count: 3
+        duration_seconds: 300
+
+  - theme: your_hand
+    display_name: Your Hand
+    no_image: true
+    weight: 1
+    cooldown_days: 14
+    example_image_url: https://assets.dailysketching.app/examples/your_hand/example.jpeg
+    focus: Draw your hand. Either the one holding the pencil or the one resting in front of you. Change the pose between rounds.
+    tip: Simplify first. See the hand as a box (palm) with cylinders (fingers). Don't draw finger by finger. Look more at your hand than at your paper.
+    stages:
+      - count: 1
+        duration_seconds: 600
+
+  - theme: box_figure
+    display_name: Box Mannequin
+    image_theme: figures
+    filter_tags: ["gesture"]
+    weight: 1
+    cooldown_days: 14
+    homepage_example: true
+    example_image_url: https://assets.dailysketching.app/examples/box_figure/example_v3.jpeg
+    focus: Draw the entire body as a collection of boxes only. No curves, no contours, just volumes.
+    tip: Think of each body part as a 3D box in space. The rib cage is a big tilted box. The hips are a smaller box. The limbs are elongated boxes. This trains you to see the figure in 3D, not as a flat outline.
+    stages:
+      - count: 3
+        duration_seconds: 180
+      - count: 1
+        duration_seconds: 300
+
+  - theme: coffee_shop
+    display_name: Coffee Shop Sketch
+    no_image: true
+    skip_session: true
+    weight: 1
+    cooldown_days: 14
+    example_image_url: https://assets.dailysketching.app/examples/coffee_shop/example.jpeg
+    focus: Find a person around you, on the street, in a café, anywhere. Draw them from life before they move.
+    tip: Work fast and accept imperfection. Capture the big shapes first, the overall silhouette and posture. Details are secondary. If they move, start a new one.
+    stages:
+      - count: 1
+        duration_seconds: 0
+
+  - theme: animals
+    display_name: Animal Sketching
+    image_theme: animals
+    weight: 2
+    cooldown_days: 5
+    example_image_url: https://assets.dailysketching.app/examples/animals/example.jpg
+    focus: Capture the overall silhouette and proportions of the animal before adding any details.
+    tip: Animals have a clear line of action too. Find the spine curve first, from head to tail, then build the body around it. Work fast and loose on the short rounds.
+    stages:
+      - count: 3
+        duration_seconds: 180
+      - count: 1
+        duration_seconds: 300
+
+  - theme: caricature
+    display_name: Caricature
+    image_theme: faces
+    filter_tags: ["caricature"]
+    weight: 2
+    cooldown_days: 14
+    homepage_example: true
+    example_image_url: https://assets.dailysketching.app/examples/caricature/example_v2.jpeg
+    focus: Find the most distinctive feature of this face and exaggerate it. Big nose? Bigger. Strong jaw? Stronger.
+    tip: Start with the silhouette of the head. Is it round, square, long? Then find the one feature that makes this person recognizable and push it to the extreme. Caricature is not about accuracy, it's about essence.
+    stages:
+      - count: 1
+        duration_seconds: 300
+      - count: 1
+        duration_seconds: 600

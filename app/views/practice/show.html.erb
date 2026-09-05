@@ -1,0 +1,144 @@
+<style>
+  .draw-btn { transition: transform 0.1s ease; }
+  .draw-btn:hover { transform: scale(1.08); }
+  .draw-btn:active { transform: scale(0.88); }
+  @media (max-width: 640px) {
+    .drawing-bottom-bar { justify-content: center !important; }
+  }
+</style>
+
+<% if @show_countdown %>
+<div id="countdown-overlay" style="position: fixed; inset: 0; z-index: 999; background: #0a0a0a; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem;">
+  <img src="<%= asset_path('drawing_mascotte.png') %>" style="height: 14rem; width: auto;" alt="">
+  <div id="countdown-number" style="font-family: 'Itim', cursive; font-size: 8rem; color: white; line-height: 1; transition: opacity 0.3s ease;">5</div>
+  <div id="countdown-label" style="font-family: 'Inter', sans-serif; font-size: 1rem; color: rgba(255,255,255,0.4); letter-spacing: 0.15em; text-transform: uppercase;">Get ready</div>
+</div>
+<script>
+  (function() {
+    let count = 5;
+    const overlay = document.getElementById("countdown-overlay");
+    const number  = document.getElementById("countdown-number");
+    const label   = document.getElementById("countdown-label");
+    const tick = setInterval(function() {
+      count--;
+      if (count === 0) {
+        clearInterval(tick);
+        label.textContent = "Go!";
+        number.style.opacity = "0";
+        setTimeout(function() { overlay.style.display = "none"; }, 400);
+      } else {
+        number.style.opacity = "0";
+        setTimeout(function() { number.textContent = count; number.style.opacity = "1"; }, 300);
+      }
+    }, 1000);
+  })();
+</script>
+<% end %>
+
+<%# Pause overlay %>
+<div id="pause-overlay" style="display: none; position: fixed; inset: 0; z-index: 998; background: #111; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem;">
+  <div style="position: absolute; top: 1.25rem; right: 1.75rem;">
+    <span class="font-sans" style="font-size: 1rem; color: rgba(255,255,255,0.55);">Pose <%= @step %></span>
+  </div>
+  <img src="https://assets.dailysketching.app/mascots/pause_mascotte_v2.png" style="height: 300px; width: auto;" loading="lazy" alt="">
+  <% if @duration_seconds > 0 %>
+    <div style="display: flex; align-items: baseline; gap: 0.35rem;">
+      <span id="pause-seconds" class="font-sans" style="font-size: 1.6rem; font-weight: 600; color: rgba(255,255,255,0.7);"></span>
+      <span class="font-sans" style="font-size: 1rem; color: rgba(255,255,255,0.3);">s remaining</span>
+    </div>
+  <% end %>
+  <button onclick="resumeSession()" style="display: flex; align-items: center; justify-content: center; width: 5rem; height: 5rem; border-radius: 999px; background: rgba(255,255,255,0.1); border: none; cursor: pointer;" class="draw-btn">
+    <svg width="22" height="26" viewBox="0 0 22 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 2L20 13L2 24V2Z" fill="rgba(255,255,255,0.9)" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <%= link_to "Stop practicing", practice_done_path(count: @step), class: "font-sans", style: "font-size: 0.8rem; color: rgba(255,255,255,0.3); text-decoration: none; margin-top: 0.5rem;" %>
+</div>
+
+<div style="position: fixed; inset: 0; background: #111; display: flex; align-items: center; justify-content: center;">
+
+  <img src="<%= @pose_url %>"
+       fetchpriority="high"
+       style="max-width: 100%; max-height: 100%; object-fit: contain; opacity: 0; transition: opacity 0.4s ease;"
+       onload="this.style.opacity='1'" />
+
+  <%# Bottom bar %>
+  <div class="drawing-bottom-bar" style="position: fixed; bottom: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: flex-end; gap: 1rem; padding: 1.25rem 1.75rem; background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.65));">
+    <% if @duration_seconds > 0 %>
+      <button onclick="pauseSession()" id="pause-btn" class="draw-btn" style="display: flex; align-items: center; justify-content: center; width: 3.2rem; height: 3.2rem; border-radius: 999px; background: rgba(255,255,255,0.1); border: none; cursor: pointer;">
+        <svg width="14" height="16" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="4" height="14" rx="1.5" fill="rgba(255,255,255,0.8)"/>
+          <rect x="8" y="0" width="4" height="14" rx="1.5" fill="rgba(255,255,255,0.8)"/>
+        </svg>
+      </button>
+      <div style="display: flex; align-items: center; gap: 0.35rem;">
+        <span id="timer" class="font-sans" style="font-size: 1.6rem; font-weight: 600; color: white; min-width: 2.5rem; text-align: right;"><%= @duration_seconds %></span>
+        <span class="font-sans" style="font-size: 1rem; color: rgba(255,255,255,0.4);">s</span>
+      </div>
+    <% end %>
+    <% next_url = (@total > 0 && @step >= @total) ? practice_done_path(count: @total) : practice_draw_path(step: @step + 1) %>
+    <%= link_to next_url, id: "next-btn", class: "draw-btn",
+      style: "display: flex; align-items: center; justify-content: center; width: 3.2rem; height: 3.2rem; border-radius: 999px; background: rgba(255,255,255,0.1); color: white; text-decoration: none;" do %>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    <% end %>
+  </div>
+
+  <%# Stop — top left %>
+  <%= link_to practice_done_path(count: @step), class: "draw-btn font-sans",
+    style: "position: fixed; top: 1.1rem; left: 1.25rem; font-size: 0.75rem; font-weight: 600; color: rgba(255,255,255,0.3); text-decoration: none; padding: 0.4rem 0.75rem; border-radius: 999px; background: rgba(255,255,255,0.07);" do %>
+    Stop
+  <% end %>
+
+  <%# Pose counter — top right %>
+  <div style="position: fixed; top: 1.25rem; right: 1.75rem;">
+    <span class="font-sans" style="font-size: 1rem; color: rgba(255,255,255,0.55);"><%= @step %><% if @total > 0 %> / <%= @total %><% end %></span>
+  </div>
+
+</div>
+
+<% if @duration_seconds > 0 %>
+<script>
+  (function () {
+    let seconds = <%= @duration_seconds %>;
+    let paused = false;
+    let timer = null;
+    const el      = document.getElementById("timer");
+    const nextUrl = "<%= (@total > 0 && @step >= @total) ? practice_done_path(count: @total) : practice_draw_path(step: @step + 1) %>";
+    const overlay = document.getElementById("pause-overlay");
+
+    function tick() {
+      if (paused) return;
+      seconds--;
+      el.textContent = seconds;
+      if (seconds <= 0) {
+        window.location.href = nextUrl;
+      } else {
+        timer = setTimeout(tick, 1000);
+      }
+    }
+
+    timer = setTimeout(tick, 1000);
+
+    window.pauseSession = function() {
+      paused = true;
+      clearTimeout(timer);
+      const pauseEl = document.getElementById("pause-seconds");
+      if (pauseEl) pauseEl.textContent = seconds;
+      overlay.style.display = "flex";
+    };
+
+    window.resumeSession = function() {
+      paused = false;
+      overlay.style.display = "none";
+      timer = setTimeout(tick, 1000);
+    };
+
+    document.addEventListener("keydown", function(e) {
+      if (e.code === "Space" && e.target.tagName !== "INPUT") {
+        e.preventDefault();
+        paused ? resumeSession() : pauseSession();
+      }
+    });
+  })();
+</script>
+<% end %>
