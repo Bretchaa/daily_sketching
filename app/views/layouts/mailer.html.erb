@@ -35,7 +35,9 @@
           <hr class="divider">
           <img src="https://assets.dailysketching.app/brand/logo_email.png" alt="Daily Sketching" style="height: 20px; width: auto; margin-bottom: 12px; opacity: 0.5;">
           <p class="small">One drawing challenge, every day.</p>
-          <p class="small" style="margin-top: 6px;"><a href="<%= unsubscribe_url(token: @user&.unsubscribe_token) %>">Unsubscribe</a> from these emails.</p>
+          <% if @user&.unsubscribe_token %>
+            <p class="small" style="margin-top: 6px;"><a href="<%= unsubscribe_url(token: @user.unsubscribe_token) %>">Unsubscribe</a> from these emails.</p>
+          <% end %>
         </div>
       </div>
     </div>
