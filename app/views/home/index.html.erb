@@ -1,132 +1,146 @@
 <style>
   @media (max-width: 640px) {
-    .hero-split { flex-direction: column !important; }
-    .hero-split .hero-right { border-left: none !important; padding: 0 1.5rem 3rem !important; }
+    .hero-split { flex-direction: column !important; min-height: unset !important; }
+    .hero-split .hero-left { padding: 3.5rem 1.75rem 3rem !important; align-items: center !important; text-align: center !important; }
+    .hero-split .hero-left p { margin-bottom: 2.5rem !important; }
+    .hero-split .hero-left h1 { margin-bottom: 1.25rem !important; }
+    .hero-split .hero-headline { font-size: 2.1rem !important; }
+    .hero-split .hero-cta { width: 100% !important; justify-content: center; }
+    .hero-split .hero-right { border-left: none !important; padding: 0 1.75rem 3rem !important; height: 260px !important; }
+    .hero-cta-group { flex-direction: column !important; width: 100% !important; align-items: stretch !important; }
+    .hero-cta-group .btn-secondary { width: 100% !important; justify-content: center !important; }
+    .hero-cta-group .btn { width: 100% !important; justify-content: center !important; }
+    .hero-cta-group .btn-sketchy { width: 100% !important; justify-content: center !important; }
+    .hero-cta-group .btn-sketchy-secondary { width: 100% !important; justify-content: center !important; }
+    .btn-sketchy.hero-cta { width: 100% !important; justify-content: center !important; }
+  }
+  @keyframes bounce-down {
+    0%, 100% { transform: translateX(-0.15em) translateY(-0.15em); }
+    50% { transform: translateX(-0.15em) translateY(calc(-0.15em + 6px)); }
   }
 </style>
 
-<div id="lightbox" onclick="this.style.display='none'" style="display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.92); align-items: center; justify-content: center; cursor: zoom-out;">
-  <img id="lightbox-img" style="max-width: 92vw; max-height: 92vh; object-fit: contain; border-radius: 0.5rem;">
-</div>
-<script>
-  function openLightbox(src) {
-    document.getElementById("lightbox-img").src = src;
-    document.getElementById("lightbox").style.display = "flex";
-  }
-  document.addEventListener("keydown", function(e) { if (e.key === "Escape") document.getElementById("lightbox").style.display = "none"; });
-</script>
+<%= render "shared/lightbox" %>
 
+<% show_scroll_hint = @yesterday_count >= 5 %>
 
-<div style="background: #f5f2ee; min-height: 100vh;">
+<div class="bg-paper">
 
   <%# Hero — split layout %>
-  <div class="hero-split" style="min-height: 100vh; display: flex; align-items: stretch;">
+  <div class="hero-split" style="min-height: 100vh; display: flex; align-items: stretch; position: relative;">
 
     <%# Left — CTA %>
-    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 2rem 3rem 6rem 5rem; min-width: 0;">
+    <div class="hero-left" style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 2rem 3rem 6rem 5rem; min-width: 0;">
 
-      <%= image_tag "logo_home.svg", style: "height: 7.5rem; width: auto; margin-bottom: 3.5rem; display: block;", alt: "Daily Sketching" %>
+      <%= image_tag "logo_home.svg", class: "hero-logo", style: "height: 7.5rem; width: auto; margin-bottom: 3.5rem; display: block;", alt: "Daily Sketching" %>
 
       <% if current_user %>
-        <h1 class="font-handwritten" style="font-size: 2.75rem; line-height: 1.15; color: #1a1a1a; margin-bottom: 0.75rem;">
-          <% if @drew_today %>
+        <h1 class="font-handwritten hero-headline" style="font-size: 2.75rem; line-height: 1.15; color: #1a1a1a; margin-bottom: 0.75rem;">
+          <% if @drew_today || @completed_not_uploaded %>
             Well done,<% if current_user.username.length > 10 %><br><% end %> <%= current_user.username %>!
           <% else %>
             Welcome back,<% if current_user.username.length > 10 %><br><% end %> <%= current_user.username %>
           <% end %>
         </h1>
-
         <p class="font-sans" style="font-size: 1rem; color: #888; margin-bottom: 2rem; line-height: 1.6;">
-          <%= @drew_today ? "Come back tomorrow for a new challenge." : "Your daily challenge is waiting." %>
+          <%= (@drew_today || @completed_not_uploaded) ? "Come back tomorrow for a new challenge, or keep drawing today." : "Your daily challenge is waiting." %>
         </p>
       <% else %>
-        <h1 class="font-handwritten" style="font-size: 2.75rem; line-height: 1.15; color: #1a1a1a; margin-bottom: 0.75rem;">
+        <h1 class="font-handwritten hero-headline" style="font-size: 2.75rem; line-height: 1.15; color: #1a1a1a; margin-bottom: 0.75rem;">
           One drawing challenge,<br>every day.
         </h1>
         <p class="font-sans" style="font-size: 1rem; color: #888; margin-bottom: 2rem; line-height: 1.6;">
-          Figure drawing, portraits, gestures &amp; more — 15 minutes a day, same challenge for everyone.
+          15 minutes of real reference drawing every day. Figures, portraits, gestures. One shared challenge. Then see what everyone drew.
         </p>
       <% end %>
 
       <% if @drew_today %>
-        <%= link_to "See today's drawings", done_path,
-          class: "btn btn-black btn-lg rounded-2xl",
-          style: "width: fit-content; padding-left: 2rem; padding-right: 2rem;" %>
+        <div class="hero-cta-group" style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 1rem; align-items: center;">
+          <%= link_to "See today's drawings", done_path, class: "btn-sketchy hero-cta" %>
+          <%= link_to "Keep practicing", practice_path, class: "btn-sketchy-secondary hero-cta" %>
+        </div>
+      <% elsif @completed_not_uploaded %>
+        <div class="hero-cta-group" style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 1rem; align-items: center;">
+          <%= link_to "Upload your drawing", done_path, class: "btn-sketchy hero-cta" %>
+          <%= link_to "Keep practicing", practice_path, class: "btn-sketchy-secondary hero-cta" %>
+        </div>
       <% else %>
-        <%= link_to "Start today's challenge", today_challenge_path,
-          class: "btn btn-black btn-lg rounded-2xl",
-          style: "width: fit-content; padding-left: 2rem; padding-right: 2rem;" %>
+        <%= link_to "Start today's challenge", today_challenge_path, class: "btn-sketchy hero-cta" %>
       <% end %>
 
     </div>
 
-    <%# Right — yesterday's gallery %>
-    <% if @yesterday_submissions.any? %>
+    <%# Right — always example images %>
+    <% if @example_images.present? %>
       <div class="hero-right" style="flex: 1; padding: 2.5rem 1.5rem 2.5rem 0.75rem; display: flex; flex-direction: column; min-width: 0; overflow: hidden; height: 100vh;">
-        <p class="font-sans" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #bbb; margin-bottom: 0.4rem; flex-shrink: 0;">
-          <%= @gallery_date == Date.yesterday ? "Yesterday" : @gallery_date.strftime("%B %-d") %><% if @yesterday_theme.present? %> · <%= @yesterday_theme.humanize %><% end %>
-        </p>
-        <% total_count = @yesterday_submissions.size %>
-        <% if total_count == 1 %>
-          <% grid_cols = 1; grid_rows = 1 %>
-          <% grid_submissions = @yesterday_submissions %>
-          <% show_browse_all = false %>
-        <% elsif total_count == 2 %>
-          <% grid_cols = 2; grid_rows = 1 %>
-          <% grid_submissions = @yesterday_submissions %>
-          <% show_browse_all = false %>
-        <% elsif total_count == 3 %>
-          <% grid_cols = 2; grid_rows = 2 %>
-          <% grid_submissions = @yesterday_submissions %>
-          <% show_browse_all = true %>
-        <% elsif total_count == 4 %>
-          <% grid_cols = 2; grid_rows = 2 %>
-          <% grid_submissions = @yesterday_submissions %>
-          <% show_browse_all = false %>
-        <% else %>
-          <% grid_cols = 3; grid_rows = 2 %>
-          <% grid_submissions = @yesterday_submissions.first(5) %>
-          <% show_browse_all = true %>
-        <% end %>
-
-        <div style="flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(<%= grid_cols %>, 1fr); grid-template-rows: repeat(<%= grid_rows %>, 1fr); gap: 0.4rem;">
-          <% grid_submissions.each do |submission| %>
-            <% total = submission.total_cheers %>
-            <div style="position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; min-height: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-              <%= image_tag url_for(submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in;", onclick: "openLightbox(this.src)" %>
-              <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.3rem 0.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.6)); display: flex; align-items: center; justify-content: space-between;">
-                <p class="font-sans" style="font-size: 0.65rem; color: white; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= submission.user.username %></p>
-                <% if total > 0 %>
-                  <div style="display: flex; align-items: center; gap: 0.2rem; flex-shrink: 0;">
-                    <span style="font-size: 0.65rem;">👏</span>
-                    <span class="font-sans" style="font-size: 0.6rem; color: white; font-weight: 600;"><%= total %></span>
-                  </div>
-                <% end %>
-              </div>
+        <div style="flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 0.4rem;">
+          <% @example_images.first(6).each do |url| %>
+            <div class="img-skeleton" style="position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; min-height: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+              <img src="<%= url %>" style="width: 100%; height: 100%; object-fit: cover; display: block;" loading="lazy" onload="this.parentElement.classList.remove('img-skeleton')">
             </div>
-          <% end %>
-
-          <% if show_browse_all %>
-            <%= link_to gallery_path(date: @gallery_date.to_s), style: "text-decoration: none; display: block; height: 100%;" do %>
-              <div style="border-radius: 1rem; background: #e8e3db; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem; cursor: pointer; height: 100%;">
-                <% remaining = [@yesterday_submissions.size - grid_submissions.size, 0].max %>
-                <% if remaining > 0 %>
-                  <span class="font-sans" style="font-size: 1.25rem; color: #aaa;">+<%= remaining %></span>
-                <% end %>
-                <span class="font-sans" style="font-size: 0.65rem; font-weight: 600; color: #bbb; text-align: center;">Browse all</span>
-              </div>
-            <% end %>
           <% end %>
         </div>
       </div>
+    <% end %>
 
-    <% else %>
-      <%# No drawings yet — fill right side with a teaser %>
-      <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem;">
-        <p class="font-handwritten" style="font-size: 1.25rem; color: #ccc; text-align: center;">Your drawing<br>could be here.</p>
-      </div>
+    <%# Gradient fade + scroll hint %>
+    <% if show_scroll_hint %>
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 8rem; background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.45) 50%, white); pointer-events: none;"></div>
+      <a href="#yesterday-gallery" style="position: absolute; bottom: 1.5rem; left: 5rem; display: flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; background: white; border-radius: 999px; border: 2px solid #1a1a1a; box-shadow: 0.25em 0.25em 0 #1a1a1a; text-decoration: none; animation: bounce-down 2.4s ease-in-out infinite;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </a>
     <% end %>
 
   </div>
+
+  <%# Yesterday gallery %>
+  <% if show_scroll_hint %>
+    <div id="yesterday-gallery" style="background: white;">
+    <div style="max-width: 52rem; margin: 0 auto; padding: 4rem 2rem 0;">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.35rem;">
+        <h2 class="font-handwritten" style="font-size: 2rem; color: #1a1a1a;">
+          <%= @gallery_date == Date.yesterday ? "Yesterday's drawings" : @gallery_date.strftime("%B %-d") %>
+        </h2>
+        <% if @yesterday_count > 8 %>
+          <%= link_to "See all", gallery_path(date: @gallery_date.to_s), class: "font-sans", style: "font-size: 0.78rem; font-weight: 600; color: #aaa; text-decoration: none;" %>
+        <% end %>
+      </div>
+      <p class="font-sans" style="font-size: 0.85rem; color: #aaa; margin-bottom: 2rem;">
+        <%= @yesterday_count %> <%= @yesterday_count == 1 ? "person" : "people" %> drew<% if @yesterday_theme.present? %> · <%= @yesterday_theme.humanize %><% end %>
+      </p>
+
+      <div style="columns: 2; column-gap: 0.75rem;">
+        <% @yesterday_submissions.each do |submission| %>
+          <% meta = "#{@gallery_date.strftime("%b %-d")} · #{@yesterday_theme.humanize}" %>
+          <div data-lightbox
+               data-img="<%= url_for(submission.image) %>"
+               data-username="<%= submission.user.username %>"
+               data-avatar-url="<%= submission.user.avatar_url.to_s %>"
+               data-note="<%= submission.note.to_s %>"
+               data-meta="<%= meta %>"
+               class="img-skeleton"
+               style="break-inside: avoid; margin-bottom: 0.75rem; position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer;">
+            <%= image_tag url_for(submission.image), style: "width: 100%; height: auto; display: block;", loading: "lazy", onload: "this.parentElement.classList.remove('img-skeleton')" %>
+            <div class="gallery-hover-overlay"></div>
+          </div>
+        <% end %>
+      </div>
+
+      <div style="text-align: center; padding: 5rem 0 4rem;">
+        <% if @drew_today %>
+          <%= link_to "See today's drawings", done_path, class: "btn-sketchy" %>
+        <% elsif @completed_not_uploaded %>
+          <%= link_to "Upload your drawing", done_path, class: "btn-sketchy" %>
+        <% else %>
+          <%= link_to "Start today's challenge", today_challenge_path, class: "btn-sketchy" %>
+        <% end %>
+      </div>
+
+    </div>
+    <div style="height: 4rem; background: linear-gradient(to bottom, white, rgba(245,242,238,0.5) 50%, #f5f2ee);"></div>
+    </div>
+  <% end %>
 
 </div>

@@ -26,7 +26,7 @@ class RegistrationsController < ApplicationController
 
   def set_username
     if current_user.update(username: params[:username])
-      redirect_to params[:return_to].presence || root_path
+      redirect_to session.delete(:return_to) || root_path
     else
       @error = current_user.errors.full_messages.first
       @user = current_user

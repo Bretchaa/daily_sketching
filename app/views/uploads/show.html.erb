@@ -1,4 +1,4 @@
-<div class="min-h-screen flex flex-col items-center justify-center px-6 py-10" style="background: #f5f2ee;">
+<div class="bg-paper min-h-screen flex flex-col items-center justify-center px-6 py-10">
   <div class="w-full" style="max-width: 24rem;">
 
     <%= image_tag "logo_home.svg", class: "w-40", alt: "Daily Sketching", style: "margin: 0 auto 1.75rem; display: block;" %>
@@ -57,7 +57,7 @@
             <%= f.file_field :image, accept: "image/*", capture: "environment", style: "display: none;", id: "image-input" %>
           </label>
 
-          <%= f.submit @existing&.image&.attached? ? "Replace drawing" : "Share my drawing", class: "btn btn-black btn-lg w-full rounded-2xl", id: "submit-btn" %>
+          <%= f.submit @existing&.image&.attached? ? "Replace drawing" : "Share my drawing", class: "btn-sketchy", style: "width: 100%;", id: "submit-btn" %>
 
         </div>
       <% end %>

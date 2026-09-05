@@ -3,41 +3,44 @@
 <% if !current_user %>
   <%# ── STEP 1: Not logged in ── %>
   <% bg = @submissions.find { |s| s.image.attached? } %>
-  <div style="background: #c8bfb4; min-height: 100vh; display: flex; flex-direction: column; position: relative; overflow: hidden;">
-
-    <%# Blurred background — single image stretched to fill %>
-    <% if bg %>
-      <img src="<%= url_for(bg.image) %>" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(20px) brightness(0.55); transform: scale(1.1); pointer-events: none; z-index: 0;">
-    <% end %>
+  <div style="background: #1a1a1a; min-height: 100vh; display: flex; flex-direction: column; position: relative; overflow: hidden;">
 
     <%# Content %>
     <div style="position: relative; z-index: 1; flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem;">
-      <div style="background: white; border-radius: 1.5rem; padding: 2rem 2.5rem; border: 1px solid #e2ddd8; max-width: 22rem; width: 100%; box-shadow: 0 8px 40px rgba(0,0,0,0.15); text-align: center;">
-        <p class="font-handwritten" style="font-size: 1.6rem; color: #1a1a1a; margin-bottom: 0.35rem;">See what everyone drew today</p>
-        <p class="font-sans" style="font-size: 0.85rem; color: #999; margin-bottom: 1.5rem; line-height: 1.5;">Create a free account, upload your drawing, and unlock today's community gallery.</p>
+      <div style="background: white; border-radius: 1.5rem; padding: 2rem 2.5rem; border: 2px solid #1a1a1a; max-width: 22rem; width: 100%;">
+        <p class="font-handwritten" style="font-size: 1.6rem; color: #1a1a1a; margin-bottom: 1.5rem;">See what everyone drew today</p>
 
-        <%= link_to "/auth/google_oauth2", style: "display: flex; align-items: center; justify-content: center; gap: 0.6rem; background: white; color: #333; border: 1.5px solid #e2ddd8; border-radius: 0.75rem; padding: 0.7rem 1rem; font-size: 0.9rem; font-weight: 600; text-decoration: none; width: 100%; box-sizing: border-box; margin-bottom: 1rem;" do %>
+        <%= button_to "/auth/google_oauth2", method: :post, class: "btn-sketchy-secondary", style: "width: 100%; gap: 0.6rem; margin-bottom: 1rem;" do %>
           <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
           Continue with Google
         <% end %>
 
         <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-          <div style="flex: 1; height: 1px; background: #e2ddd8;"></div>
-          <span class="font-sans" style="font-size: 0.8rem; color: #bbb;">or</span>
-          <div style="flex: 1; height: 1px; background: #e2ddd8;"></div>
+          <div style="flex: 1; height: 1.5px; background: #1a1a1a;"></div>
+          <span class="font-sans" style="font-size: 0.8rem; color: #1a1a1a; font-weight: 600;">or</span>
+          <div style="flex: 1; height: 1.5px; background: #1a1a1a;"></div>
         </div>
 
         <%= form_with url: sign_up_path, method: :post do |f| %>
           <%= f.hidden_field :return_to, value: done_path %>
-          <div style="display: flex; flex-direction: column; gap: 0.65rem;">
-            <%= f.text_field :username, placeholder: "Username", required: true, style: "width: 100%; padding: 0.7rem 1rem; border: 1.5px solid #e2ddd8; border-radius: 0.75rem; font-size: 0.9rem; outline: none; box-sizing: border-box;" %>
-            <%= f.email_field :email, placeholder: "Email", required: true, style: "width: 100%; padding: 0.7rem 1rem; border: 1.5px solid #e2ddd8; border-radius: 0.75rem; font-size: 0.9rem; outline: none; box-sizing: border-box;" %>
-            <%= f.password_field :password, placeholder: "Password (6+ characters)", required: true, style: "width: 100%; padding: 0.7rem 1rem; border: 1.5px solid #e2ddd8; border-radius: 0.75rem; font-size: 0.9rem; outline: none; box-sizing: border-box;" %>
-            <%= f.submit "Create free account", class: "btn btn-black btn-lg w-full rounded-2xl" %>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div>
+              <label class="font-sans" style="font-size: 0.8rem; font-weight: 600; color: #555; display: block; margin-bottom: 0.4rem;">Username</label>
+              <%= f.text_field :username, required: true, class: "input-sketchy" %>
+            </div>
+            <div>
+              <label class="font-sans" style="font-size: 0.8rem; font-weight: 600; color: #555; display: block; margin-bottom: 0.4rem;">Email</label>
+              <%= f.email_field :email, required: true, class: "input-sketchy" %>
+            </div>
+            <div>
+              <label class="font-sans" style="font-size: 0.8rem; font-weight: 600; color: #555; display: block; margin-bottom: 0.4rem;">Password</label>
+              <%= f.password_field :password, required: true, placeholder: "At least 6 characters", class: "input-sketchy" %>
+            </div>
+            <%= f.submit "Create free account", class: "btn-sketchy", style: "width: 100%;" %>
           </div>
         <% end %>
 
-        <p class="font-sans" style="margin-top: 1rem; font-size: 0.82rem; color: #aaa;">
+        <p class="font-sans" style="margin-top: 1rem; font-size: 0.82rem; color: #aaa; text-align: left;">
           Already have an account? <%= link_to "Sign in", sign_in_path, style: "color: #1a1a1a; font-weight: 600;" %>
         </p>
       </div>
@@ -45,128 +48,262 @@
 
   </div>
 
-<% elsif !uploaded %>
+<% elsif !uploaded && !@skipped %>
   <%# ── STEP 2: Logged in, no upload yet ── %>
-  <% bg = @submissions.find { |s| s.image.attached? } %>
-  <div style="background: #111; min-height: 100vh; display: flex; flex-direction: column; position: relative; overflow: hidden;">
-
-    <%# Blurred background — single image stretched to fill %>
-    <% if bg %>
-      <img src="<%= url_for(bg.image) %>" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(20px) brightness(0.25); transform: scale(1.1); pointer-events: none; z-index: 0;">
-    <% end %>
+  <% @hide_nav = true %>
+  <div style="background: #111; min-height: 100vh; display: flex; flex-direction: column;">
 
     <%# Content %>
-    <div style="position: relative; z-index: 1; flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem;">
-      <div style="text-align: center; max-width: 26rem; width: 100%;">
+    <style>
+      @media (max-width: 640px) {
+        .upload-layout { flex-direction: column !important; gap: 1.5rem !important; }
+        .upload-left { margin-bottom: 0 !important; text-align: center !important; }
+        .upload-outer { padding: 0.75rem !important; align-items: flex-start !important; padding-top: 1.5rem !important; }
+        .upload-card { padding: 0.75rem !important; }
+        .desktop-skip { display: none !important; }
+      }
+    </style>
+    <div class="upload-outer" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+      <div class="upload-layout" style="display: flex; align-items: center; gap: 3rem; max-width: 54rem; width: 100%;">
 
-        <%= image_tag "mascotte_photo.png", style: "height: 10rem; width: auto; margin-bottom: 1rem; display: block; margin-left: auto; margin-right: auto;", alt: "" %>
-        <h1 class="font-handwritten" style="font-size: 2rem; color: white; margin-bottom: 0.5rem;">Share your drawing!</h1>
-        <p class="font-sans" style="font-size: 0.9rem; color: rgba(255,255,255,0.5); margin-bottom: 2rem; line-height: 1.5;">Upload your drawing to unlock today's community gallery.</p>
-
-        <div style="background: rgba(255,255,255,0.07); border-radius: 1.5rem; padding: 1.75rem; border: 1px solid rgba(255,255,255,0.1);">
-          <% if mobile? %>
-            <%# Mobile: direct camera upload %>
-            <%= form_with url: submissions_path, method: :post, html: { enctype: "multipart/form-data" } do |f| %>
-              <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                <label for="mobile-image-input" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; border: 2px dashed rgba(255,255,255,0.2); border-radius: 1rem; padding: 1.5rem; cursor: pointer; overflow: hidden; position: relative;">
-                  <div id="mobile-preview-container" style="display: none; width: 100%;">
-                    <img id="mobile-preview" style="width: 100%; border-radius: 0.5rem; object-fit: cover; max-height: 220px; display: block;">
-                  </div>
-                  <div id="mobile-placeholder">
-                    <span style="font-size: 2rem;">📷</span>
-                    <span class="font-sans" style="font-size: 0.875rem; color: rgba(255,255,255,0.5); display: block; margin-top: 0.25rem;">Tap to take or pick a photo</span>
-                  </div>
-                  <%= f.file_field :image, accept: "image/*", capture: "environment", style: "display: none;", id: "mobile-image-input" %>
-                </label>
-                <%= f.submit "Upload my drawing", class: "btn btn-black w-full rounded-2xl" %>
-              </div>
-            <% end %>
-            <script>
-              document.getElementById("mobile-image-input").addEventListener("change", function() {
-                const file = this.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                  document.getElementById("mobile-preview").src = e.target.result;
-                  document.getElementById("mobile-preview-container").style.display = "block";
-                  document.getElementById("mobile-placeholder").style.display = "none";
-                };
-                reader.readAsDataURL(file);
-              });
-            </script>
-          <% else %>
-            <%# Desktop: QR code + polling %>
-            <% qr_url = done_url(host: request.host, port: request.port) %>
-            <% qr = RQRCode::QRCode.new(qr_url) %>
-            <p class="font-sans" style="font-size: 0.95rem; font-weight: 600; color: white; margin-bottom: 0.25rem;">Scan with your phone</p>
-            <p class="font-sans" style="font-size: 0.82rem; color: rgba(255,255,255,0.45); margin-bottom: 1.25rem;">Take a photo of your drawing and upload it directly.</p>
-            <div style="display: inline-block; background: white; padding: 1rem; border-radius: 1rem;">
-              <% svg = qr.as_svg(viewbox: true, use_path: true) %>
-              <% svg = svg.sub('<svg ', '<svg width="150" height="150" ') %>
-              <%= svg.html_safe %>
-            </div>
-            <p class="font-sans" style="font-size: 0.78rem; color: rgba(255,255,255,0.3); margin-top: 1rem;">Waiting for your upload…</p>
-
-            <div style="display: flex; align-items: center; gap: 0.75rem; margin: 1.25rem 0;">
-              <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
-              <span class="font-sans" style="font-size: 0.8rem; color: rgba(255,255,255,0.3);">or</span>
-              <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
-            </div>
-
-            <%= form_with url: submissions_path, method: :post, html: { enctype: "multipart/form-data" } do |f| %>
-              <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                <label style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; border: 1.5px dashed rgba(255,255,255,0.2); border-radius: 0.75rem; padding: 0.75rem 1rem; cursor: pointer;">
-                  <span style="font-size: 1rem;">📎</span>
-                  <span class="font-sans" style="font-size: 0.85rem; color: rgba(255,255,255,0.5);">Upload a file from this device</span>
-                  <%= f.file_field :image, accept: "image/*", style: "display: none;" %>
-                </label>
-                <%= f.submit "Upload drawing", class: "btn btn-black w-full rounded-2xl" %>
-              </div>
-            <% end %>
-
-            <script>
-              setInterval(function() {
-                fetch("/upload_status")
-                  .then(function(r) { return r.json(); })
-                  .then(function(data) { if (data.uploaded) window.location.href = "<%= done_path %>"; });
-              }, 3000);
-            </script>
-          <% end %>
+        <%# Left: mascot + text %>
+        <div class="upload-left" style="flex: 1; text-align: center; min-width: 0;">
+          <%= image_tag "mascotte_photo.png", style: "height: 10rem; width: auto; margin-bottom: 1rem; display: block; margin-left: auto; margin-right: auto;", alt: "" %>
+          <h1 class="font-handwritten" style="font-size: 2rem; color: white; margin-bottom: 0.75rem;">Complete your challenge!</h1>
+          <p class="font-sans" style="font-size: 0.9rem; color: rgba(255,255,255,0.75); line-height: 1.6;">Upload your drawing to unlock today's community gallery and track your progress. Only your username is shown. No followers, no pressure.</p>
+          <p class="font-sans desktop-skip" style="margin-top: 1.25rem; font-size: 0.8rem;">
+            <%= link_to "Skip for now →", done_path(skipped: "1"), style: "color: rgba(255,255,255,0.4); text-decoration: none;" %>
+          </p>
         </div>
 
-        <p class="font-sans" style="margin-top: 1.5rem; font-size: 0.8rem;">
-          <%= link_to "Skip for now →", root_path, style: "color: rgba(255,255,255,0.25); text-decoration: none;" %>
-        </p>
+        <%# Right: upload card + skip %>
+        <div class="upload-right" style="flex: 1; min-width: 0;">
+          <div class="upload-card" style="background: #f5f2ee; border-radius: 1.5rem; padding: 1.75rem; border: 2px solid #1a1a1a; text-align: center;">
+            <% if mobile? %>
+              <%# Mobile: direct camera upload %>
+              <%= form_with url: submissions_path, method: :post, html: { enctype: "multipart/form-data" } do |f| %>
+                <%# Wrapper so rotate button sits outside the label %>
+                <div id="mobile-upload-zone" style="position: relative; background: #f5f2ee; border-radius: 1rem; padding: 0.5rem;">
+                  <label id="mobile-upload-label" for="mobile-image-input" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; border: 2px dashed rgba(0,0,0,0.15); border-radius: 1rem; padding: 1.5rem; cursor: pointer; overflow: hidden; min-height: 10rem; background: #f5f2ee;">
+                    <div id="mobile-preview-container" style="display: none; width: 100%;">
+                      <img id="mobile-preview" style="width: 100%; border-radius: 0.5rem; object-fit: cover; max-height: 320px; display: block;">
+                    </div>
+                    <div id="mobile-placeholder">
+                      <span style="font-size: 3rem; display: block; margin-bottom: 0.75rem;">📷</span>
+                      <span class="font-sans" style="font-size: 0.95rem; color: #1a1a1a; display: block; font-weight: 600;">Tap to take or pick a photo</span>
+                    </div>
+                    <%= f.file_field :image, accept: "image/*", capture: "environment", style: "display: none;", id: "mobile-image-input" %>
+                  </label>
+                  <button type="button" id="mobile-rotate-btn" onclick="rotateMobileImage()" class="font-sans"
+                          style="display:none;position:absolute;top:0.75rem;right:0.75rem;width:3rem;height:3rem;border-radius:50%;background:#1a1a1a;border:none;color:white;font-size:1.4rem;font-weight:600;cursor:pointer;align-items:center;justify-content:center;line-height:1;-webkit-tap-highlight-color:transparent;box-shadow:0 2px 8px rgba(0,0,0,0.4);">↻</button>
+                </div>
+
+                <%# Sticky upload bar — hidden until photo selected %>
+                <div id="mobile-sticky-bar" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; padding: 1.25rem 1.75rem calc(1.25rem + env(safe-area-inset-bottom)); background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.75));">
+                  <%= f.submit "Upload my drawing", class: "btn-sketchy", style: "width: 100%; -webkit-appearance: none;", data: { disable_with: "Uploading…" } %>
+                </div>
+              <% end %>
+              <script>
+                var mobileOriginalFile = null;
+                var mobileRotation = 0;
+
+                document.getElementById("mobile-image-input").addEventListener("change", function() {
+                  mobileOriginalFile = this.files[0];
+                  if (!mobileOriginalFile) return;
+                  mobileRotation = 0;
+                  var preview = document.getElementById("mobile-preview");
+                  preview.style.transform = "";
+                  preview.src = URL.createObjectURL(mobileOriginalFile);
+                  document.getElementById("mobile-preview-container").style.display = "block";
+                  document.getElementById("mobile-placeholder").style.display = "none";
+                  document.getElementById("mobile-rotate-btn").style.display = "flex";
+                  document.getElementById("mobile-sticky-bar").style.display = "block";
+                  document.getElementById("mobile-sticky-spacer").style.display = "block";
+                  document.getElementById("mobile-upload-zone").style.background = "transparent";
+                  document.getElementById("mobile-upload-zone").style.padding = "0";
+                  document.getElementById("mobile-upload-label").style.background = "transparent";
+                  document.getElementById("mobile-upload-label").style.padding = "0";
+                  document.getElementById("mobile-upload-label").style.minHeight = "auto";
+                  document.getElementById("mobile-upload-label").style.border = "none";
+                  var skipLink = document.getElementById("mobile-skip-link");
+                  if (skipLink) skipLink.style.display = "none";
+                });
+
+                function rotateMobileImage() {
+                  if (!mobileOriginalFile) return;
+                  mobileRotation = (mobileRotation + 90) % 360;
+                  document.getElementById("mobile-preview").style.transform = "rotate(" + mobileRotation + "deg)";
+                }
+
+                (function() {
+                  var form = document.getElementById("mobile-image-input").closest("form");
+                  var encoding = false;
+                  form.addEventListener("submit", function(e) {
+                    if (encoding || mobileRotation === 0 || !mobileOriginalFile) return;
+                    e.preventDefault();
+                    encoding = true;
+                    var submitBtn = form.querySelector("[type=submit]");
+                    if (submitBtn) { submitBtn.disabled = true; submitBtn.value = "Uploading…"; }
+                    var img = new Image();
+                    var url = URL.createObjectURL(mobileOriginalFile);
+                    img.onload = function() {
+                      URL.revokeObjectURL(url);
+                      var rad = mobileRotation * Math.PI / 180;
+                      var swap = mobileRotation % 180 !== 0;
+                      var canvas = document.createElement("canvas");
+                      canvas.width  = swap ? img.height : img.width;
+                      canvas.height = swap ? img.width  : img.height;
+                      var ctx = canvas.getContext("2d");
+                      ctx.translate(canvas.width / 2, canvas.height / 2);
+                      ctx.rotate(rad);
+                      ctx.drawImage(img, -img.width / 2, -img.height / 2);
+                      canvas.toBlob(function(blob) {
+                        var rotated = new File([blob], mobileOriginalFile.name, { type: "image/jpeg" });
+                        try {
+                          var dt = new DataTransfer();
+                          dt.items.add(rotated);
+                          document.getElementById("mobile-image-input").files = dt.files;
+                        } catch(err) {}
+                        form.submit();
+                      }, "image/jpeg", 0.92);
+                    };
+                    img.src = url;
+                  });
+                })();
+              </script>
+            <% else %>
+              <%# Desktop: QR code + polling %>
+              <% qr_url = done_url(host: request.host, port: request.port) %>
+              <% qr = RQRCode::QRCode.new(qr_url) %>
+              <p class="font-sans" style="font-size: 0.95rem; font-weight: 600; color: #1a1a1a; margin-bottom: 0.25rem;">Scan with your phone</p>
+              <p class="font-sans" style="font-size: 0.82rem; color: #888; margin-bottom: 1.25rem;">Take a photo of your drawing and upload it directly.</p>
+              <div style="text-align: center;">
+                <div style="display: inline-block; background: white; padding: 1rem; border-radius: 1rem; border: 1.5px solid #1a1a1a;">
+                  <% svg = qr.as_svg(viewbox: true, use_path: true) %>
+                  <% svg = svg.sub('<svg ', '<svg width="150" height="150" ') %>
+                  <%= svg.html_safe %>
+                </div>
+                <p class="font-sans" style="font-size: 0.78rem; color: #aaa; margin-top: 1rem;">Waiting for your upload…</p>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 0.75rem; margin: 1.25rem 0;">
+                <div style="flex: 1; height: 1.5px; background: #1a1a1a;"></div>
+                <span class="font-sans" style="font-size: 0.8rem; color: #1a1a1a; font-weight: 600;">or</span>
+                <div style="flex: 1; height: 1.5px; background: #1a1a1a;"></div>
+              </div>
+
+              <%= form_with url: submissions_path, method: :post, html: { enctype: "multipart/form-data" }, data: { turbo: false } do |f| %>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                  <label id="desktop-file-label" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; border: 1.5px dashed #1a1a1a; border-radius: 0.75rem; padding: 0.75rem 1rem; cursor: pointer; overflow: hidden; position: relative;">
+                    <div id="desktop-preview-container" style="display: none; width: 100%; position: relative;">
+                      <img id="desktop-preview" style="width: 100%; border-radius: 0.5rem; object-fit: cover; max-height: 180px; display: block;">
+                      <button type="button" onclick="rotateDesktopImage(event)" class="font-sans"
+                              style="position:absolute;top:0.5rem;right:0.5rem;width:2.5rem;height:2.5rem;border-radius:50%;background:#1a1a1a;border:none;color:white;font-size:1.2rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;box-shadow:0 2px 8px rgba(0,0,0,0.4);">↻</button>
+                    </div>
+                    <div id="desktop-placeholder" style="display: flex; align-items: center; gap: 0.5rem;">
+                      <span style="font-size: 1rem;">📎</span>
+                      <span class="font-sans" style="font-size: 0.85rem; color: #1a1a1a;">Upload a file from this device</span>
+                    </div>
+                    <%= f.file_field :image, accept: "image/*", style: "display: none;", id: "desktop-image-input" %>
+                  </label>
+                  <%= f.text_area :note, placeholder: "Add a note… (optional)", maxlength: 200, rows: 2, class: "input-sketchy", style: "resize: none;" %>
+                  <%= f.submit "Upload drawing", class: "btn-sketchy", style: "width: 100%;", data: { disable_with: "Uploading…" } %>
+                </div>
+              <% end %>
+
+              <script>
+                var desktopOriginalFile = null;
+                var desktopRotation = 0;
+
+                document.getElementById("desktop-image-input").addEventListener("change", function() {
+                  desktopOriginalFile = this.files[0];
+                  if (!desktopOriginalFile) return;
+                  desktopRotation = 0;
+                  var preview = document.getElementById("desktop-preview");
+                  preview.style.transform = "";
+                  preview.src = URL.createObjectURL(desktopOriginalFile);
+                  document.getElementById("desktop-preview-container").style.display = "block";
+                  document.getElementById("desktop-placeholder").style.display = "none";
+                });
+
+                function rotateDesktopImage(e) {
+                  e.stopPropagation();
+                  if (!desktopOriginalFile) return;
+                  desktopRotation = (desktopRotation + 90) % 360;
+                  document.getElementById("desktop-preview").style.transform = "rotate(" + desktopRotation + "deg)";
+                }
+
+                (function() {
+                  var form = document.getElementById("desktop-image-input").closest("form");
+                  var encoding = false;
+                  form.addEventListener("submit", function(e) {
+                    if (encoding || desktopRotation === 0 || !desktopOriginalFile) return;
+                    e.preventDefault();
+                    encoding = true;
+                    var fileType = desktopOriginalFile.type || "image/jpeg";
+                    var img = new Image();
+                    var url = URL.createObjectURL(desktopOriginalFile);
+                    img.onload = function() {
+                      URL.revokeObjectURL(url);
+                      var rad = desktopRotation * Math.PI / 180;
+                      var swap = desktopRotation % 180 !== 0;
+                      var canvas = document.createElement("canvas");
+                      canvas.width  = swap ? img.height : img.width;
+                      canvas.height = swap ? img.width  : img.height;
+                      var ctx = canvas.getContext("2d");
+                      ctx.translate(canvas.width / 2, canvas.height / 2);
+                      ctx.rotate(rad);
+                      ctx.drawImage(img, -img.width / 2, -img.height / 2);
+                      canvas.toBlob(function(blob) {
+                        var rotated = new File([blob], desktopOriginalFile.name, { type: fileType });
+                        try {
+                          var dt = new DataTransfer();
+                          dt.items.add(rotated);
+                          document.getElementById("desktop-image-input").files = dt.files;
+                        } catch(err) {}
+                        form.submit();
+                      }, fileType, 0.92);
+                    };
+                    img.src = url;
+                  });
+                })();
+
+
+                var pollTicks = 0;
+                var poll = setInterval(function() {
+                  if (++pollTicks > 100) { clearInterval(poll); return; }
+                  fetch("/upload_status")
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) { if (data.uploaded) { clearInterval(poll); window.location.href = "<%= done_path %>"; } });
+                }, 3000);
+              </script>
+            <% end %>
+          </div>
+
+          <% if mobile? %>
+            <div id="mobile-sticky-spacer" style="display: none; height: 5rem;"></div>
+            <p class="font-sans" style="margin-top: 1.25rem; font-size: 0.9rem; text-align: center;">
+              <%= link_to "Skip for now →", done_path(skipped: "1"), id: "mobile-skip-link", style: "color: rgba(255,255,255,0.75); text-decoration: none;" %>
+            </p>
+          <% end %>
+
+        </div>
 
       </div>
     </div>
   </div>
 
-<% else %>
-  <%# ── STEP 3: Uploaded — Success! ── %>
-  <%# Lightbox %>
-  <div id="lightbox" onclick="this.style.display='none'" style="display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.92); align-items: center; justify-content: center; cursor: zoom-out;">
-    <img id="lightbox-img" style="max-width: 92vw; max-height: 92vh; object-fit: contain; border-radius: 0.5rem;">
-  </div>
-  <script>
-    function openLightbox(src) {
-      document.getElementById("lightbox-img").src = src;
-      document.getElementById("lightbox").style.display = "flex";
-    }
-    document.addEventListener("keydown", function(e) { if (e.key === "Escape") document.getElementById("lightbox").style.display = "none"; });
-  </script>
+<% elsif @skipped && !uploaded %>
+  <%# ── STEP 2b: Skipped — success screen with locked gallery ── %>
+  <div style="display: flex; flex-direction: column; min-height: 100vh;">
 
-  <div style="background: #f5f2ee; min-height: 100vh; padding: 4rem 1.5rem 6rem;">
-    <div style="max-width: 52rem; margin: 0 auto;">
-
-      <%# ── Congrats ── %>
-      <div style="text-align: center; margin-bottom: 3rem; max-width: 36rem; margin-left: auto; margin-right: auto;">
-        <%= image_tag "congrats.png", style: "width: 14rem; display: block; margin: 0 auto 1rem;", alt: "" %>
-        <h1 class="font-handwritten" style="font-size: 3rem; color: #1a1a1a; line-height: 1.1; margin-bottom: 1rem;">
-          You showed up today!
-        </h1>
+    <%# White top %>
+    <div style="background: white;">
+      <div style="padding: 5rem 1.5rem 2.5rem; text-align: center; max-width: 36rem; margin: 0 auto;">
+        <%= image_tag "congrats.png", style: "width: 12rem; display: block; margin: 0 auto 1rem;", alt: "" %>
+        <h1 class="font-handwritten" style="font-size: 3rem; color: #1a1a1a; line-height: 1.1; margin-bottom: 1.25rem;"><%= @congrats %></h1>
         <% if @streak > 0 %>
-          <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: white; border-radius: 999px; padding: 0.45rem 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 1rem;">
+          <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: #f9f4e8; border-radius: 999px; padding: 0.45rem 1rem; margin-bottom: 1.25rem;">
             <div style="position: relative; width: 1.6rem; height: 2rem; flex-shrink: 0;">
               <svg viewBox="0 0 36 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; filter: drop-shadow(0 2px 6px rgba(255,212,0,0.5));">
                 <path d="M24 2L4 26L15 26L11 46L32 22L21 22Z" fill="#FFD400"/>
@@ -176,67 +313,155 @@
             <span class="font-sans" style="font-size: 0.82rem; font-weight: 700; color: #1a1a1a;"><%= @streak %> day streak</span>
           </div>
         <% end %>
-        <p class="font-sans" style="font-size: 0.85rem; color: #bbb;">See you tomorrow</p>
       </div>
+      <div style="border-top: 2px solid #1a1a1a;"></div>
+    </div>
 
-<%# ── Today's drawings ── %>
-      <% others = @submissions.reject { |s| s == @my_submission }.select { |s| s.image.attached? } %>
-      <% all_drawings = ([@my_submission] + others).compact %>
-      <% if all_drawings.any? %>
-        <div>
+    <%# Paper background — locked gallery %>
+    <div class="bg-paper" style="flex: 1; padding: 2rem 1.5rem 6rem;">
+      <div style="max-width: 52rem; margin: 0 auto;">
+        <div style="margin-bottom: 1rem;">
+          <p class="font-sans" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #1a1a1a;">Today's drawings<% if @challenge_display_name %><span style="margin: 0 0.5rem;">·</span><span style="text-transform: none; letter-spacing: 0; font-weight: 500;"><%= @challenge_display_name %></span><% end %></p>
+        </div>
+        <div style="position: relative; height: 220px; overflow: hidden;">
+          <div style="columns: 2; column-gap: 0.75rem;">
+            <% [160, 200, 140, 180].each do |h| %>
+              <div style="break-inside: avoid; margin-bottom: 0.75rem; border-radius: 1rem; background: #e8e3db; height: <%= h %>px;"></div>
+            <% end %>
+          </div>
+          <div style="position: absolute; inset: 0; background: linear-gradient(transparent 20%, #f9f4e8 70%); display: flex; align-items: center; justify-content: center; padding-top: 4rem;">
+            <%= link_to "Upload to unlock →", done_path, class: "btn-sketchy" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+<% else %>
+  <%# ── STEP 3: Uploaded — Success! ── %>
+  <%= render "shared/lightbox" %>
+  <% share_url = @my_submission&.image&.attached? ? drawing_url(@my_submission) : nil %>
+
+  <div style="display: flex; flex-direction: column; min-height: 100vh;">
+
+    <%# White top — congrats + streak %>
+    <div style="background: white;">
+      <div style="padding: 5rem 1.5rem 2.5rem; text-align: center; max-width: 36rem; margin: 0 auto;">
+        <%= image_tag "congrats.png", style: "width: 12rem; display: block; margin: 0 auto 1rem;", alt: "" %>
+        <h1 class="font-handwritten" style="font-size: 3rem; color: #1a1a1a; line-height: 1.1; margin-bottom: 1.25rem;">
+          <%= @congrats %>
+        </h1>
+
+        <% if @streak > 0 %>
+          <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: #f9f4e8; border-radius: 999px; padding: 0.45rem 1rem; margin-bottom: 1.25rem;">
+            <div style="position: relative; width: 1.6rem; height: 2rem; flex-shrink: 0;">
+              <svg viewBox="0 0 36 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; filter: drop-shadow(0 2px 6px rgba(255,212,0,0.5));">
+                <path d="M24 2L4 26L15 26L11 46L32 22L21 22Z" fill="#FFD400"/>
+              </svg>
+              <span class="font-sans" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding-left: 0.1rem; font-size: <%= @streak >= 10 ? '0.5rem' : '0.65rem' %>; font-weight: 900; color: #1a1a1a; line-height: 1;"><%= @streak %></span>
+            </div>
+            <span class="font-sans" style="font-size: 0.82rem; font-weight: 700; color: #1a1a1a;"><%= @streak %> day streak</span>
+          </div>
+        <% end %>
+
+      </div>
+      <div style="border-top: 2px solid #1a1a1a;"></div>
+    </div>
+
+    <%# Paper background — gallery %>
+    <div class="bg-paper" style="flex: 1; padding: 2rem 1.5rem 6rem;">
+      <div style="max-width: 52rem; margin: 0 auto;">
+
+        <%# Today's drawings %>
+        <% others = @submissions.reject { |s| s == @my_submission }.select { |s| s.image.attached? } %>
+        <% all_drawings = ([@my_submission] + others).compact %>
+        <% if all_drawings.any? %>
           <div style="margin-bottom: 1rem;">
-            <p class="font-sans" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #bbb;">Today's drawings</p>
+            <p class="font-sans" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #1a1a1a;">Today's drawings<% if @challenge_display_name %><span style="margin: 0 0.5rem;">·</span><span style="text-transform: none; letter-spacing: 0; font-weight: 500;"><%= @challenge_display_name %></span><% end %></p>
           </div>
 
-          <%# First row: my drawing (flex: 2) + first other (flex: 1) %>
-          <% first_other = all_drawings.find { |s| s != @my_submission } %>
-          <div style="display: flex; gap: 0.75rem; margin-bottom: 0.75rem; align-items: stretch; max-height: 22rem;">
-
-            <%# My drawing %>
-            <% my_total = @my_submission.total_cheers %>
-            <div style="flex: 2; position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; box-shadow: 0 2px 12px rgba(0,0,0,0.1);">
-              <%= image_tag url_for(@my_submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in;", onclick: "openLightbox(this.src)" %>
-              <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.4rem 0.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.65)); display: flex; align-items: center; justify-content: space-between;">
-                <p class="font-sans" style="font-size: 0.7rem; color: rgba(255,255,255,0.9); font-weight: 600;"><%= @my_submission.user.username %></p>
-                <% if my_total > 0 %>
-                  <div style="display: flex; align-items: center; gap: 0.25rem;">
-                    <span style="font-size: 0.8rem;">👏</span>
-                    <span class="font-sans" style="font-size: 0.7rem; color: white; font-weight: 700;"><%= my_total %></span>
-                  </div>
+          <div style="columns: 2; column-gap: 0.75rem;">
+            <% all_drawings.each do |submission| %>
+              <% is_mine = submission == @my_submission %>
+              <% meta = "#{@challenge.date.strftime("%b %-d")} · #{@challenge.theme.humanize}" %>
+              <div data-lightbox
+                   data-img="<%= url_for(submission.image) %>"
+                   data-username="<%= submission.user.username %>"
+                   data-avatar-url="<%= submission.user.avatar_url.to_s %>"
+                   data-note="<%= submission.note.to_s %>"
+                   data-meta="<%= meta %>"
+                   <%= "data-share-url=\"#{drawing_url(submission)}\"".html_safe if is_mine %>
+                   style="break-inside: avoid; margin-bottom: 0.75rem; position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer;">
+                <%= image_tag url_for(submission.image), style: "width: 100%; height: auto; display: block;" %>
+                <div class="gallery-hover-overlay"></div>
+                <% if is_mine && share_url %>
+                  <button onclick="shareDrawing('<%= j share_url %>')"
+                          class="share-icon-btn"
+                          style="position: absolute; top: 0.6rem; right: 0.6rem; background: #1a1a1a; border: none; border-radius: 999px; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                  </button>
                 <% end %>
-              </div>
-            </div>
-
-            <%# First other drawing %>
-            <% if first_other %>
-              <div style="flex: 1; aspect-ratio: 3/4; position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <%= image_tag url_for(first_other.image), style: "width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in;", onclick: "openLightbox(this.src)" %>
-                <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.4rem 0.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.65)); display: flex; align-items: center; justify-content: space-between;">
-                  <p class="font-sans" style="font-size: 0.7rem; color: rgba(255,255,255,0.9); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= first_other.user.username %></p>
-                  <%= render "cheers/button", submission: first_other %>
-                </div>
               </div>
             <% end %>
           </div>
+        <% end %>
 
-          <%# Remaining drawings in a 3-col grid %>
-          <% rest = all_drawings.reject { |s| s == @my_submission || s == first_other } %>
-          <% if rest.any? %>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
-              <% rest.each do |submission| %>
-                <div style="position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; aspect-ratio: 3/4; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                  <%= image_tag url_for(submission.image), style: "width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in;", onclick: "openLightbox(this.src)" %>
-                  <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 0.4rem 0.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.65)); display: flex; align-items: center; justify-content: space-between;">
-                    <p class="font-sans" style="font-size: 0.7rem; color: rgba(255,255,255,0.9); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= submission.user.username %></p>
-                    <%= render "cheers/button", submission: submission %>
-                  </div>
-                </div>
-              <% end %>
-            </div>
-          <% end %>
-        </div>
-      <% end %>
+        <% if @practice_theme %>
+          <div style="text-align: center; padding: 2rem 0 1rem;">
+            <%= link_to "Keep practicing", practice_path(theme: @practice_theme, filter_tag: @practice_filter_tag),
+              class: "btn-sketchy", style: "width: 100%;" %>
+          </div>
+        <% end %>
 
+      </div>
     </div>
+
   </div>
+
+  <%# Share modal + JS %>
+  <% if share_url %>
+    <div id="share-modal" style="display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; padding: 1.5rem;"
+         onclick="if(event.target===this)this.style.display='none'">
+      <div style="background: white; border-radius: 1.5rem; padding: 1.75rem; max-width: 22rem; width: 100%; box-shadow: 0 16px 60px rgba(0,0,0,0.2);">
+        <p class="font-handwritten" style="font-size: 1.4rem; color: #1a1a1a; margin-bottom: 1.25rem;">Share your drawing</p>
+        <div style="display: flex; align-items: center; gap: 0.5rem; background: #f5f2ee; border-radius: 0.75rem; padding: 0.6rem 0.75rem; margin-bottom: 1rem;">
+          <span class="font-sans" style="font-size: 0.78rem; color: #888; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= share_url %></span>
+          <button onclick="copyShareLink('<%= j share_url %>')" class="font-sans"
+                  style="background: #1a1a1a; color: white; border: none; border-radius: 0.5rem; padding: 0.35rem 0.75rem; font-size: 0.75rem; font-weight: 600; cursor: pointer; white-space: nowrap; font-family: inherit;">
+            <span id="copy-label">Copy</span>
+          </button>
+        </div>
+        <div style="display: flex; gap: 0.6rem;">
+          <a href="https://twitter.com/intent/tweet?text=<%= CGI.escape("I just drew today's #{@challenge.theme.humanize} challenge on Daily Sketching!") %>&url=<%= CGI.escape(share_url) %>"
+             target="_blank" rel="noopener"
+             style="flex: 1; display: flex; align-items: center; justify-content: center; background: #000; color: white; border-radius: 0.75rem; padding: 0.75rem; text-decoration: none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.259 5.629L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="https://wa.me/?text=<%= CGI.escape("I just drew today's #{@challenge.theme.humanize} challenge! #{share_url}") %>"
+             target="_blank" rel="noopener"
+             style="flex: 1; display: flex; align-items: center; justify-content: center; background: #25D366; color: white; border-radius: 0.75rem; padding: 0.75rem; text-decoration: none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <script>
+      function shareDrawing(url) {
+        var isTouchDevice = ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+        if (navigator.share && isTouchDevice) {
+          navigator.share({ title: "My drawing on Daily Sketching", url: url });
+        } else {
+          document.getElementById("share-modal").style.display = "flex";
+        }
+      }
+      function copyShareLink(url) {
+        navigator.clipboard.writeText(url).then(function() {
+          var label = document.getElementById("copy-label");
+          label.textContent = "Copied!";
+          setTimeout(function() { label.textContent = "Copy"; }, 2000);
+        });
+      }
+    </script>
+  <% end %>
 <% end %>

@@ -6,7 +6,7 @@ class SessionsController < ApplicationController
     user = User.find_by(email: params[:email])
     if user&.authenticate(params[:password])
       session[:user_id] = user.id
-      redirect_to root_path
+      redirect_to session.delete(:return_to) || root_path
     else
       @error = "Incorrect email or password."
       render :new, status: :unprocessable_entity
@@ -19,7 +19,7 @@ class SessionsController < ApplicationController
     if user.needs_username?
       redirect_to pick_username_path
     else
-      redirect_to root_path
+      redirect_to session.delete(:return_to) || root_path
     end
   end
 

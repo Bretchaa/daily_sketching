@@ -10,8 +10,14 @@ Rails.application.routes.draw do
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   get "/today", to: "challenges#today", as: :today_challenge
+  get "/preview/:theme", to: "challenges#preview", as: :preview_challenge if Rails.env.development?
+  get "/gallery_preview", to: "gallery#preview" if Rails.env.development?
   get "/draw/:step", to: "drawings#show", as: :draw
   get "/done", to: "drawings#done", as: :done
+  get  "/practice",           to: "practice#index", as: :practice
+  post "/practice/start",     to: "practice#start", as: :practice_start
+  get  "/practice/draw/:step", to: "practice#show", as: :practice_draw
+  get  "/practice/done",      to: "practice#done",  as: :practice_done
   get "/upload_status", to: "drawings#upload_status"
   get   "/password_reset",          to: "password_resets#new",    as: :new_password_reset
   post  "/password_reset",          to: "password_resets#create"
@@ -24,13 +30,23 @@ Rails.application.routes.draw do
   get "/auth/google_oauth2/callback", to: "sessions#google"
 
   post "/submissions", to: "submissions#create", as: :submissions
+  get  "/d/:id", to: "submissions#show", as: :drawing
   post "/cheers", to: "cheers#create", as: :cheers
   get  "/upload", to: "uploads#show", as: :upload
   post "/upload", to: "uploads#create"
   get    "/account", to: "account#show",    as: :account
   delete "/account", to: "account#destroy"
-  get  "/admin", to: "admin#dashboard", as: :admin
+  get  "/backstage", to: "admin#dashboard", as: :admin
+  get  "/backstage/daily_report", to: "admin#daily_report"
+  get  "/backstage/generate_challenges", to: "admin#generate_challenges"
+  namespace :admin, path: "backstage" do
+    resources :images do
+      collection { post :bulk_action }
+    end
+    resources :challenges, only: [:index]
+  end
   get  "/gallery/:date", to: "gallery#show", as: :gallery
+  get  "/unsubscribe/:token", to: "unsubscribes#show", as: :unsubscribe
   get  "/privacy", to: "pages#privacy", as: :privacy
   get  "/terms", to: "pages#terms", as: :terms
   get  "/sign_up",  to: "registrations#new",    as: :sign_up

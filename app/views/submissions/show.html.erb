@@ -1,0 +1,42 @@
+<% content_for :title, "#{@user.username} drew today's #{@challenge.theme.humanize} challenge" %>
+<% content_for :meta_description, "See what #{@user.username} drew for Daily Sketching's #{@challenge.theme.humanize} challenge. One drawing, every day." %>
+<% content_for :og_image, url_for(@submission.image) %>
+
+<div class="bg-paper" style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 1.5rem 6rem;">
+  <div style="max-width: 48rem; width: 100%;">
+
+    <%# Lightbox-style card %>
+    <div style="border-radius: 1.5rem; overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.12); margin-bottom: 1.75rem;">
+      <%= image_tag url_for(@submission.image), style: "width: 100%; height: auto; display: block; max-height: 80vh; object-fit: contain; background: #e8e3db;" %>
+      <div style="background: white; padding: 1rem 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.65rem;">
+          <% if @user.avatar_url.present? %>
+            <img src="<%= @user.avatar_url %>" style="width: 2rem; height: 2rem; border-radius: 999px; flex-shrink: 0;">
+          <% else %>
+            <div style="width: 2rem; height: 2rem; border-radius: 999px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <span class="font-sans" style="color: white; font-weight: 700; font-size: 0.75rem;"><%= @user.username[0].upcase %></span>
+            </div>
+          <% end %>
+          <div>
+            <p class="font-sans" style="font-size: 0.9rem; font-weight: 700; color: #1a1a1a; line-height: 1.2;"><%= @user.username %></p>
+            <p class="font-sans" style="font-size: 0.75rem; color: #aaa; margin-top: 0.1rem;"><%= @challenge.date.strftime("%B %-d") %> · <%= @challenge.theme.humanize %></p>
+          </div>
+        </div>
+        <% if @submission.note.present? %>
+          <p class="font-sans" style="font-size: 0.875rem; color: #666; margin-top: 0.75rem; line-height: 1.5; padding-top: 0.75rem; border-top: 1px solid #f0ece6;"><%= @submission.note %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <%# CTA %>
+    <div style="text-align: center;">
+      <% if @my_today_submission %>
+        <%= link_to "See today's drawings", done_path, class: "btn-sketchy" %>
+      <% else %>
+        <%= link_to "Try today's challenge", today_challenge_path, class: "btn-sketchy" %>
+      <% end %>
+    </div>
+
+  </div>
+</div>
+

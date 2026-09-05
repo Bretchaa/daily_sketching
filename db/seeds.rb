@@ -17,3 +17,4 @@ Challenge.find_or_create_by!(date: Date.current) do |c|
 end
 
 load Rails.root.join("db/seeds/challenges.rb")
+load Rails.root.join("db/seeds/pose_images.rb")

@@ -3,15 +3,27 @@ class User < ApplicationRecord
   has_many :cheers
   has_secure_password validations: false
 
+  before_create :generate_unsubscribe_token
+
   validates :email, presence: true, uniqueness: true
   validates :username, presence: true, uniqueness: true, allow_nil: true
   validates :password, length: { minimum: 6 }, if: -> { password.present? }
 
   def self.from_omniauth(auth)
-    find_or_create_by(provider: auth.provider, uid: auth.uid) do |user|
-      user.name = auth.info.name
-      user.email = auth.info.email
-      user.avatar_url = auth.info.image
+    user = find_by(provider: auth.provider, uid: auth.uid)
+    user ||= find_by(email: auth.info.email)
+
+    if user
+      user.update_columns(provider: auth.provider, uid: auth.uid) if user.provider.nil?
+      user
+    else
+      create!(
+        provider: auth.provider,
+        uid: auth.uid,
+        name: auth.info.name,
+        email: auth.info.email,
+        avatar_url: auth.info.image
+      )
     end
   end
 
@@ -43,9 +55,12 @@ class User < ApplicationRecord
     reset_password_sent_at < 2.hours.ago
   end
 
+  def generate_unsubscribe_token
+    self.unsubscribe_token ||= SecureRandom.urlsafe_base64(32)
+  end
+
   def streak
-    drawn_dates = submissions.joins(:image_attachment)
-                             .joins(:challenge)
+    drawn_dates = submissions.joins(:challenge)
                              .pluck("challenges.date")
                              .map(&:to_date)
                              .to_set

@@ -2,6 +2,16 @@
 <html data-theme="light">
   <head>
     <title><%= content_for(:title) || "Daily Sketching" %></title>
+    <meta name="description" content="<%= content_for(:meta_description) || "15 minutes of real reference drawing every day. Figures, portraits, gestures. One shared challenge. Then see what everyone drew." %>">
+    <meta property="og:title" content="<%= content_for(:title) || "Daily Sketching" %>">
+    <meta property="og:description" content="<%= content_for(:meta_description) || "15 minutes of real reference drawing every day. Figures, portraits, gestures. One shared challenge. Then see what everyone drew." %>">
+    <meta property="og:image" content="<%= content_for(:og_image).presence || "https://assets.dailysketching.app/brand/og_image.png" %>">
+    <meta property="og:url" content="https://dailysketching.app">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= content_for(:title).presence || "Daily Sketching" %>">
+    <meta name="twitter:description" content="<%= content_for(:meta_description).presence || "Figure drawing, portraits, gestures & more. One shared challenge a day. 15 minutes. Then see what the community drew." %>">
+    <meta name="twitter:image" content="<%= content_for(:og_image).presence || "https://assets.dailysketching.app/brand/og_image.png" %>">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
@@ -13,45 +23,30 @@
     <%= yield :head %>
 
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/icon.png?v=2" type="image/png">
-    <link rel="apple-touch-icon" href="/icon.png?v=2">
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+    <link rel="icon" href="/icon.png?v=3" type="image/png">
+    <link rel="apple-touch-icon" href="/icon.png?v=3">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <link rel="preload" as="image" href="<%= asset_path('mascotte_DS.png') %>">
   </head>
 
   <body class="font-sans">
-  <script>
-    function toggleCheer(submissionId, btn) {
-      var csrf = document.querySelector('meta[name="csrf-token"]').content;
-      fetch("/cheers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf, "Accept": "application/json" },
-        body: JSON.stringify({ submission_id: submissionId })
-      })
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        btn.style.background = data.cheered ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.15)";
-        var count = document.getElementById("cheer-count-" + submissionId);
-        count.textContent = data.total > 0 ? data.total : "";
-        count.style.color = data.cheered ? "white" : "rgba(255,255,255,0.7)";
-      });
-    }
-  </script>
 
     <%# Top left — mascot linking to home — hidden during drawing session %>
-    <% unless (controller_name == 'drawings' && action_name == 'show') || (controller_name == 'home') %>
+    <% unless (controller_name == 'drawings' && action_name == 'show') || (controller_name == 'practice' && action_name == 'show') || (controller_name == 'home') || @hide_nav %>
       <div style="position: fixed; top: 0; left: 0; z-index: 50; padding: 0.5rem 1rem;">
         <%= link_to root_path, style: "display: block; text-decoration: none;" do %>
-          <%= image_tag "mascotte_DS.png", style: "width: 3.5rem; height: 3.5rem; object-fit: contain;", alt: "Home" %>
+          <%= image_tag "mascotte_DS.png", class: "nav-logo", style: "width: 4rem; height: 4rem; object-fit: contain;", alt: "Home", fetchpriority: "high" %>
         <% end %>
       </div>
     <% end %>
 
     <%# Top right — profile + streak — hidden during drawing session %>
-    <nav style="position: fixed; top: 0; right: 0; z-index: 50; padding: 1rem 1.25rem;<%= ' display: none;' if controller_name == 'drawings' && action_name == 'show' %>">
+    <nav style="position: fixed; top: 0; right: 0; z-index: 50; padding: 1rem 1.25rem;<%= ' display: none;' if (controller_name == 'drawings' && action_name == 'show') || (controller_name == 'practice' && action_name == 'show') || @hide_nav %>">
       <% if current_user %>
         <% nav_streak = current_user.streak %>
-        <%= link_to account_path, style: "display: flex; align-items: center; gap: 0.5rem; text-decoration: none;" do %>
+        <%= link_to account_path, class: "nav-logo", style: "display: flex; align-items: center; gap: 0.5rem; text-decoration: none;" do %>
           <% if nav_streak > 0 %>
             <div style="position: relative; width: 1.8rem; height: 2.25rem; flex-shrink: 0;">
               <svg viewBox="0 0 36 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; filter: drop-shadow(0 1px 4px rgba(255,212,0,0.6));">
@@ -61,7 +56,9 @@
             </div>
           <% end %>
           <% if current_user.avatar_url.present? %>
-            <img src="<%= current_user.avatar_url %>" style="width: 2.25rem; height: 2.25rem; border-radius: 999px; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 1px 4px rgba(0,0,0,0.12);">
+            <span class="img-skeleton" style="display: inline-block; width: 2.25rem; height: 2.25rem; border-radius: 999px; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 1px 4px rgba(0,0,0,0.12); flex-shrink: 0;">
+              <img src="<%= current_user.avatar_url %>" style="width: 100%; height: 100%; border-radius: 999px; display: block; object-fit: cover;" fetchpriority="high" onload="this.parentElement.classList.remove('img-skeleton')">
+            </span>
           <% else %>
             <div style="width: 2.25rem; height: 2.25rem; border-radius: 999px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,0.12);">
               <span class="font-sans" style="color: white; font-weight: 700; font-size: 0.75rem;"><%= current_user.username[0].upcase %></span>
@@ -73,15 +70,28 @@
       <% end %>
     </nav>
 
+    <% if flash[:notice] %>
+      <div style="position: fixed; top: 1.25rem; left: 50%; transform: translateX(-50%); z-index: 100; background: #1a1a1a; color: white; padding: 0.75rem 1.25rem; border-radius: 999px; font-size: 0.85rem; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.15); white-space: nowrap;" class="font-sans">
+        <%= flash[:notice] %>
+      </div>
+    <% end %>
+    <% if flash[:alert] %>
+      <div style="position: fixed; top: 1.25rem; left: 50%; transform: translateX(-50%); z-index: 100; background: #c53030; color: white; padding: 0.75rem 1.25rem; border-radius: 999px; font-size: 0.85rem; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.15); white-space: nowrap;" class="font-sans">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
     <%= yield %>
 
-    <footer style="text-align: center; padding: 1.5rem; background: #f5f2ee;">
-      <p class="font-sans" style="font-size: 0.78rem; color: #ccc;">
-        <%= link_to "Privacy Policy", privacy_path, style: "color: #bbb; text-decoration: none;" %>
+    <% unless controller_name == 'drawings' %>
+    <footer style="text-align: center; padding: 1.5rem; background: #f9f4e8;">
+      <p class="font-sans" style="font-size: 0.78rem; color: #888;">
+        <%= link_to "Privacy Policy", privacy_path, style: "color: #888; text-decoration: none;" %>
         <span style="margin: 0 0.5rem;">·</span>
-        <%= link_to "Terms of Service", terms_path, style: "color: #bbb; text-decoration: none;" %>
+        <%= link_to "Terms of Service", terms_path, style: "color: #888; text-decoration: none;" %>
       </p>
     </footer>
+    <% end %>
 
   </body>
 </html>

@@ -1,0 +1,76 @@
+<div id="lightbox" onclick="if(event.target===this)this.style.display='none'" style="display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.88); align-items: center; justify-content: center; padding: 1.5rem;">
+  <div style="background: white; border-radius: 1.5rem; overflow: hidden; width: fit-content; min-width: 14rem; max-width: min(94vw, 64rem); box-shadow: 0 24px 80px rgba(0,0,0,0.5); border: 2px solid #1a1a1a;">
+    <img id="lightbox-img" style="display: block; width: auto; height: auto; max-width: min(94vw, 64rem); max-height: 82vh;">
+    <div style="padding: 1rem 1.25rem; background: #f5f2ee;">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <div id="lightbox-avatar" style="width: 2rem; height: 2rem; border-radius: 999px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
+            <img id="lightbox-avatar-img" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+            <span id="lightbox-initial" class="font-sans" style="color: white; font-weight: 700; font-size: 0.75rem;"></span>
+          </div>
+          <div>
+            <span id="lightbox-username" class="font-sans" style="font-size: 0.875rem; font-weight: 600; color: #1a1a1a; display: block;"></span>
+            <p id="lightbox-meta" class="font-sans" style="font-size: 0.75rem; color: #888; margin-top: 0.15rem; display: none;"></p>
+          </div>
+        </div>
+        <div id="lightbox-share-row" style="display: none; flex-shrink: 0;">
+          <button id="lightbox-share-btn" onclick="lightboxShare()" class="btn-sketchy" style="font-size: 0.82rem; gap: 0.4rem; padding: 0.45em 1.1em 0.55em;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            <span id="lightbox-share-label">Share</span>
+          </button>
+        </div>
+      </div>
+      <p id="lightbox-note" class="font-sans" style="font-size: 0.85rem; color: #888; margin-top: 0.6rem; line-height: 1.5; display: none;"></p>
+    </div>
+  </div>
+</div>
+<script>
+  var _lightboxShareUrl = null;
+
+  function openLightbox(src, username, note, meta, shareUrl, avatarUrl) {
+    document.getElementById("lightbox-img").src = src;
+    document.getElementById("lightbox-username").textContent = username || "";
+    var avatarImg = document.getElementById("lightbox-avatar-img");
+    var initial = document.getElementById("lightbox-initial");
+    if (avatarUrl) {
+      avatarImg.src = avatarUrl; avatarImg.style.display = "block"; initial.style.display = "none";
+    } else {
+      avatarImg.style.display = "none"; initial.style.display = "block";
+      initial.textContent = username ? username[0].toUpperCase() : "?";
+    }
+    var metaEl = document.getElementById("lightbox-meta");
+    if (meta) { metaEl.textContent = meta; metaEl.style.display = "block"; }
+    else { metaEl.style.display = "none"; }
+    var noteEl = document.getElementById("lightbox-note");
+    if (note) { noteEl.textContent = note; noteEl.style.display = "block"; }
+    else { noteEl.style.display = "none"; }
+    var shareRow = document.getElementById("lightbox-share-row");
+    _lightboxShareUrl = shareUrl || null;
+    if (shareUrl) { shareRow.style.display = "block"; document.getElementById("lightbox-share-label").textContent = "Share"; }
+    else { shareRow.style.display = "none"; }
+    document.getElementById("lightbox").style.display = "flex";
+  }
+
+  function lightboxShare() {
+    if (!_lightboxShareUrl) return;
+    var isTouchDevice = ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    if (navigator.share && isTouchDevice) {
+      navigator.share({ title: "My drawing on Daily Sketching", url: _lightboxShareUrl });
+    } else {
+      navigator.clipboard.writeText(_lightboxShareUrl).then(function() {
+        var label = document.getElementById("lightbox-share-label");
+        label.textContent = "Copied!";
+        setTimeout(function() { label.textContent = "Share"; }, 2000);
+      });
+    }
+  }
+
+  document.addEventListener("click", function(e) {
+    var card = e.target.closest("[data-lightbox]");
+    if (!card) return;
+    if (e.target.closest("button, a, form")) return;
+    openLightbox(card.dataset.img, card.dataset.username, card.dataset.note, card.dataset.meta, card.dataset.shareUrl, card.dataset.avatarUrl);
+  });
+
+  document.addEventListener("keydown", function(e) { if (e.key === "Escape") document.getElementById("lightbox").style.display = "none"; });
+</script>

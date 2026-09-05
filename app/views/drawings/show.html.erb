@@ -1,20 +1,27 @@
-<% if @step == 1 %>
-<div id="countdown-overlay" style="position: fixed; inset: 0; z-index: 999; background: #0a0a0a; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem;">
-  <img src="<%= asset_path('mascotte_focus.png') %>" style="height: 14rem; width: auto;" alt="">
-  <div id="countdown-number" style="font-family: 'Itim', cursive; font-size: 8rem; color: white; line-height: 1; transition: opacity 0.3s ease;">5</div>
-  <div id="countdown-label" style="font-family: 'Inter', sans-serif; font-size: 1rem; color: rgba(255,255,255,0.4); letter-spacing: 0.15em; text-transform: uppercase;">Get ready</div>
+<style>
+  .draw-btn { transition: transform 0.1s ease; }
+  .draw-btn:hover { transform: scale(1.08); }
+  .draw-btn:active { transform: scale(0.88); }
+  @media (max-width: 640px) {
+    .drawing-bottom-bar { justify-content: center !important; }
+  }
+</style>
+
+<% if @show_countdown %>
+<div id="countdown-overlay" style="position: fixed; inset: 0; z-index: 999; background: #0a0a0a; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;">
+  <img src="<%= asset_path('drawing_mascotte.png') %>" style="height: 14rem; width: auto;" alt="">
+  <p style="font-family: 'Itim', cursive; font-size: 1.6rem; color: white; text-align: center; margin: 0;">Grab a sheet of paper and a pencil, and have fun!</p>
+  <div id="countdown-number" style="font-family: 'Itim', cursive; font-size: 5.5rem; color: white; line-height: 1; transition: opacity 0.3s ease;">5</div>
 </div>
 <script>
   (function() {
     let count = 5;
     const overlay = document.getElementById("countdown-overlay");
     const number = document.getElementById("countdown-number");
-    const label = document.getElementById("countdown-label");
     const tick = setInterval(function() {
       count--;
       if (count === 0) {
         clearInterval(tick);
-        label.textContent = "Go!";
         number.style.opacity = "0";
         setTimeout(function() { overlay.style.display = "none"; }, 400);
       } else {
@@ -26,45 +33,98 @@
 </script>
 <% end %>
 
+<%# Pause overlay %>
+<div id="pause-overlay" style="display: none; position: fixed; inset: 0; z-index: 998; background: #111; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem;">
+  <div style="position: absolute; top: 1.25rem; right: 1.75rem;">
+    <span class="font-sans" style="font-size: 1rem; color: rgba(255,255,255,0.55);"><%= @step %> / <%= @total %></span>
+  </div>
+  <img src="https://assets.dailysketching.app/mascots/pause_mascotte_v2.png" style="height: 300px; width: auto;" loading="lazy" alt="">
+  <% if @duration_seconds > 0 %>
+    <div style="display: flex; align-items: baseline; gap: 0.35rem;">
+      <span id="pause-seconds" class="font-sans" style="font-size: 1.6rem; font-weight: 600; color: rgba(255,255,255,0.7);"></span>
+      <span class="font-sans" style="font-size: 1rem; color: rgba(255,255,255,0.3);">s remaining</span>
+    </div>
+  <% end %>
+  <button onclick="resumeSession()" style="display: flex; align-items: center; justify-content: center; width: 5rem; height: 5rem; border-radius: 999px; background: rgba(255,255,255,0.1); border: none; cursor: pointer;" class="draw-btn">
+    <svg width="22" height="26" viewBox="0 0 22 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 2L20 13L2 24V2Z" fill="rgba(255,255,255,0.9)" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</div>
+
 <div style="position: fixed; inset: 0; background: #111; display: flex; align-items: center; justify-content: center;">
 
-  <%# Pose image %>
-  <img src="<%= @pose_url %>"
-       style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+  <% if @pose_url.present? %>
+    <%# Pose image %>
+    <img src="<%= @pose_url %>"
+         fetchpriority="high"
+         style="max-width: 100%; max-height: 100%; object-fit: contain; opacity: 0; transition: opacity 0.4s ease;<%= ' transform: rotate(180deg);' if @flip_image %>"
+         onload="this.style.opacity='1'" />
 
-  <%# Bottom bar %>
-  <div style="position: fixed; bottom: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.75rem;">
-
-    <%# Back arrow %>
-    <div style="width: 3rem;">
+    <%# Bottom bar — all controls right-aligned %>
+    <div class="drawing-bottom-bar" style="position: fixed; bottom: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: flex-end; gap: 1rem; padding: 1.25rem 1.75rem; background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.65));">
       <% if @prev_step %>
-        <%= link_to draw_path(@prev_step),
-          style: "display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 999px; background: rgba(255,255,255,0.1); color: white; font-size: 1.1rem; text-decoration: none;" do %>
-          ←
+        <%= link_to draw_path(@prev_step, back: true), class: "draw-btn",
+          style: "display: flex; align-items: center; justify-content: center; width: 3.2rem; height: 3.2rem; border-radius: 999px; background: rgba(255,255,255,0.1); color: white; font-size: 1.3rem; text-decoration: none;" do %>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <% end %>
+      <% end %>
+      <% if @duration_seconds > 0 %>
+        <button onclick="pauseSession()" id="pause-btn" class="draw-btn" style="display: flex; align-items: center; justify-content: center; width: 3.2rem; height: 3.2rem; border-radius: 999px; background: rgba(255,255,255,0.1); border: none; cursor: pointer;">
+          <svg width="14" height="16" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="4" height="14" rx="1.5" fill="rgba(255,255,255,0.8)"/>
+            <rect x="8" y="0" width="4" height="14" rx="1.5" fill="rgba(255,255,255,0.8)"/>
+          </svg>
+        </button>
+        <div style="display: flex; align-items: center; gap: 0.35rem;">
+          <span id="timer" class="font-sans" style="font-size: 1.6rem; font-weight: 600; color: white; min-width: 2.5rem; text-align: right;"><%= @duration_seconds %></span>
+          <span class="font-sans" style="font-size: 1rem; color: rgba(255,255,255,0.4);">s</span>
+        </div>
+      <% end %>
+      <%= link_to draw_path(@next_step), id: "next-btn", class: "draw-btn",
+        style: "display: flex; align-items: center; justify-content: center; width: 3.2rem; height: 3.2rem; border-radius: 999px; background: #{@step == @total ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)'}; color: white; font-size: 1.3rem; text-decoration: none;" do %>
+        <% if @step == @total %>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <% else %>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         <% end %>
       <% end %>
     </div>
 
-    <%# Timer + next arrow %>
-    <div style="display: flex; align-items: center; gap: 0.75rem;">
+  <% else %>
+    <%# No image — self portrait mode: centered timer %>
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; text-align: center;">
       <% if @duration_seconds > 0 %>
-        <div style="display: flex; align-items: center; gap: 0.35rem;">
-          <span id="timer" class="font-sans" style="font-size: 1.1rem; font-weight: 600; color: white; min-width: 2rem; text-align: right;"><%= @duration_seconds %></span>
-          <span class="font-sans" style="font-size: 0.85rem; color: rgba(255,255,255,0.4);">s</span>
-        </div>
+        <span id="timer" class="font-sans" style="font-size: 6rem; font-weight: 700; color: white; line-height: 1;"><%= @duration_seconds %></span>
+        <span class="font-sans" style="font-size: 0.9rem; color: rgba(255,255,255,0.3); letter-spacing: 0.1em; text-transform: uppercase;">seconds</span>
+        <button onclick="pauseSession()" id="pause-btn" class="font-sans draw-btn" style="display: flex; align-items: center; justify-content: center; width: 3.2rem; height: 3.2rem; border-radius: 999px; background: rgba(255,255,255,0.1); color: white; font-size: 1.2rem; border: none; cursor: pointer; margin-top: 0.5rem;">
+          ⏸
+        </button>
       <% end %>
-      <%= link_to draw_path(@next_step),
-        id: "next-btn",
-        style: "display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 999px; background: rgba(255,255,255,0.1); color: white; font-size: 1.1rem; text-decoration: none;" do %>
-        →
+      <%= link_to draw_path(@next_step), id: "next-btn", class: "draw-btn",
+        style: "margin-top: 1rem; display: flex; align-items: center; justify-content: center; width: 3.2rem; height: 3.2rem; border-radius: 999px; background: #{@step == @total ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)'}; color: white; font-size: 1.3rem; text-decoration: none;" do %>
+        <% if @step == @total %>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <% else %>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        <% end %>
       <% end %>
     </div>
 
-  </div>
+    <%# Back arrow — top left %>
+    <% if @prev_step %>
+      <div style="position: fixed; top: 1.25rem; left: 1.75rem;">
+        <%= link_to draw_path(@prev_step, back: true), class: "draw-btn",
+          style: "display: flex; align-items: center; justify-content: center; width: 3.2rem; height: 3.2rem; border-radius: 999px; background: rgba(255,255,255,0.1); color: white; font-size: 1.3rem; text-decoration: none;" do %>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
 
-  <%# Pose counter — top left %>
-  <div style="position: fixed; top: 1.25rem; left: 1.75rem;">
-    <span class="font-sans" style="font-size: 0.85rem; color: rgba(255,255,255,0.35);">
+  <%# Pose counter — top right %>
+  <div style="position: fixed; top: 1.25rem; right: 1.75rem;">
+    <span class="font-sans" style="font-size: 1rem; color: rgba(255,255,255,0.55);">
       <%= @step %> / <%= @total %>
     </span>
   </div>
@@ -75,19 +135,45 @@
 <script>
   (function () {
     let seconds = <%= @duration_seconds %>;
+    let paused = false;
+    let timer = null;
     const el = document.getElementById("timer");
     const nextUrl = "<%= draw_path(@next_step) %>";
+    const overlay = document.getElementById("pause-overlay");
 
     function tick() {
+      if (paused) return;
       seconds--;
       el.textContent = seconds;
       if (seconds <= 0) {
         window.location.href = nextUrl;
       } else {
-        setTimeout(tick, 1000);
+        timer = setTimeout(tick, 1000);
       }
     }
-    setTimeout(tick, 1000);
+
+    timer = setTimeout(tick, 1000);
+
+    window.pauseSession = function() {
+      paused = true;
+      clearTimeout(timer);
+      const pauseEl = document.getElementById("pause-seconds");
+      if (pauseEl) pauseEl.textContent = seconds;
+      overlay.style.display = "flex";
+    };
+
+    window.resumeSession = function() {
+      paused = false;
+      overlay.style.display = "none";
+      timer = setTimeout(tick, 1000);
+    };
+
+    document.addEventListener("keydown", function(e) {
+      if (e.code === "Space" && e.target.tagName !== "INPUT") {
+        e.preventDefault();
+        paused ? resumeSession() : pauseSession();
+      }
+    });
   })();
 </script>
 <% end %>

@@ -2,12 +2,154 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer utilities {
-  .btn.btn-black {
-    --btn-color: 0% 0 0;
-    color: #ffffff !important;
-  }
-  .btn.btn-black:hover {
-    --btn-color: 14% 0 0;
-  }
+
+.btn.btn-black {
+  transition: transform 0.15s ease;
+}
+.btn.btn-black:hover {
+  transform: scale(1.025);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #1a1a1a;
+  border: 2.5px solid #1a1a1a;
+  border-radius: 1rem;
+  padding: 0 1.5rem;
+  height: 3rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-secondary:hover {
+  transform: scale(1.025);
+}
+
+.btn-sketchy {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  border: 0.15em solid #1a1a1a;
+  box-shadow: 0.25em 0.25em #1a1a1a;
+  padding: 0.45em 1.3em 0.55em;
+  background-color: #FFEE00;
+  border-radius: 0.5em;
+  transform: translateX(-0.15em) translateY(-0.15em);
+  text-decoration: none;
+  color: #1a1a1a;
+  transition: transform 100ms ease, box-shadow 100ms ease;
+  text-align: center;
+  font-family: inherit;
+}
+
+.btn-sketchy:hover {
+  transform: translateX(0) translateY(0);
+  box-shadow: 0 0 #1a1a1a;
+  color: #1a1a1a;
+}
+
+.btn-sketchy-secondary {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  border: 0.15em solid #1a1a1a;
+  box-shadow: 0.25em 0.25em #1a1a1a;
+  padding: 0.45em 1.3em 0.55em;
+  background-color: #fff;
+  border-radius: 0.5em;
+  transform: translateX(-0.15em) translateY(-0.15em);
+  text-decoration: none;
+  color: #1a1a1a;
+  transition: transform 100ms ease, box-shadow 100ms ease;
+  text-align: center;
+  font-family: inherit;
+}
+
+.btn-sketchy-secondary:hover {
+  transform: translateX(0) translateY(0);
+  box-shadow: 0 0 #1a1a1a;
+  color: #1a1a1a;
+}
+
+.share-icon-btn {
+  transition: transform 0.15s ease;
+}
+
+.share-icon-btn:hover {
+  transform: scale(1.1);
+}
+
+.nav-logo {
+  transition: transform 0.15s ease;
+}
+
+.nav-logo:hover {
+  transform: scale(1.08);
+}
+
+.gallery-hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.15);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+[data-lightbox]:hover .gallery-hover-overlay {
+  opacity: 1;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { background-color: #e4dfd8; }
+  50% { background-color: #d0cbc3; }
+}
+
+.img-skeleton {
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+  background-color: #e4dfd8;
+}
+
+.card-sketchy {
+  background: white;
+  border: 2px solid #1a1a1a;
+  border-radius: 1.5rem;
+}
+
+.input-sketchy {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #1a1a1a;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  outline: none;
+  box-sizing: border-box;
+  background: white;
+  font-family: inherit;
+}
+
+.input-sketchy:focus {
+  border-color: #1a1a1a;
+  box-shadow: 0.15em 0.15em #1a1a1a;
+}
+
+.bg-paper {
+  background-color: #f9f4e8;
+  background-image: radial-gradient(circle, #c8b89a 1px, transparent 1px);
+  background-size: 22px 22px;
 }
