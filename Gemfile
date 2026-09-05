@@ -32,7 +32,7 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "bootsnap", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-# gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 1.2"
 
 group :development, :test do
   gem "minitest", "~> 5.25"
@@ -65,3 +65,8 @@ gem "rqrcode"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
 gem "dotenv-rails"
+
+gem "dockerfile-rails", ">= 1.7", group: :development
+
+gem "litestream", "~> 0.14.0"
+gem "clockwork"

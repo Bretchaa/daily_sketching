@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+# Start clockwork in background on the same machine as the database
+bundle exec clockwork config/clock.rb &
+
+# Start Rails server in foreground
+bundle exec rails server -p 3000 -b '[::]'
