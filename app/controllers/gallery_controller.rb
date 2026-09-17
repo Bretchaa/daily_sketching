@@ -9,7 +9,7 @@ class GalleryController < ApplicationController
       { url: "https://assets.dailysketching.app/examples/caricature/example_v2.jpeg", username: "anna" },
       { url: "https://assets.dailysketching.app/examples/box_figure/example_v3.jpeg", username: "pierre" },
       { url: "https://assets.dailysketching.app/examples/robo_bean/example_v4.png", username: "camille" },
-      { url: "https://assets.dailysketching.app/examples/figure_study/example_v2.jpeg", username: "julien" },
+      { url: "https://assets.dailysketching.app/examples/figure_study/example_v2.jpeg", username: "julien" }
     ]
   end
 

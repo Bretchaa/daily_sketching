@@ -4,15 +4,15 @@ class Admin::ImagesController < Admin::BaseController
   def index
     @theme_filter = params[:theme].presence
     @tag_filter   = params[:tag].presence
-    @page         = [params[:page].to_i, 1].max
+    @page         = [ params[:page].to_i, 1 ].max
 
     scope   = @theme_filter ? PoseImage.where(theme: @theme_filter) : PoseImage.all
     all     = scope.order(:theme, :path).to_a
     all     = all.select { |img| img.tags_array.include?(@tag_filter) } if @tag_filter
 
     @total       = all.size
-    @total_pages = [(@total.to_f / PER_PAGE).ceil, 1].max
-    @page        = [@page, @total_pages].min
+    @total_pages = [ (@total.to_f / PER_PAGE).ceil, 1 ].max
+    @page        = [ @page, @total_pages ].min
     @images      = all[((@page - 1) * PER_PAGE), PER_PAGE] || []
 
     @counts   = PoseImage.group(:theme).count
@@ -96,13 +96,13 @@ class Admin::ImagesController < Admin::BaseController
     when "add_tag"
       tag = params[:tag].to_s.strip.downcase
       if tag.present?
-        images.each { |img| img.update!(tags: (img.tags_array | [tag]).join(",")) }
+        images.each { |img| img.update!(tags: (img.tags_array | [ tag ]).join(",")) }
         flash[:notice] = "Tag \"#{tag}\" added to #{images.count} image#{"s" if images.count != 1}."
       end
     when "remove_tag"
       tag = params[:tag].to_s.strip.downcase
       if tag.present?
-        images.each { |img| img.update!(tags: (img.tags_array - [tag]).join(",")) }
+        images.each { |img| img.update!(tags: (img.tags_array - [ tag ]).join(",")) }
         flash[:notice] = "Tag \"#{tag}\" removed from #{images.count} image#{"s" if images.count != 1}."
       end
     end

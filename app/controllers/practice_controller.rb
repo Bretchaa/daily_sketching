@@ -48,7 +48,7 @@ class PracticeController < ApplicationController
 
     multi_tags  = Array(session[:practice_filter_tags]).reject(&:empty?)
     single_tag  = session[:practice_filter_tag]
-    filter_tags = multi_tags.any? ? multi_tags : (single_tag ? [single_tag] : nil)
+    filter_tags = multi_tags.any? ? multi_tags : (single_tag ? [ single_tag ] : nil)
 
     scope  = PoseImage.where(theme: theme)
     images = if filter_tags

@@ -43,7 +43,7 @@ Rails.application.routes.draw do
     resources :images do
       collection { post :bulk_action }
     end
-    resources :challenges, only: [:index]
+    resources :challenges, only: [ :index ]
   end
   get  "/gallery/:date", to: "gallery#show", as: :gallery
   get  "/unsubscribe/:token", to: "unsubscribes#show", as: :unsubscribe
