@@ -24,4 +24,10 @@ class ApplicationController < ActionController::Base
 
     redirect_to "https://#{CANONICAL_HOST}#{request.fullpath}", status: :moved_permanently, allow_other_host: true
   end
+
+  # Used by sign-in/sign-up pages so a bookmarked or already-authenticated
+  # visit sends the user straight to their content instead of the form.
+  def redirect_if_signed_in
+    redirect_to root_path if current_user
+  end
 end
