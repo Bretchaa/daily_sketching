@@ -18,7 +18,7 @@
       <% end %>
 
       <%# Username + settings/back %>
-      <div style="display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1.25rem;">
+      <div style="display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1.75rem;">
         <h1 class="font-handwritten" style="font-size: 1.75rem; color: #1a1a1a; line-height: 1;"><%= current_user.username %></h1>
         <% if @tab == "settings" %>
           <%= link_to account_path, style: "color: #1a1a1a; text-decoration: none; display: flex; align-items: center;" do %>
@@ -159,7 +159,21 @@
             <% end %>
           </div>
         <% else %>
-          <p class="font-handwritten" style="font-size: 1.1rem; color: #ccc; text-align: center; padding: 4rem 0;">No drawings yet —<br>complete today's challenge!</p>
+          <p class="font-sans" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #1a1a1a; margin-bottom: 1rem;">Your drawings</p>
+          <div style="position: relative; height: 220px; overflow: hidden;">
+            <div style="columns: 2; column-gap: 0.75rem;">
+              <% [160, 200, 140, 180].each do |h| %>
+                <div style="break-inside: avoid; margin-bottom: 0.75rem; border-radius: 1rem; background: #e8e3db; height: <%= h %>px;"></div>
+              <% end %>
+            </div>
+            <div style="position: absolute; inset: 0; background: linear-gradient(transparent 20%, #f9f4e8 70%); display: flex; align-items: center; justify-content: center; padding-top: 4rem;">
+              <% if @started_today %>
+                <%= link_to "Upload to unlock →", done_path, class: "btn-sketchy" %>
+              <% else %>
+                <%= link_to "Start today's challenge →", today_challenge_path, class: "btn-sketchy" %>
+              <% end %>
+            </div>
+          </div>
         <% end %>
 
       <% end %>
