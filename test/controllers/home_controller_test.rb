@@ -49,8 +49,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     get root_path
 
     assert_response :success
-    assert_match "Your streak is safe.", response.body
-    assert_match "−1 shield, 0 left", response.body
+    assert_match "−1 shield (0/2)", response.body
     assert_match "3 day streak", response.body
   end
 
@@ -65,7 +64,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     get root_path
 
     assert_response :success
-    refute_match "Your streak is safe.", response.body
+    refute_match "−1 shield", response.body
   end
 
   test "logged in, ordinary day with no shield involved: hides the streak-safe pill" do
@@ -75,7 +74,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     get root_path
 
     assert_response :success
-    refute_match "Your streak is safe.", response.body
+    refute_match "−1 shield", response.body
   end
 
   def challenge_for(date)

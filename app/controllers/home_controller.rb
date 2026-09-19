@@ -36,6 +36,7 @@ class HomeController < ApplicationController
     @streak = current_user ? current_user.streak : 0
     @shield_holding_streak = current_user ? current_user.shield_holding_streak? : false
     @shields_count = current_user ? current_user.shields_count : 0
+    @shield_cap = User::MAX_SHIELDS
     today_challenge = Challenge.find_by(date: Date.current)
     @drew_today = current_user && today_challenge &&
                   current_user.submissions.joins(:image_attachment).exists?(challenge: today_challenge)

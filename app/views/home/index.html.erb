@@ -58,16 +58,13 @@
               <span class="font-sans" style="font-weight: 700; color: #1a1a1a; font-size: 1rem;"><%= @streak %> day streak</span>
             </div>
 
-            <div class="shield-pill" style="display: flex; align-items: center; gap: 0.75rem; flex: 1 1 0; min-width: 0; background: #ffffff; border-radius: 1rem; padding: 1rem 1.2rem;">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 2.2rem; height: 2.2rem; flex-shrink: 0; filter: drop-shadow(0 2px 6px rgba(20,184,166,0.55));">
+            <div class="shield-pill" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex: 1 1 0; min-width: 0; background: #ffffff; border-radius: 1rem; padding: 1rem 1.2rem;">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 1.8rem; height: 1.8rem; flex-shrink: 0; filter: drop-shadow(0 2px 6px rgba(20,184,166,0.55));">
                 <path d="M3 12.5C3 7.3 7 3 12 3C17 3 21 7.3 21 12.5H3Z" fill="#14B8A6"/>
                 <rect x="11.3" y="12.5" width="1.4" height="6.5" fill="#14B8A6"/>
                 <path d="M11.3 19C11.3 19 9.6 19 9.6 17.4" stroke="#14B8A6" stroke-width="1.3" stroke-linecap="round" fill="none"/>
               </svg>
-              <div style="text-align: left; min-width: 0;">
-                <p class="font-sans" style="font-weight: 700; color: #1a1a1a; font-size: 1rem; line-height: 1.25; margin: 0;">Your streak is safe.</p>
-                <p class="font-sans" style="font-weight: 500; color: #888; font-size: 0.88rem; line-height: 1.25; margin: 0.15rem 0 0;">−1 shield, <%= @shields_count %> left</p>
-              </div>
+              <span class="font-sans" style="font-weight: 700; color: #1a1a1a; font-size: 1rem;">−1 shield (<%= @shields_count %>/<%= @shield_cap %>)</span>
             </div>
           </div>
         <% end %>
