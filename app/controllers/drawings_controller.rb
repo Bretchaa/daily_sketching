@@ -20,7 +20,39 @@ class DrawingsController < ApplicationController
       @submissions = [ @my_submission ].compact + others.to_a
       @my_submission&.association(:cheers)&.load_target
       @skipped = params[:skipped].present?
+      uploaded = @my_submission&.image&.attached?
+
+      if current_user
+        shields_earned = current_user.sync_shields!
+        shields_spent = current_user.shields_spent
+        if shields_earned.positive? || shields_spent.positive?
+          session[:pending_shield_feedback] = {
+            "earned" => shields_earned,
+            "spent" => shields_spent,
+            "date" => Date.current.iso8601
+          }
+        end
+      end
+
       @streak = current_user ? current_user.streak : 0
+      @shields_count = current_user ? current_user.shields_count : 0
+      @shield_cap = User::MAX_SHIELDS
+
+      # Only the screens that actually render the shield pill (skipped or
+      # uploaded) show a pending grant/spend — the upload-prompt screen never
+      # shows it, so it has to wait here instead of being lost the moment it
+      # happens. It stays visible for the rest of the day (any refresh today
+      # shows it again), but never carries over into a following day.
+      feedback = session[:pending_shield_feedback]
+      if (uploaded || @skipped) && feedback && feedback["date"] == Date.current.iso8601
+        @shields_earned = feedback["earned"].to_i
+        @shields_spent = feedback["spent"].to_i
+      else
+        session.delete(:pending_shield_feedback) if feedback && feedback["date"] != Date.current.iso8601
+        @shields_earned = 0
+        @shields_spent = 0
+      end
+      @show_shield_pill = @shields_earned.positive? || @shields_spent.positive?
       submission_ids = @submissions.map(&:id)
       if current_user
         @my_cheers = current_user.cheers.where(submission_id: submission_ids).index_by(&:submission_id)

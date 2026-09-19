@@ -6,7 +6,10 @@ class AccountController < ApplicationController
                                .joins(:image_attachment)
                                .includes(:image_attachment, :challenge)
                                .order(created_at: :desc)
+    current_user.sync_shields!
     @streak = current_user.streak
+    @shields_count = current_user.shields_count
+    @shield_cap = User::MAX_SHIELDS
     @tab = params[:tab] == "settings" ? "settings" : "drawings"
   end
 

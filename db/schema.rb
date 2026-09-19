@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_14_193303) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_19_172314) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -80,6 +80,15 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_14_193303) do
     t.index ["challenge_id"], name: "index_poses_on_challenge_id"
   end
 
+  create_table "shield_uses", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.date "date", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "date"], name: "index_shield_uses_on_user_id_and_date", unique: true
+    t.index ["user_id"], name: "index_shield_uses_on_user_id"
+  end
+
   create_table "submissions", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "challenge_id", null: false
@@ -109,6 +118,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_14_193303) do
     t.datetime "first_followup_sent_at"
     t.datetime "reengagement_sent_at"
     t.datetime "streak_break_sent_at"
+    t.integer "shields_count", default: 0, null: false
+    t.boolean "restart_shield_granted", default: false, null: false
+    t.integer "shield_milestone_day", default: 0, null: false
     t.index ["unsubscribe_token"], name: "index_users_on_unsubscribe_token", unique: true
   end
 
@@ -117,6 +129,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_14_193303) do
   add_foreign_key "cheers", "submissions"
   add_foreign_key "cheers", "users"
   add_foreign_key "poses", "challenges"
+  add_foreign_key "shield_uses", "users"
   add_foreign_key "submissions", "challenges"
   add_foreign_key "submissions", "users"
 end

@@ -4,6 +4,10 @@ namespace :emails do
     yesterday = Date.current - 1
     today = Date.current
 
+    # Keep streak shields up to date for everyone before checking streak breaks below,
+    # so a shield-covered gap never gets flagged as a broken streak.
+    User.where(id: Submission.select(:user_id)).find_each(&:sync_shields!)
+
     # ── Email 1: D+1 followup after first challenge ──────────────────────────
     # Users whose very first submission was yesterday, not yet sent
     yesterday_challenge = Challenge.find_by(date: yesterday)
@@ -80,6 +84,7 @@ namespace :emails do
       last_draw = completed.joins(:challenge).maximum("challenges.date")
       next unless last_draw
       next unless last_draw.to_date == 2.days.ago.to_date  # missed exactly yesterday
+      next if user.shield_uses.exists?(date: yesterday)     # a shield covered it, streak didn't actually break
 
       # Calculate streak length before the break
       streak_length = 0
