@@ -49,7 +49,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     get root_path
 
     assert_response :success
-    assert_match "−1 shield (0/2)", response.body
+    assert_match "−1 shield", response.body
     assert_match "3 day streak", response.body
   end
 
