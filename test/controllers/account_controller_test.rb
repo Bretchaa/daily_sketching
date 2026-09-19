@@ -66,4 +66,62 @@ class AccountControllerTest < ActionDispatch::IntegrationTest
     refute_match "Upload to unlock", response.body
     refute_match "Start today&#39;s challenge", response.body
   end
+
+  # ── Nav bar streak icon color ────────────────────────────────────────────────
+  #
+  # The nav icon's glow uses distinct alpha values (0.6) from every other bolt
+  # on the page (e.g. the profile's own day-streak stat glows at 0.5), so
+  # these strings uniquely identify the top-right nav icon specifically.
+  NAV_TURQUOISE_GLOW = "drop-shadow(0 1px 4px rgba(20,184,166,0.6))".freeze
+  NAV_YELLOW_GLOW = "drop-shadow(0 1px 4px rgba(255,212,0,0.6))".freeze
+
+  test "nav streak icon turns turquoise the day after a shield bridged a gap" do
+    @user.update!(shields_count: 1, restart_shield_granted: true)
+    @user.submissions.create!(challenge: challenge_for(Date.current - 3))
+    @user.submissions.create!(challenge: challenge_for(Date.current - 2))
+    @user.sync_shields! # bridges yesterday
+    sign_in_as @user
+
+    get account_path
+
+    assert_response :success
+    assert_match NAV_TURQUOISE_GLOW, response.body
+    refute_match NAV_YELLOW_GLOW, response.body
+  end
+
+  test "nav streak icon is back to yellow once today is drawn" do
+    @user.update!(shields_count: 1, restart_shield_granted: true)
+    @user.submissions.create!(challenge: challenge_for(Date.current - 3))
+    @user.submissions.create!(challenge: challenge_for(Date.current - 2))
+    @user.sync_shields! # bridges yesterday
+    @user.submissions.create!(challenge: today_challenge)
+    sign_in_as @user
+
+    get account_path
+
+    assert_response :success
+    assert_match NAV_YELLOW_GLOW, response.body
+    refute_match NAV_TURQUOISE_GLOW, response.body
+  end
+
+  test "nav streak icon is yellow on an ordinary day with no shield involved" do
+    @user.submissions.create!(challenge: challenge_for(Date.current - 1))
+    @user.submissions.create!(challenge: today_challenge)
+    sign_in_as @user
+
+    get account_path
+
+    assert_response :success
+    assert_match NAV_YELLOW_GLOW, response.body
+  end
+
+  def challenge_for(date)
+    Challenge.find_by(date: date) || Challenge.create!(
+      date: date,
+      theme: "gesture",
+      focus: "Focus on gesture",
+      tip: "A tip",
+      example_image_url: "https://example.com/img.jpg"
+    )
+  end
 end

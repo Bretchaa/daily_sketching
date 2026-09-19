@@ -46,11 +46,14 @@
     <nav style="position: fixed; top: 0; right: 0; z-index: 50; padding: 1rem 1.25rem;<%= ' display: none;' if (controller_name == 'drawings' && action_name == 'show') || (controller_name == 'practice' && action_name == 'show') || @hide_nav %>">
       <% if current_user %>
         <% nav_streak = current_user.streak %>
+        <% nav_shielded = current_user.shield_holding_streak? %>
+        <% nav_bolt_color = nav_shielded ? "#14B8A6" : "#FFD400" %>
+        <% nav_bolt_glow = nav_shielded ? "rgba(20,184,166,0.6)" : "rgba(255,212,0,0.6)" %>
         <%= link_to account_path, class: "nav-logo", style: "display: flex; align-items: center; gap: 0.5rem; text-decoration: none;" do %>
           <% if nav_streak > 0 %>
             <div style="position: relative; width: 1.8rem; height: 2.25rem; flex-shrink: 0;">
-              <svg viewBox="0 0 36 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; filter: drop-shadow(0 1px 4px rgba(255,212,0,0.6));">
-                <path d="M24 2L4 26L15 26L11 46L32 22L21 22Z" fill="#FFD400"/>
+              <svg viewBox="0 0 36 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; filter: drop-shadow(0 1px 4px <%= nav_bolt_glow %>);">
+                <path d="M24 2L4 26L15 26L11 46L32 22L21 22Z" fill="<%= nav_bolt_color %>"/>
               </svg>
               <span class="font-sans" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding-left: 0.1rem; font-size: <%= nav_streak >= 10 ? '0.5rem' : '0.65rem' %>; font-weight: 900; color: #1a1a1a; line-height: 1;"><%= nav_streak %></span>
             </div>

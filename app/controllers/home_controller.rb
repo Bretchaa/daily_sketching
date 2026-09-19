@@ -32,7 +32,10 @@ class HomeController < ApplicationController
       .select { |t| t["homepage_example"] && t["example_image_url"].present? }
       .map { |t| t["example_image_url"] }
 
+    current_user&.sync_shields!
     @streak = current_user ? current_user.streak : 0
+    @shield_holding_streak = current_user ? current_user.shield_holding_streak? : false
+    @shields_count = current_user ? current_user.shields_count : 0
     today_challenge = Challenge.find_by(date: Date.current)
     @drew_today = current_user && today_challenge &&
                   current_user.submissions.joins(:image_attachment).exists?(challenge: today_challenge)

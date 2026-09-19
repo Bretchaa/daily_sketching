@@ -90,4 +90,32 @@ class UserTest < ActiveSupport::TestCase
     refute @user.shield_uses.exists?(date: Date.current - 1)
     assert_equal 0, @user.streak
   end
+
+  test "shield_holding_streak? is true the day after a shield bridged a gap, before today is drawn" do
+    @user.update!(shields_count: 1, restart_shield_granted: true)
+    @user.submissions.create!(challenge: challenge_for(Date.current - 3))
+    @user.submissions.create!(challenge: challenge_for(Date.current - 2))
+    @user.sync_shields! # bridges yesterday
+
+    assert @user.shield_holding_streak?
+  end
+
+  test "shield_holding_streak? turns false once today is drawn" do
+    @user.update!(shields_count: 1, restart_shield_granted: true)
+    @user.submissions.create!(challenge: challenge_for(Date.current - 3))
+    @user.submissions.create!(challenge: challenge_for(Date.current - 2))
+    @user.sync_shields! # bridges yesterday
+    assert @user.shield_holding_streak?
+
+    @user.submissions.create!(challenge: challenge_for(Date.current))
+
+    refute @user.shield_holding_streak?
+  end
+
+  test "shield_holding_streak? is false on an ordinary day with no shield involved" do
+    @user.submissions.create!(challenge: challenge_for(Date.current - 1))
+    @user.submissions.create!(challenge: challenge_for(Date.current))
+
+    refute @user.shield_holding_streak?
+  end
 end

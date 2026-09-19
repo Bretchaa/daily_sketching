@@ -71,6 +71,13 @@ class User < ApplicationRecord
     run_length(drawn_dates | shield_uses.pluck(:date).to_set)
   end
 
+  # True when the streak is currently being held up by a shield rather than
+  # today's own activity — i.e. yesterday was missed but shielded, and today
+  # hasn't been drawn yet. Clears itself the moment today is drawn.
+  def shield_holding_streak?
+    !drawn_dates.include?(Date.current) && shield_uses.exists?(date: Date.yesterday)
+  end
+
   # Grants shields (streak restart, every 7-day milestone) and auto-spends a
   # shield to bridge a missed day so the streak keeps going.
   #
