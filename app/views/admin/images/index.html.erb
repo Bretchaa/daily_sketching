@@ -94,6 +94,8 @@
                 <% end %>
               </div>
               <div class="card-actions" style="display:flex;gap:0.4rem;">
+                <a href="<%= download_admin_image_path(img) %>" onclick="event.stopPropagation()"
+                   style="font-size:0.7rem;font-weight:600;color:#1a1a1a;text-decoration:none;" class="font-sans">Download</a>
                 <a href="<%= edit_admin_image_path(img) %>" onclick="event.stopPropagation()"
                    style="font-size:0.7rem;font-weight:600;color:#1a1a1a;text-decoration:none;" class="font-sans">Edit</a>
                 <%= button_to "Delete", admin_image_path(img), method: :delete,

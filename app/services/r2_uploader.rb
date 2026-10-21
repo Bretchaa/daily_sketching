@@ -19,6 +19,18 @@ class R2Uploader
     )
   end
 
+  def self.download(key)
+    require "aws-sdk-s3"
+    client = Aws::S3::Client.new(
+      access_key_id:     ENV.fetch("R2_ACCESS_KEY_ID"),
+      secret_access_key: ENV.fetch("R2_SECRET_ACCESS_KEY"),
+      region:            "auto",
+      endpoint:          ENDPOINT.call,
+      force_path_style:  true
+    )
+    client.get_object(bucket: BUCKET.call, key: key).body.read
+  end
+
   def self.delete(key)
     require "aws-sdk-s3"
     client = Aws::S3::Client.new(

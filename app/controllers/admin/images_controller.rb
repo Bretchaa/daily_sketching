@@ -73,6 +73,14 @@ class Admin::ImagesController < Admin::BaseController
     end
   end
 
+  def download
+    @image = PoseImage.find(params[:id])
+    send_data R2Uploader.download(@image.path),
+              filename: @image.filename,
+              type: Rack::Mime.mime_type(File.extname(@image.filename)),
+              disposition: "attachment"
+  end
+
   def destroy
     @image = PoseImage.find(params[:id])
     theme = @image.theme

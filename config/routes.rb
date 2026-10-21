@@ -42,6 +42,7 @@ Rails.application.routes.draw do
   namespace :admin, path: "backstage" do
     resources :images do
       collection { post :bulk_action }
+      member { get :download }
     end
     resources :challenges, only: [ :index ]
   end
