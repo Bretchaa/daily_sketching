@@ -142,14 +142,13 @@ challenges:
         duration_seconds: 600
 
   # Paused (Oct 2026): every basic_shapes photo is from Reference.Pictures, hidden while we
-  # wait on a license. To restore: weight 2, homepage_example true, and remove homepage_example
-  # from animals (it filled the empty homepage slot; the grid holds 6).
+  # wait on a license. Its example drawing stays on the homepage. To restore: weight 2.
   - theme: still_life
     display_name: Basic Shapes & Still Life
     image_theme: basic_shapes
     weight: 0
     cooldown_days: 14
-    homepage_example: false
+    homepage_example: true
     example_image_url: https://assets.dailysketching.app/examples/still_life/example.jpeg
     focus: Draw each object from the reference photo. Focus on proportions, light, and shadow.
     tip: Before drawing, observe the negative space around the object. That's what holds the composition together. Lightly sketch the overall shape first before committing to any details.
@@ -201,7 +200,6 @@ challenges:
   - theme: animals
     display_name: Animal Sketching
     image_theme: animals
-    homepage_example: true
     weight: 2
     cooldown_days: 5
     example_image_url: https://assets.dailysketching.app/examples/animals/example.jpg
