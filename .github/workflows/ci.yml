@@ -19,8 +19,12 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      # Always scan with the newest Brakeman instead of failing when Gemfile.lock lags a release
+      - name: Install latest Brakeman
+        run: gem install brakeman --no-document
+
       - name: Scan for common Rails security vulnerabilities using static analysis
-        run: bin/brakeman --no-pager
+        run: brakeman --no-pager
 
   lint:
     runs-on: ubuntu-latest
