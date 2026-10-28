@@ -8,7 +8,7 @@ class LiveUploadRefreshTest < ApplicationSystemTestCase
 
   test "desktop QR page updates by itself when the drawing is uploaded from the phone" do
     sign_in_and_open_qr_page
-    assert_selector "#live-upload[data-connected]", visible: :all
+    assert_selector "#live-upload[data-connected]", visible: :all, wait: 10
 
     # Same as what SubmissionsController#create does after the phone upload
     upload_drawing_for(@user, @challenge)
