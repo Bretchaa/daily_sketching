@@ -19,8 +19,9 @@ class LiveUploadRefreshTest < ApplicationSystemTestCase
   end
 
   test "desktop QR page falls back to the 15s check when live connections are blocked" do
-    # Simulate a network that blocks WebSockets
-    page.driver.browser.execute_cdp("Page.addScriptToEvaluateOnNewDocument",
+    # Simulate a network that blocks WebSockets. The browser is shared between tests,
+    # so the block is removed afterwards.
+    blocker = page.driver.browser.execute_cdp("Page.addScriptToEvaluateOnNewDocument",
       source: "window.WebSocket = function() { throw new Error('blocked') }")
     sign_in_and_open_qr_page
     assert_no_selector "#live-upload[data-connected]", visible: :all
@@ -29,6 +30,8 @@ class LiveUploadRefreshTest < ApplicationSystemTestCase
 
     assert_no_text "Scan with your phone", wait: 20
     assert_text(/You showed up today|Keep it up|Nice work today/)
+  ensure
+    page.driver.browser.execute_cdp("Page.removeScriptToEvaluateOnNewDocument", identifier: blocker["identifier"]) if blocker
   end
 
   private
