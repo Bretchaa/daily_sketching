@@ -44,6 +44,15 @@ class DrawingsControllerTest < ActionDispatch::IntegrationTest
     assert_match "Complete your challenge", response.body
   end
 
+  test "logged in, no upload on desktop: listens live for the phone upload" do
+    sign_in_as @user
+    get done_path
+    assert_response :success
+    assert_match "Scan with your phone", response.body
+    assert_match 'id="live-upload"', response.body
+    assert_match "upload_live", response.body
+  end
+
   test "logged in, skipped: shows locked gallery with unlock CTA" do
     sign_in_as @user
     get done_path(skipped: "1")

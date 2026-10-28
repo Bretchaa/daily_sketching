@@ -172,7 +172,11 @@
                 })();
               </script>
             <% else %>
-              <%# Desktop: QR code + polling %>
+              <%# Desktop: QR code + live refresh when the phone upload lands (polling below is the backup) %>
+              <div id="live-upload" hidden
+                   data-stream="<%= Turbo::StreamsChannel.signed_stream_name([ current_user, :uploads ]) %>"
+                   data-done-url="<%= done_path %>"></div>
+              <%= javascript_include_tag "upload_live", type: "module" %>
               <% qr_url = done_url(host: request.host, port: request.port) %>
               <% qr = RQRCode::QRCode.new(qr_url) %>
               <p class="font-sans" style="font-size: 0.95rem; font-weight: 600; color: #1a1a1a; margin-bottom: 0.25rem;">Scan with your phone</p>
@@ -269,13 +273,16 @@
                 })();
 
 
+                // Backup in case the live connection is blocked: check every 15s for 10 minutes,
+                // skipped while upload_live.js is connected
                 var pollTicks = 0;
                 var poll = setInterval(function() {
-                  if (++pollTicks > 100) { clearInterval(poll); return; }
+                  if (++pollTicks > 40) { clearInterval(poll); return; }
+                  if (document.getElementById("live-upload").dataset.connected) return;
                   fetch("/upload_status")
                     .then(function(r) { return r.json(); })
                     .then(function(data) { if (data.uploaded) { clearInterval(poll); window.location.href = "<%= done_path %>"; } });
-                }, 3000);
+                }, 15000);
               </script>
             <% end %>
           </div>

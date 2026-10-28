@@ -49,6 +49,8 @@ class SubmissionsController < ApplicationController
     submission.note = params[:note].to_s.strip.truncate(200).presence
 
     if submission.save
+      # Refresh this user's other open pages, e.g. the desktop QR page waiting for a phone upload
+      Turbo::StreamsChannel.broadcast_refresh_to(current_user, :uploads)
       redirect_to done_path
     else
       redirect_to done_path, alert: "Upload failed, please try again."

@@ -35,6 +35,14 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert @user.submissions.joins(:image_attachment).exists?(challenge: @challenge)
   end
 
+  test "uploading an image tells the user's other open pages to refresh" do
+    skip "libvips not installed" unless vips_available?
+    image = fixture_file_upload("drawing.jpg", "image/jpeg")
+    assert_turbo_stream_broadcasts [ @user, :uploads ], count: 1 do
+      post submissions_path, params: { image: image }
+    end
+  end
+
   test "uploading twice replaces the existing submission" do
     skip "libvips not installed" unless vips_available?
     image = fixture_file_upload("drawing.jpg", "image/jpeg")
