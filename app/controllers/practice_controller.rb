@@ -21,7 +21,9 @@ class PracticeController < ApplicationController
   ].freeze
 
   def index
-    @themes = THEMES
+    # Skip categories whose photos are all hidden (see PoseImage::HIDDEN_FILENAME_PREFIXES)
+    visible_themes = PoseImage.all.reject(&:hidden?).map(&:theme).uniq
+    @themes = THEMES.select { |t| visible_themes.include?(t[:key]) }
     @timers = TIMERS
   end
 
@@ -57,7 +59,7 @@ class PracticeController < ApplicationController
     else
       scope.to_a
     end
-    paths  = images.map(&:path)
+    paths  = images.reject(&:hidden?).map(&:path)
 
     redirect_to practice_path, alert: "No images found for this category." and return if paths.empty?
 

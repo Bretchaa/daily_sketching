@@ -58,6 +58,20 @@ namespace :challenges do
     puts "\nDone! #{generated} challenges created, #{skipped} already existed."
   end
 
+  desc "Replace upcoming challenges whose theme is paused (weight 0) and hasn't started yet, then refill the schedule"
+  task replace_paused: :environment do
+    config = YAML.load_file(Rails.root.join("config", "challenge_themes.yml"))
+    paused = config["challenges"].select { |t| t["weight"].to_i.zero? }.map { |t| t["theme"] }
+
+    # Only days nobody has opened yet: no poses picked, no drawings uploaded
+    replaceable = Challenge.where(theme: paused).where("date >= ?", Date.current)
+                           .where.missing(:poses).where.missing(:submissions)
+    replaceable.each { |c| puts "Removing #{c.date} — #{c.theme}" }
+    replaceable.destroy_all
+
+    Rake::Task["challenges:generate"].invoke
+  end
+
   desc "Check that challenges exist for the next N days (default: 7). Exits with error if any are missing."
   task :validate, [ :days ] => :environment do |_, args|
     days = (args[:days] || 7).to_i

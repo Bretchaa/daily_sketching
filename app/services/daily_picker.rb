@@ -14,9 +14,11 @@ class DailyPicker
   def poses
     scope = PoseImage.where(theme: @theme)
     records = @filter_tags.present? ? scope.select { |p| (p.tags_array & @filter_tags).any? } : scope.to_a
+    records = records.reject(&:hidden?)
     raise "No pose images found for theme=#{@theme}" if records.empty?
 
-    paths = seeded_shuffle(records.map(&:path)).first(@poses_count)
+    # cycle repeats poses only if hiding left the pool smaller than one session
+    paths = seeded_shuffle(records.map(&:path)).cycle.first(@poses_count)
     paths.map { |path| "#{R2_BASE_URL}/#{path}" }
   end
 

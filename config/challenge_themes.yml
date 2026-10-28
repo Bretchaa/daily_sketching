@@ -141,12 +141,14 @@ challenges:
       - count: 1
         duration_seconds: 600
 
+  # Paused (Oct 2026): every basic_shapes photo is from Reference.Pictures, hidden while we
+  # wait on a license. To restore: weight 2, homepage_example true.
   - theme: still_life
     display_name: Basic Shapes & Still Life
     image_theme: basic_shapes
-    weight: 2
+    weight: 0
     cooldown_days: 14
-    homepage_example: true
+    homepage_example: false
     example_image_url: https://assets.dailysketching.app/examples/still_life/example.jpeg
     focus: Draw each object from the reference photo. Focus on proportions, light, and shadow.
     tip: Before drawing, observe the negative space around the object. That's what holds the composition together. Lightly sketch the overall shape first before committing to any details.
