@@ -10,4 +10,10 @@ class Submission < ApplicationRecord
   def total_cheers
     cheers.sum(:count)
   end
+
+  # "width / height" for CSS aspect-ratio, or nil if the upload was never measured
+  def image_aspect_ratio
+    meta = image.blob.metadata
+    "#{meta["width"]} / #{meta["height"]}" if meta["width"].to_i > 0 && meta["height"].to_i > 0
+  end
 end

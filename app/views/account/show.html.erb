@@ -150,9 +150,12 @@
                        data-meta="<%= submission.challenge.date.strftime("%b %-d") %> · <%= submission.challenge.theme.humanize %>"
                        data-share-url="<%= drawing_url(submission) %>"
                        class="img-skeleton"
-                       style="position: relative; border-radius: 1rem; overflow: hidden; background: #e8e3db; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer;">
-                    <%= image_tag url_for(submission.image), style: "width: 100%; height: auto; display: block;", loading: "lazy", onload: "this.parentElement.classList.remove('img-skeleton')" %>
+                       style="position: relative; aspect-ratio: <%= submission.image_aspect_ratio || "3 / 4" %>; border-radius: 1rem; overflow: hidden; background: #e8e3db; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer;">
+                    <%= image_tag url_for(submission.image), style: "width: 100%; height: auto; display: block;", loading: "lazy", onload: "this.parentElement.classList.remove('img-skeleton'); this.parentElement.style.aspectRatio = ''", onerror: ApplicationHelper::IMAGE_RETRY_ONERROR %>
                     <div class="gallery-hover-overlay"></div>
+                    <button type="button" class="img-retry" aria-label="Try loading this drawing again" onclick="<%= ApplicationHelper::IMAGE_RETRY_ONCLICK %>">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>
+                    </button>
                   </div>
                 <% end %>
               </div>

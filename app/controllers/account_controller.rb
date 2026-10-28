@@ -4,7 +4,7 @@ class AccountController < ApplicationController
   def show
     @submissions = current_user.submissions
                                .joins(:image_attachment)
-                               .includes(:image_attachment, :challenge)
+                               .includes({ image_attachment: :blob }, :challenge)
                                .order(created_at: :desc)
     current_user.sync_shields!
     @streak = current_user.streak

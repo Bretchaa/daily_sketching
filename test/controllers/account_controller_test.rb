@@ -115,6 +115,31 @@ class AccountControllerTest < ActionDispatch::IntegrationTest
     assert_match NAV_YELLOW_GLOW, response.body
   end
 
+  # ── Gallery images ───────────────────────────────────────────────────────────
+
+  test "gallery placeholder takes the drawing's real shape and the image retries on error" do
+    submission = upload_drawing_for(@user, today_challenge)
+    submission.image.blob.update!(metadata: { "width" => 1200, "height" => 900 })
+    sign_in_as @user
+
+    get account_path
+
+    assert_response :success
+    assert_match "aspect-ratio: 1200 / 900", response.body
+    assert_match "dataset.retries", response.body
+  end
+
+  test "gallery placeholder falls back to a portrait shape when the drawing was never measured" do
+    submission = upload_drawing_for(@user, today_challenge)
+    submission.image.blob.update!(metadata: {})
+    sign_in_as @user
+
+    get account_path
+
+    assert_response :success
+    assert_match "aspect-ratio: 3 / 4", response.body
+  end
+
   def challenge_for(date)
     Challenge.find_by(date: date) || Challenge.create!(
       date: date,
