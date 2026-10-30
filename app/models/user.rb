@@ -114,6 +114,12 @@ class User < ApplicationRecord
     newly_granted
   end
 
+  # Days the user finished a session, uploaded or not. This is what counts as
+  # "drew that day" for the streak and the reminder emails.
+  def drawn_dates
+    submissions.joins(:challenge).pluck("challenges.date").map(&:to_date).to_set
+  end
+
   private
 
   # Anyone starting a streak from zero (their very first-ever drawing, or a
@@ -129,10 +135,6 @@ class User < ApplicationRecord
     else
       0
     end
-  end
-
-  def drawn_dates
-    submissions.joins(:challenge).pluck("challenges.date").map(&:to_date).to_set
   end
 
   def run_length(covered_dates)

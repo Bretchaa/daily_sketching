@@ -35,10 +35,11 @@ namespace :emails do
     end
 
     # ── Email 2: 24h nudge for users who never started ───────────────────────
-    # Signed up 23-25h ago, zero completed submissions
+    # Signed up 23-25h ago, never finished a session (same definition as the streak:
+    # a finished session counts, with or without an upload)
     nudge_candidates = User.where(email_notifications: true)
                            .where(created_at: 25.hours.ago..23.hours.ago)
-                           .where.not(id: Submission.joins(:image_attachment).select(:user_id))
+                           .where.not(id: Submission.select(:user_id))
 
     nudge_candidates.each do |user|
       begin
@@ -55,12 +56,10 @@ namespace :emails do
                                   .where("reengagement_sent_at IS NULL OR reengagement_sent_at < ?", 30.days.ago)
 
     reengagement_candidates.each do |user|
-      completed = user.submissions.joins(:image_attachment)
-      next if completed.none?
-
-      last_draw = completed.joins(:challenge).maximum("challenges.date")
+      # Same definition as the streak: a finished session counts, with or without an upload
+      last_draw = user.drawn_dates.max
       next unless last_draw
-      next unless last_draw.to_date.between?(8.days.ago.to_date, 7.days.ago.to_date)
+      next unless last_draw.between?(8.days.ago.to_date, 7.days.ago.to_date)
 
       begin
         UserMailer.reengagement(user).deliver_now
@@ -78,19 +77,18 @@ namespace :emails do
                                   .where("streak_break_sent_at IS NULL OR streak_break_sent_at < ?", 30.days.ago)
 
     streak_break_candidates.each do |user|
-      completed = user.submissions.joins(:image_attachment)
-      next if completed.count < 2
+      # Same definition as the streak: a finished session counts, with or without an upload
+      drawn = user.drawn_dates
+      next if drawn.size < 2
 
-      last_draw = completed.joins(:challenge).maximum("challenges.date")
-      next unless last_draw
-      next unless last_draw.to_date == 2.days.ago.to_date  # missed exactly yesterday
+      last_draw = drawn.max
+      next unless last_draw == 2.days.ago.to_date          # missed exactly yesterday
       next if user.shield_uses.exists?(date: yesterday)     # a shield covered it, streak didn't actually break
 
       # Calculate streak length before the break
       streak_length = 0
       check_date = 2.days.ago.to_date
-      loop do
-        break unless completed.joins(:challenge).where(challenges: { date: check_date }).exists?
+      while drawn.include?(check_date)
         streak_length += 1
         check_date -= 1
       end
